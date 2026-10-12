@@ -2,6 +2,7 @@ import {
   ACESFilmicToneMapping, Box3, Color, DirectionalLight, Group, HemisphereLight,
   LoadingManager, Material, Mesh, PerspectiveCamera, PMREMGenerator, Scene,
   Quaternion, Spherical, Texture, Vector3, WebGLRenderer, type WebGLRenderTarget,
+  Euler, Matrix4, Plane, MeshBasicMaterial,
 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -10,6 +11,8 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { sceneConfig, type CameraPose } from './config';
+import { sampleChoreography } from './motion';
+import { createInk } from './ink';
 
 export interface SceneStats { fps: number; dpr: number; drawCalls: number; triangles: number }
 
@@ -19,6 +22,19 @@ export class KatanaScene {
   readonly scene = new Scene();
   controls: OrbitControls;
   readonly model = new Group();
+  readonly sword = new Group();
+  readonly scabbard = new Group();
+  private ink = new Group();
+  private sheathMaterials: Material[] = [];
+  private bladeMaterials: Material[] = [];
+  private mouthX = -1;
+  private bladePlane = new Plane();
+  private storyProgress = 0;
+  private key = new DirectionalLight('#fff2dd', 2.8);
+  private rim = new DirectionalLight('#c6cddd', 2);
+  private qa = new Quaternion();
+  private qb = new Quaternion();
+  private rotation = new Euler();
   private environment: WebGLRenderTarget;
   private draco = new DRACOLoader();
   private basis = new KTX2Loader();
@@ -39,6 +55,7 @@ export class KatanaScene {
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = sceneConfig.renderer.exposure;
     this.renderer.setClearColor(new Color('#171713'), 0);
+    this.renderer.localClippingEnabled = true;
     this.pixelRatio = Math.min(devicePixelRatio, innerWidth < sceneConfig.breakpoint ? sceneConfig.renderer.mobileDpr : sceneConfig.renderer.desktopDpr);
     this.renderer.setPixelRatio(this.pixelRatio);
     const room = new RoomEnvironment();
@@ -49,13 +66,14 @@ export class KatanaScene {
     room.dispose();
     pmrem.dispose();
     this.scene.add(new HemisphereLight('#efe8d9', '#302921', 0.8));
-    const key = new DirectionalLight('#fff2dd', 2.5);
+    const key = this.key;
     key.position.set(-2, 4, 5);
-    const rim = new DirectionalLight('#c6cddd', 1.65);
+    const rim = this.rim;
     rim.position.set(2, -1, -3);
     const warm = new DirectionalLight('#b9583e', 0.65);
     warm.position.set(-4, 1, -2);
     this.scene.add(key, rim, warm, this.model);
+    this.model.add(this.sword, this.scabbard);
     this.draco.setDecoderPath('/assets/decoders/draco/');
     this.basis.setTranscoderPath('/assets/decoders/basis/').detectSupport(this.renderer);
     this.controls = this.createControls();
@@ -73,46 +91,88 @@ export class KatanaScene {
       presentation.rotation.set(0, 0, 0);
       source.rotation.set(...sceneConfig.model.sourceRotation);
     }
-    source.traverse(object => {
-      if (object instanceof Mesh && sceneConfig.model.hiddenMeshes.test(object.name)) object.visible = false;
-    });
-    // Find the longest source axis, orient it horizontally, then normalize the model.
-    const visibleBounds = (): Box3 => {
-      source.updateMatrixWorld(true);
-      const bounds = new Box3();
-      source.traverseVisible(object => {
-        if (object instanceof Mesh) bounds.expandByObject(object, true);
-      });
-      return bounds;
-    };
-    let bounds = visibleBounds();
-    const extent = bounds.getSize(new Vector3());
-    if (extent.y > extent.x && extent.y > extent.z) source.rotateZ(-Math.PI / 2);
-    else if (extent.z > extent.x && extent.z > extent.y) source.rotateY(Math.PI / 2);
-    if (sceneConfig.model.flipBlade) source.rotateY(Math.PI);
     source.updateMatrixWorld(true);
-    bounds = visibleBounds();
+    const meshes: Mesh[] = [];
+    source.traverse(object => { if (object instanceof Mesh) meshes.push(object); });
+    const bounds = new Box3();
+    meshes.filter(m => !sceneConfig.model.sheathMeshes.test(m.name)).forEach(m => bounds.expandByObject(m, true));
     const length = bounds.getSize(new Vector3()).x;
     if (!Number.isFinite(length) || length <= 0) throw new Error('The katana has invalid geometry bounds.');
     const center = bounds.getCenter(new Vector3());
-    source.position.sub(center);
-    const normalized = new Group();
-    normalized.add(source);
-    normalized.scale.setScalar(sceneConfig.model.length / length);
-    this.model.add(normalized);
-    this.model.rotation.set(...sceneConfig.model.rotation);
-    source.traverse(object => {
-      if (!(object instanceof Mesh)) return;
+    const scale = sceneConfig.model.length / length;
+    const normalize = new Matrix4().makeScale(scale, scale, scale).multiply(new Matrix4().makeTranslation(-center.x,-center.y,-center.z));
+    const mouth = new Vector3(...sceneConfig.model.sheathMouth);
+    const fitted = new Vector3(...sceneConfig.model.sheathedMouth);
+    const align = new Matrix4().makeTranslation(fitted.x,fitted.y,fitted.z)
+      .multiply(new Matrix4().makeRotationZ(sceneConfig.model.sheathAngle))
+      .multiply(new Matrix4().makeTranslation(-mouth.x,-mouth.y,-mouth.z));
+    this.mouthX = fitted.sub(center).multiplyScalar(scale).x;
+    for (const object of meshes) {
+      const sheath = sceneConfig.model.sheathMeshes.test(object.name);
+      const geometry = object.geometry.clone();
+      geometry.applyMatrix4(object.matrixWorld);
+      if (sheath) geometry.applyMatrix4(align);
+      geometry.applyMatrix4(normalize);
+      // World transforms are baked into runtime geometry; the licensed GLB remains intact.
+      object.geometry.dispose(); object.geometry = geometry;
+      object.removeFromParent(); object.position.set(0,0,0); object.quaternion.identity(); object.scale.set(1,1,1);
+      const original = Array.isArray(object.material) ? object.material : [object.material];
+      const blade = /nagasa|blade/i.test(object.name);
+      const copies = original.map(material => {
+        const copy = material.clone();
+        if (sheath) { copy.transparent = true; this.sheathMaterials.push(copy); }
+        if (blade) { copy.clippingPlanes = [this.bladePlane]; this.bladeMaterials.push(copy); }
+        return copy;
+      });
+      object.material = Array.isArray(object.material) ? copies : copies[0];
+      (sheath ? this.scabbard : this.sword).add(object);
       const materials = Array.isArray(object.material) ? object.material : [object.material];
       for (const material of materials) {
         for (const value of Object.values(material)) {
           if (value instanceof Texture) value.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
         }
       }
-    });
+    }
+    this.ink = await createInk(); this.scene.add(this.ink);
+    this.setStory(this.storyProgress);
     await this.renderer.compileAsync(this.scene, this.camera);
     this.dirty = true;
   }
+
+  setStory(progress: number): void {
+    if (this.disposed || this.exploring) return;
+    this.storyProgress = progress;
+    const state = sampleChoreography(progress);
+    this.qa.setFromEuler(this.rotation.set(...state.fromRotation));
+    this.qb.setFromEuler(this.rotation.set(...state.toRotation));
+    this.model.quaternion.copy(this.qa).slerp(this.qb, state.rotationMix);
+    this.sword.position.set(...state.sword); this.scabbard.position.set(...state.scabbard);
+    this.scabbard.visible = state.scabbardOpacity > .01;
+    this.sheathMaterials.forEach(material => { material.opacity = state.scabbardOpacity; });
+    this.model.updateMatrixWorld(true);
+    // Expose only the portion past the saya mouth while the curved blade is drawn.
+    this.bladePlane.set(new Vector3(-1,0,0),this.mouthX+state.scabbard[0]).applyMatrix4(this.model.matrixWorld);
+    const lighting=sceneConfig.lighting;
+    this.key.position.set(...lighting.keyStart);this.key.position.x+=state.reflection*lighting.keyTravel;
+    this.rim.position.set(...lighting.rimStart);this.rim.position.x+=state.reflection*lighting.rimTravel;
+    this.scene.environmentRotation.y = state.reflection * lighting.reflectionRotation;
+    this.scene.environmentIntensity = lighting.environment + state.light * lighting.paperBoost;
+    this.renderer.toneMappingExposure = sceneConfig.renderer.exposure + state.light * .06;
+    this.ink.children.forEach((object, index) => {
+      const plane = object as Mesh;
+      const material = plane.material as MeshBasicMaterial;
+      const artwork=sceneConfig.artwork,layer=artwork.layers[index];
+      material.opacity = state.ink * layer.opacity * (1-state.light*artwork.paperFade) * (innerWidth<sceneConfig.breakpoint?artwork.mobileOpacity:1);
+      material.color.set('#eee1c6').lerp(new Color('#8f8670'),state.light);
+      plane.position.x = layer.x + Math.sin(progress*Math.PI)*(artwork.sway+index*artwork.swayStep);
+      plane.position.y = layer.y + state.light*artwork.paperLift;
+      plane.scale.x = layer.width*(1+state.ink*artwork.growth);
+      plane.visible = innerWidth>=sceneConfig.breakpoint || layer.mobile;
+    });
+    this.dirty = true;
+  }
+
+  storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible }; }
 
   setPose(pose: CameraPose): void {
     if (this.exploring || this.disposed) return;
@@ -187,6 +247,7 @@ export class KatanaScene {
     this.controls.update();
     this.renderer.domElement.style.touchAction = '';
     this.setPose(pose);
+    this.setStory(this.storyProgress);
     this.controls.enableDamping = true;
   }
 
@@ -249,7 +310,7 @@ export class KatanaScene {
     this.renderer.domElement.removeEventListener('webglcontextlost', this.contextLost);
     const textures = new Set<Texture>();
     const materials = new Set<Material>();
-    this.model.traverse(object => {
+    for (const root of [this.model, this.ink]) root.traverse(object => {
       if (!(object instanceof Mesh)) return;
       object.geometry.dispose();
       for (const material of Array.isArray(object.material) ? object.material : [object.material]) materials.add(material);

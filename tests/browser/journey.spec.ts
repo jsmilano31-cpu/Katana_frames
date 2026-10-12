@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { testGlb } from '../fixture';
+import { chapters } from '../../src/config';
 import { existsSync } from 'node:fs';
 
 async function withFixture(page: Page): Promise<void> {
@@ -25,10 +26,10 @@ test('missing model gives a complete accessible still-image journey and retry', 
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
   await expect(page.locator('.status-text')).toHaveText('Still-image view · 3D unavailable');
-  await expect(page.locator('.chapter')).toHaveCount(5);
+  await expect(page.locator('.chapter')).toHaveCount(6);
   await expect(page.locator('.retry-button')).toBeVisible();
   await expect(page.locator('.explore-button')).toBeDisabled();
-  await page.getByRole('navigation', { name: 'Study chapters' }).getByRole('link', { name: 'The guard' }).click();
+  await page.getByRole('navigation', { name: 'Study chapters' }).getByRole('link', { name: 'The edge' }).click();
   await expect(page.locator('[data-nav="2"]')).toHaveAttribute('aria-current', 'step');
   await page.locator('.about-button').click();
   await expect(page.getByRole('dialog')).toBeVisible();
@@ -46,8 +47,8 @@ test('real WebGL loads, scrolls forward and reverses, then reframes on resize', 
   await expect(page.locator('body')).toHaveAttribute('data-view', '3d');
   const startingPose = await page.evaluate(() => window.__katana.state().pose);
   await page.locator('[data-nav="2"]').click();
-  await waitForProgress(page, 0.5);
-  await expect(page.locator('#guard')).toHaveAttribute('aria-hidden', 'false');
+  await waitForProgress(page, chapters[2].progress);
+  await expect(page.locator('#edge')).toHaveAttribute('aria-hidden', 'false');
   await page.locator('[data-nav="0"]').click();
   await waitForProgress(page, 0);
   const returned = await page.evaluate(() => window.__katana.state().pose);
@@ -56,15 +57,15 @@ test('real WebGL loads, scrolls forward and reverses, then reframes on resize', 
     const story = document.querySelector('.story')!;
     window.scrollTo(0, (story.getBoundingClientRect().height - innerHeight) * 0.75);
     window.scrollTo(0, 0);
-    window.scrollTo(0, (story.getBoundingClientRect().height - innerHeight) * 0.5);
+    window.scrollTo(0, (story.getBoundingClientRect().height - innerHeight) * 0.47);
   });
-  await waitForProgress(page, 0.5);
+  await waitForProgress(page, chapters[2].progress);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('[data-nav="3"]').click();
-  await waitForProgress(page, 0.75);
+  await waitForProgress(page, chapters[3].progress);
   const portrait = await page.evaluate(() => window.__katana.state().pose);
   expect(portrait.fov).toBe(43);
-  expect(portrait.position[2]).toBeCloseTo(3.6, 1);
+  expect(portrait.position[2]).toBeCloseTo(chapters[3].mobile.position[2], 1);
   expect(errors).toEqual([]);
 });
 
@@ -72,12 +73,16 @@ test('exploration rotates by keyboard and drag, resets, and restores the authore
   await withFixture(page);
   await page.goto('/');
   await expect(page.locator('body')).toHaveAttribute('data-view', '3d');
-  await page.locator('[data-nav="4"]').click();
+  await page.locator('[data-nav="5"]').click();
   await waitForProgress(page, 1);
   const authored = await page.evaluate(() => window.__katana.state().pose);
   const scroll = await page.evaluate(() => scrollY);
   await page.locator('.explore-button').click();
   await expect(page.locator('.explore-panel')).toBeVisible();
+  await expect(page.locator('#katana-canvas')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.locator('.exit-button')).toBeFocused();
+  await page.keyboard.press('Tab');
   await expect(page.locator('#katana-canvas')).toBeFocused();
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('ArrowUp');
@@ -111,8 +116,8 @@ test('reduced motion uses still images without requesting WebGL assets', async (
   await page.goto('/');
   await expect(page.locator('.status-text')).toHaveText('Still-image view · reduced motion');
   await expect(page.locator('.retry-button')).toBeHidden();
-  await page.locator('[data-nav="4"]').click();
-  await expect(page.locator('[data-nav="4"]')).toHaveAttribute('aria-current', 'step');
+  await page.locator('[data-nav="5"]').click();
+  await expect(page.locator('[data-nav="5"]')).toHaveAttribute('aria-current', 'step');
   expect(assets).toEqual([]);
 });
 
@@ -139,7 +144,7 @@ test('unavailable WebGL preserves the static journey', async ({ page }) => {
   });
   await page.goto('/');
   await expect(page.locator('.status-text')).toHaveText('Still-image view · 3D unavailable');
-  await expect(page.locator('.chapter')).toHaveCount(5);
+  await expect(page.locator('.chapter')).toHaveCount(6);
   await expect(page.locator('.retry-button')).toBeVisible();
 });
 
@@ -147,7 +152,7 @@ test('a runtime reduced-motion change exits exploration and keeps navigation usa
   await withFixture(page);
   await page.goto('/');
   await expect(page.locator('body')).toHaveAttribute('data-view', '3d');
-  await page.locator('[data-nav="4"]').click();
+  await page.locator('[data-nav="5"]').click();
   await waitForProgress(page, 1);
   await page.locator('.explore-button').click();
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -162,7 +167,7 @@ test('portrait exploration responds to a touch drag and exits through its toolba
   await withFixture(page);
   await page.goto('/');
   await expect(page.locator('body')).toHaveAttribute('data-view', '3d');
-  await page.locator('[data-nav="4"]').click();
+  await page.locator('[data-nav="5"]').click();
   await waitForProgress(page, 1);
   await page.locator('.explore-button').tap();
   const before = await page.evaluate(() => window.__katana.state().pose.position);
@@ -180,7 +185,7 @@ test('portrait exploration responds to a touch drag and exits through its toolba
   await waitForProgress(page, 1);
 });
 
-test('the official katana loads with local textures and all five authored views', async ({ page }) => {
+test('the official katana loads with local textures and all six authored views', async ({ page }) => {
   test.skip(!existsSync('public/assets/model/katana.glb'), 'An official model must be imported.');
   const errors: string[] = [];
   const failed: string[] = [];
@@ -188,9 +193,10 @@ test('the official katana loads with local textures and all five authored views'
   page.on('response', response => { if (response.status() >= 400) failed.push(response.url()); });
   await page.goto('/');
   await expect(page.locator('body')).toHaveAttribute('data-view', '3d');
-  for (const index of [1, 2, 3, 4]) {
+  const seated = await page.evaluate(() => window.__katana.state().choreography);
+  for (const index of [1, 2, 3, 4, 5]) {
     await page.locator(`[data-nav="${index}"]`).click();
-    await waitForProgress(page, index / 4);
+    await waitForProgress(page, chapters[index].progress);
     const state = await page.evaluate(() => window.__katana.state());
     expect(state.pose.position.every(Number.isFinite)).toBe(true);
     expect(state.chapter).toBe(index);
@@ -199,6 +205,44 @@ test('the official katana loads with local textures and all five authored views'
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('Escape');
   await expect(page.locator('.explore-panel')).toBeHidden();
+  await page.locator('[data-nav="1"]').click();
+  await waitForProgress(page,chapters[1].progress);
+  const draw=await page.evaluate(()=>window.__katana.state().choreography!);
+  expect(draw.sword[0]).toBeLessThan(-.5);
+  expect(draw.scabbard[0]).toBeGreaterThan(.8);
+  expect(draw.scabbardVisible).toBe(true);
+  await page.locator('[data-nav="0"]').click();
+  await waitForProgress(page,0);
+  const reseated=await page.evaluate(()=>window.__katana.state().choreography!);
+  expect(reseated.sword).toEqual(seated!.sword);
+  expect(reseated.scabbard).toEqual(seated!.scabbard);
+  reseated.rotation.forEach((v,i)=>expect(v).toBeCloseTo(seated!.rotation[i],5));
   expect(errors).toEqual([]);
   expect(failed).toEqual([]);
+});
+
+
+test('the real fallback posters load for all six acts without requesting the GLB',async({page,isMobile})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});
+  const glbs:string[]=[];page.on('request',r=>{if(r.url().includes('katana.glb'))glbs.push(r.url())});
+  await page.goto('/');await expect(page.locator('body')).toHaveAttribute('data-view','static');
+  await expect.poll(()=>page.locator('.chapter-image img').evaluateAll(images=>images.every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0))).toBe(true);
+  const widths=await page.locator('.chapter-image img').evaluateAll(images=>images.map(image=>(image as HTMLImageElement).naturalWidth));
+  expect(widths).toEqual(Array(6).fill(isMobile?390:1440));expect(glbs).toEqual([]);
+});
+
+
+test('orientation changes preserve the draw progress and object transforms',async({page})=>{
+  await page.goto('/');await expect(page.locator('body')).toHaveAttribute('data-view','3d');
+  await page.locator('[data-nav="1"]').click();await waitForProgress(page,.25);
+  const initial=await page.evaluate(()=>window.__katana.state().choreography!);
+  for(const viewport of [{width:390,height:844},{width:844,height:390},{width:1440,height:900}]){
+    await page.setViewportSize(viewport);
+    await expect.poll(()=>page.evaluate(()=>({width:innerWidth,height:innerHeight}))).toEqual(viewport);
+    await page.waitForTimeout(300);await waitForProgress(page,.25);
+    const reframed=await page.evaluate(()=>window.__katana.state().choreography!);
+    reframed.sword.forEach((v,i)=>expect(v).toBeCloseTo(initial.sword[i],2));
+    reframed.scabbard.forEach((v,i)=>expect(v).toBeCloseTo(initial.scabbard[i],2));
+    expect(await page.evaluate(()=>window.__katana.state().chapter)).toBe(1);
+  }
 });

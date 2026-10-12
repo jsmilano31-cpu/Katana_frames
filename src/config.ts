@@ -1,96 +1,73 @@
-export type Vec3 = readonly [number, number, number];
-export type ChapterId = 'reveal' | 'blade' | 'guard' | 'handle' | 'form';
-
-export interface CameraPose {
-  position: Vec3;
-  target: Vec3;
-  fov: number;
-  roll?: number;
-}
-
+﻿export type Vec3 = readonly [number, number, number];
+export type ChapterId = 'presence' | 'draw' | 'edge' | 'stillness' | 'light' | 'form';
+export interface CameraPose { position: Vec3; target: Vec3; fov: number; roll?: number }
 export interface Chapter {
-  id: ChapterId;
-  label: string;
-  japanese: string;
-  eyebrow: string;
-  title: string;
-  description: string;
-  note: string;
-  progress: number;
-  desktop: CameraPose;
-  mobile: CameraPose;
-  poster: { position: string; scale: number };
+  id: ChapterId; label: string; japanese: string; eyebrow: string; title: string;
+  description: string; note: string; start: number; end: number; progress: number;
+  desktop: CameraPose; mobile: CameraPose; poster: { position: string; scale: number };
 }
-
+const desktop = (position: Vec3, target: Vec3, fov = 36): CameraPose => ({ position, target, fov, roll: 0 });
+const mobile = (position: Vec3, target: Vec3, roll = 0.55): CameraPose => ({ position, target, fov: 43, roll });
 export const chapters: readonly Chapter[] = [
-  {
-    id: 'reveal', label: 'The reveal', japanese: '刀', eyebrow: 'A study in form',
-    title: 'The quiet<br>edge of form.',
-    description: 'One blade. A different perspective.<br>A journey through the details of a katana.',
-    note: 'Scroll to begin the study', progress: 0,
-    desktop: { position: [0.1, 0.8, 8], target: [-1.7, 0.15, 0], fov: 36 },
-    mobile: { position: [1.3, -1.05, 11.5], target: [1.23, -1.45, 0], fov: 43, roll: -0.7 },
-    poster: { position: '58% 50%', scale: 1 },
-  },
-  {
-    id: 'blade', label: 'The blade', japanese: '刃', eyebrow: '01 / The blade',
-    title: 'A line.<br>A presence.',
-    description: 'Follow the curve of the steel.<br>Light traces what the eye might miss.',
-    note: 'Steel · curve · reflection', progress: 0.25,
-    desktop: { position: [0.9, 0.45, 2.8], target: [0.35, -0.28, 0], fov: 36 },
-    mobile: { position: [1.3, -0.45, 3.7], target: [1.3, -0.9, 0], fov: 43, roll: -0.7 },
-    poster: { position: '92% 83%', scale: 1.55 },
-  },
-  {
-    id: 'guard', label: 'The guard', japanese: '鍔', eyebrow: '02 / Tsuba',
-    title: 'Where two<br>worlds meet.',
-    description: 'Between blade and hand, the guard.<br>A small form with a distinct presence.',
-    note: 'Tsuba · the guard', progress: 0.5,
-    desktop: { position: [-0.4, 0.6, 1.85], target: [-1.45, 0.34, 0], fov: 36 },
-    mobile: { position: [-0.1, 0.4, 2.6], target: [-0.65, -0.12, 0], fov: 43, roll: -0.7 },
-    poster: { position: '44% 39%', scale: 1.75 },
-  },
-  {
-    id: 'handle', label: 'The handle', japanese: '柄', eyebrow: '03 / Tsuka',
-    title: 'A rhythm<br>in the wrap.',
-    description: 'Repeating diamonds. Woven texture.<br>Discover the detail along the grip.',
-    note: 'Tsuka · the wrapped handle', progress: 0.75,
-    desktop: { position: [-1.15, 0.8, 2.6], target: [-2, 0.53, 0], fov: 36 },
-    mobile: { position: [-1.3, 0.5, 3.6], target: [-1.11, -0.03, 0], fov: 43, roll: -0.7 },
-    poster: { position: '14% 20%', scale: 1.7 },
-  },
-  {
-    id: 'form', label: 'The full form', japanese: '形', eyebrow: '04 / The full form',
-    title: 'Every angle.<br>One form.',
-    description: 'The details return to the whole.<br>Take a moment. Make it your own perspective.',
-    note: 'The study is yours to explore', progress: 1,
-    desktop: { position: [0.2, 0.6, 7.8], target: [-1.7, 0.1, 0], fov: 36 },
-    mobile: { position: [1.3, -1.05, 11.3], target: [1.23, -1.45, 0], fov: 43, roll: -0.7 },
-    poster: { position: '60% 50%', scale: 1 },
-  },
+  { id: 'presence', label: 'Presence', japanese: '刀', eyebrow: 'An unfolding study / 01',
+    title: 'Quiet.<br>Until drawn.', description: 'Steel, suspended.<br>A story revealed by your scroll.', note: 'SCROLL TO UNFOLD',
+    start: 0, end: .12, progress: 0, desktop: desktop([.1, .6, 6.8], [0, -.2, 0]), mobile: mobile([.15, .25, 8.7], [0, -.25, 0]), poster: {position:'center',scale:1} },
+  { id: 'draw', label: 'The draw', japanese: '抜', eyebrow: 'The draw / 02',
+    title: 'The first<br>light.', description: 'Lacquer gives way to steel.<br>The blade emerges, one reflection at a time.', note: 'SAYA / THE SCABBARD',
+    start: .12, end: .38, progress: .25, desktop: desktop([.3, .7, 8.9], [-.1, -.3, 0]), mobile: mobile([.2, .4, 11.6], [-.25, -.98, 0], .7), poster: {position:'center',scale:1} },
+  { id: 'edge', label: 'The edge', japanese: '刃', eyebrow: 'The edge / 03',
+    title: 'A different<br>dimension.', description: 'Across the edge.<br>A line becomes a form.', note: 'NAGASA / THE BLADE',
+    start: .38, end: .56, progress: .47, desktop: desktop([1.5, 1.1, 4.8], [-.3, -.15, 0], 39), mobile: mobile([.7, .5, 7.5], [-.1, -.3, 0], .4), poster: {position:'center',scale:1} },
+  { id: 'stillness', label: 'Stillness', japanese: '鍔', eyebrow: 'A closer look / 04',
+    title: 'Held in<br>the details.', description: 'The guard. The wrap. The curve.<br>A moment to look closer.', note: 'TSUBA / GUARD · TSUKA / GRIP',
+    start: .56, end: .72, progress: .64, desktop: desktop([.7, .7, 3.3], [1.05, .02, 0], 38), mobile: mobile([.7, .2, 6.2], [.95, -.35, 0], .45), poster: {position:'center',scale:1} },
+  { id: 'light', label: 'Ink to light', japanese: '墨', eyebrow: 'Ink to light / 05',
+    title: 'Space.<br>To see.', description: 'The darkness recedes.<br>The whole form returns.', note: 'INK / STEEL / LIGHT',
+    start: .72, end: .9, progress: .81, desktop: desktop([.5, .8, 7.8], [0, -.1, 0]), mobile: mobile([.2, .4, 9.4], [0, -.35, 0], -.6), poster: {position:'center',scale:1} },
+  { id: 'form', label: 'Your perspective', japanese: '形', eyebrow: 'Your perspective / 06',
+    title: 'The form.<br>Now yours.', description: 'Take the view into your own hands.', note: 'A STUDY IN INK & STEEL',
+    start: .9, end: 1, progress: 1, desktop: desktop([.2, .6, 7], [0, -.15, 0]), mobile: mobile([.15, .3, 9], [0, -.35, 0], -.55), poster: {position:'center',scale:1} },
 ];
+export const cameraKeys = [
+  {...chapters[0]},
+  {progress:.12,desktop:desktop([.15,.6,7.6],[0,-.25,0]),mobile:mobile([.15,.3,10],[0,-.25,0],.6)},
+  {...chapters[1]},
+  {progress:.38,desktop:desktop([.4,.8,10.5],[.1,-.25,0]),mobile:mobile([.2,.4,15],[.1,-.65,0],.85)},
+  {...chapters[2]},
+  {progress:.56,desktop:desktop([.85,.8,4.2],[.7,-.1,0],38),mobile:mobile([.6,.35,7],[.7,-.3,0],.4)},
+  {...chapters[3]}, {...chapters[4]}, {...chapters[5]},
+] as const;
 
+export interface ChoreographyKey {
+  progress: number; rotation: Vec3; sword: Vec3; scabbard: Vec3; scabbardOpacity: number;
+  light: number; ink: number; reflection: number;
+}
+export const choreography: readonly ChoreographyKey[] = [
+  {progress:0,rotation:[-.08,-.16,.3],sword:[0,0,0],scabbard:[0,0,0],scabbardOpacity:1,light:0,ink:.12,reflection:0},
+  {progress:.12,rotation:[-.05,.08,.24],sword:[0,0,0],scabbard:[0,0,0],scabbardOpacity:1,light:0,ink:.12,reflection:.15},
+  {progress:.38,rotation:[.04,.28,.12],sword:[-1.3,0,0],scabbard:[1.95,0,0],scabbardOpacity:1,light:0,ink:.65,reflection:.5},
+  {progress:.47,rotation:[-.1,1.15,-.14],sword:[-.3,0,0],scabbard:[6,-.1,0],scabbardOpacity:0,light:0,ink:.85,reflection:.7},
+  {progress:.56,rotation:[.04,3.12,-.12],sword:[0,0,0],scabbard:[5.8,-.3,0],scabbardOpacity:0,light:.02,ink:1,reflection:.82},
+  {progress:.72,rotation:[.05,3.35,-.08],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:.08,ink:1,reflection:1},
+  {progress:.81,rotation:[-.04,3.24,.12],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:1,ink:.9,reflection:1.3},
+  {progress:.9,rotation:[-.08,3.15,.28],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:1,ink:.8,reflection:1.5},
+  {progress:1,rotation:[-.08,3.1,.3],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:1,ink:.55,reflection:1.6},
+];
 export const sceneConfig = {
-  breakpoint: 760,
-  desktopTravel: 8,
-  mobileTravel: 6,
-  scrubSeconds: 0.8,
-  model: {
-    length: 4, rotation: [0, 0, -0.32] as Vec3, flipBlade: false,
-    presentationNode: 'Sketchfab_model', sourceRotation: [-Math.PI / 2, 0, 0] as Vec3,
-    hiddenMeshes: /saya|scabbard|sheath|kurikata/i,
-  },
-  renderer: { desktopDpr: 1.75, mobileDpr: 1.25, minimumDpr: 0.75, exposure: 0.92 },
+  breakpoint:760,desktopTravel:8,mobileTravel:6,scrubSeconds:.8,
+  model:{length:4,presentationNode:'Sketchfab_model',sourceRotation:[-Math.PI/2,0,0] as Vec3,
+    sheathMeshes:/saya|scabbard|sheath|kurikata/i,
+    sheathMouth:[-1.235,-.247,0] as Vec3,sheathedMouth:[-1.235,.111,0] as Vec3,sheathAngle:.032},
+  motion:{cameraArcs:[.08,.12,.12,.35,.22,.1,-.12,-.15],cameraLift:.15,textFade:.025,lightCopyAt:.79,lightCopyFade:.018,drawDip:.08,drawStart:.12,drawEnd:.38},
+  artwork:{layers:[
+    {x:-1.6,y:-.1,z:-3.5,width:13,height:7,angle:-.08,opacity:.7,mobile:true},
+    {x:2.6,y:-.8,z:-1.5,width:11.5,height:6.3,angle:.12,opacity:.7,mobile:true},
+    {x:-1.6,y:-1.5,z:.5,width:10,height:5.6,angle:-.08,opacity:.32,mobile:false},
+  ],sway:.6,swayStep:.25,growth:.06,paperLift:.4,paperFade:.25,mobileOpacity:.75},
+  lighting:{environment:.85,paperBoost:.25,reflectionRotation:.7,keyStart:[-3,4,3.5] as Vec3,keyTravel:5,rimStart:[3,-1,-3] as Vec3,rimTravel:-3},
+  renderer:{desktopDpr:1.75,mobileDpr:1.25,minimumDpr:.75,exposure:1.05},
 } as const;
-
 export interface AssetManifest {
-  status: 'ready' | 'awaiting-official-download';
-  url: string;
-  name: string;
-  author: string;
-  source: string;
-  license: string;
-  licenseUrl: string;
-  modifications: string;
-  postersReady: boolean;
+  status:'ready'|'awaiting-official-download';url:string;name:string;author:string;source:string;
+  license:string;licenseUrl:string;modifications:string;postersReady:boolean;
 }

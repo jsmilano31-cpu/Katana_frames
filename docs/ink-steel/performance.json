@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Desktop 1440 × 900",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "asset": "Official Katana by J.AkioHonda",
+    "measurements": [
+      {
+        "fps": 115.80516898608329,
+        "dpr": 1,
+        "drawCalls": 10,
+        "triangles": 18058
+      },
+      {
+        "fps": 119.9940002999849,
+        "dpr": 1,
+        "drawCalls": 10,
+        "triangles": 18058
+      },
+      {
+        "fps": 107.17846460618132,
+        "dpr": 1,
+        "drawCalls": 14,
+        "triangles": 21194
+      }
+    ],
+    "limitation": "Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone."
+  },
+  {
+    "name": "Pixel 7 emulation",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "asset": "Official Katana by J.AkioHonda",
+    "measurements": [
+      {
+        "fps": 147.49999999999963,
+        "dpr": 1.25,
+        "drawCalls": 9,
+        "triangles": 18056
+      },
+      {
+        "fps": 163.9836016398355,
+        "dpr": 1.25,
+        "drawCalls": 9,
+        "triangles": 18056
+      },
+      {
+        "fps": 163.9918004099792,
+        "dpr": 1.25,
+        "drawCalls": 13,
+        "triangles": 21192
+      }
+    ],
+    "limitation": "Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone."
+  }
+]

@@ -1,15 +1,15 @@
-# Selected 3D asset
+﻿# Selected 3D asset
 
-The official model is included as `katana.glb`, with original geometry and PBR textures. The creator's license is retained in `license.txt`. Source: **Katana** by **J.AkioHonda**:
+The official **Katana** by **J.AkioHonda** is included in `katana.glb`, with original PBR textures embedded and the creator's license retained in `license.txt`.
 
-https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37
+Source: https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37
 
 License: Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/).
 
-From the project root run:
+The runtime resets the original presentation orientation, normalizes the sword, aligns the scabbard opening, and separates sword/scabbard animation groups. The scabbard fitting travels with its scabbard. During the draw a temporary clipping plane conceals steel inside the scabbard. Original geometry, materials, and UVs remain in the delivered GLB; runtime geometry transforms are baked into clones for animation. Studio lighting and original ink clouds surround the model. Six desktop and six portrait fallback images are rendered from this sequence.
 
-    npm run assets:import -- "C:\path\to\official-download.zip"
+For future replacement imports, from the project root:
 
-A GLB, a .gltf file with its adjacent textures/buffer, or a ZIP containing glTF/GLB is supported for future replacement imports. The importer packs glTF resources into `katana.glb` and records the import. Then reload the preview, inspect framing, and run `npm.cmd run assets:posters` to render fallback images.
+    npm.cmd run assets:import -- "C:\path\to\official-download.zip"
 
-Do not extract files from Sketchfab's internal viewer. Use the creator's official download.
+A GLB, glTF with adjacent buffers/textures, or ZIP is supported. Recalibrate against the replacement model and regenerate posters before rebuilding. Use the creator's official download.

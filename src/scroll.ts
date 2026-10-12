@@ -58,5 +58,17 @@ export class ScrollJourney {
   }
 
   refresh(): void { ScrollTrigger.refresh(); this.onProgress(this.playhead.progress); }
+  reframe(progress: number): void {
+    const preserved = clamp01(progress);
+    if (!this.paused) {
+      ScrollTrigger.refresh();
+      window.scrollTo({ top: this.trigger.start + preserved * (this.trigger.end - this.trigger.start), behavior: 'instant' });
+      ScrollTrigger.update();
+      // Finish the refresh's scrub at the preserved position, then resume native scrolling.
+      this.trigger.getTween()?.progress(1);
+    }
+    this.timeline.progress(preserved);
+    this.onProgress(preserved);
+  }
   dispose(): void { this.trigger.kill(); this.timeline.kill(); }
 }

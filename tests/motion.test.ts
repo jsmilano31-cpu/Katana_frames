@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { chapters } from '../src/config';
-import { activeChapter, sampleCamera } from '../src/motion';
+import { chapters, choreography } from '../src/config';
+import { activeChapter, sampleCamera, sampleChoreography } from '../src/motion';
 
 describe('the reversible camera journey', () => {
   it('hits every authored chapter pose in desktop and portrait framing', () => {
@@ -33,6 +33,31 @@ describe('the reversible camera journey', () => {
     expect(sampleCamera(-1, false)).toEqual(sampleCamera(0, false));
     expect(sampleCamera(2, false)).toEqual(sampleCamera(1, false));
     expect(activeChapter(-1)).toBe(0);
-    expect(activeChapter(2)).toBe(4);
+    expect(activeChapter(2)).toBe(5);
+  });
+});
+
+
+describe('the draw and scene choreography', () => {
+  it('clears the full blade before the camera sweep and keeps the scabbard away', () => {
+    const seated=sampleChoreography(.12);
+    expect(seated.sword).toEqual([0,0,0]);
+    expect(seated.scabbard).toEqual([0,0,0]);
+    const cleared=sampleChoreography(.38);
+    expect(cleared.scabbard[0]-cleared.sword[0]).toBeGreaterThan(3.2);
+    for(let p=.38;p<=1;p+=.01){const state=sampleChoreography(p);expect(state.scabbard[0]-state.sword[0]).toBeGreaterThan(3.2);}
+  });
+  it('restores object transforms, lighting and artwork exactly on reverse scroll', () => {
+    const forward=Array.from({length:101},(_,i)=>sampleChoreography(i/100));
+    const reversed=Array.from({length:101},(_,i)=>sampleChoreography((100-i)/100)).reverse();
+    expect(reversed).toEqual(forward);
+    for(const key of choreography.slice(1,-1)){
+      const before=sampleChoreography(key.progress-.00001),after=sampleChoreography(key.progress+.00001);
+      [...before.sword,...before.scabbard,before.light,before.ink].forEach((v,i)=>expect(Math.abs(v-[...after.sword,...after.scabbard,after.light,after.ink][i])).toBeLessThan(.001));
+    }
+    forward.forEach(state=>expect([...state.sword,...state.scabbard,state.light,state.ink].every(Number.isFinite)).toBe(true));
+    expect(sampleChoreography(0).light).toBe(0);
+    expect(sampleChoreography(1).light).toBe(1);
+    expect(sampleChoreography(1).scabbardOpacity).toBe(0);
   });
 });

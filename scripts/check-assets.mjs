@@ -15,7 +15,7 @@ if (manifest.status !== 'ready') {
     console.error('INCOMPLETE: render chapter fallback posters with npm run assets:posters.');
     process.exitCode = 1;
   } else {
-    for (let chapter = 0; chapter < 5; chapter++) {
+    for (let chapter = 0; chapter < 6; chapter++) {
       await access(new URL(`posters/chapter-${chapter}.png`, root));
       await access(new URL(`posters/chapter-${chapter}-mobile.png`, root));
     }

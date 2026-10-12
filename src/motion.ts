@@ -1,40 +1,35 @@
-import { chapters, type CameraPose, type Vec3 } from './config';
-
-export function clamp01(value: number): number {
-  return Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
+﻿import { chapters, choreography, cameraKeys, sceneConfig, type CameraPose, type Vec3 } from './config';
+export const clamp01 = (v:number):number => Math.max(0,Math.min(1,Number.isFinite(v)?v:0));
+export const ease = (t:number):number => { const v=clamp01(t);return v*v*(3-2*v); };
+export function cubicBezier(a:Vec3,b:Vec3,c:Vec3,d:Vec3,t:number):Vec3 {
+  const v=clamp01(t),u=1-v;
+  return [0,1,2].map(i=>u**3*a[i]+3*u*u*v*b[i]+3*u*v*v*c[i]+v**3*d[i]) as unknown as Vec3;
 }
-
-export function cubicBezier(a: Vec3, b: Vec3, c: Vec3, d: Vec3, t: number): Vec3 {
-  const u = 1 - clamp01(t);
-  const v = clamp01(t);
-  return [0, 1, 2].map(i => u ** 3 * a[i] + 3 * u ** 2 * v * b[i] + 3 * u * v ** 2 * c[i] + v ** 3 * d[i]) as unknown as Vec3;
+const mix=(a:Vec3,b:Vec3,t:number):Vec3=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+export function sampleCamera(progress:number,mobile:boolean):CameraPose {
+  const p=clamp01(progress);
+  const index=Math.max(0,Math.min(cameraKeys.length-2,cameraKeys.findIndex((_,i)=>i<cameraKeys.length-1&&p<=cameraKeys[i+1].progress)));
+  const a=cameraKeys[index],b=cameraKeys[index+1];
+  const from=a[mobile?'mobile':'desktop'],to=b[mobile?'mobile':'desktop'];
+  const t=ease((p-a.progress)/(b.progress-a.progress));
+  const c1=[...mix(from.position,to.position,.32)] as [number,number,number];
+  const c2=[...mix(from.position,to.position,.68)] as [number,number,number];
+  const arc=sceneConfig.motion.cameraArcs[index];c1[0]+=arc;c2[0]+=arc;c1[1]+=sceneConfig.motion.cameraLift;c2[1]+=sceneConfig.motion.cameraLift;
+  return {position:cubicBezier(from.position,c1,c2,to.position,t),target:cubicBezier(from.target,mix(from.target,to.target,.33),mix(from.target,to.target,.67),to.target,t),fov:from.fov+(to.fov-from.fov)*t,roll:(from.roll??0)+((to.roll??0)-(from.roll??0))*t};
 }
-
-const mix = (a: Vec3, b: Vec3, t: number): Vec3 => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
-const ease = (t: number) => t * t * (3 - 2 * t);
-
-export function sampleCamera(progress: number, mobile: boolean): CameraPose {
-  const p = clamp01(progress);
-  const index = Math.min(chapters.length - 2, Math.floor(p * (chapters.length - 1)));
-  const from = chapters[index][mobile ? 'mobile' : 'desktop'];
-  const to = chapters[index + 1][mobile ? 'mobile' : 'desktop'];
-  const local = ease((p - chapters[index].progress) / (chapters[index + 1].progress - chapters[index].progress));
-  const positionB = [...mix(from.position, to.position, 0.32)] as [number, number, number];
-  const positionC = [...mix(from.position, to.position, 0.68)] as [number, number, number];
-  // A restrained sideways arc gives each transition depth without a camera spin.
-  const arc = [0.22, -0.28, 0.12, 0.35][index];
-  positionB[0] += arc;
-  positionC[0] += arc;
-  positionB[1] += 0.12;
-  positionC[1] += 0.12;
-  return {
-    position: cubicBezier(from.position, positionB, positionC, to.position, local),
-    target: cubicBezier(from.target, mix(from.target, to.target, 0.33), mix(from.target, to.target, 0.67), to.target, local),
-    fov: from.fov + (to.fov - from.fov) * local,
-    roll: (from.roll ?? 0) + ((to.roll ?? 0) - (from.roll ?? 0)) * local,
-  };
+export function activeChapter(progress:number):number {
+  const p=clamp01(progress);return chapters.reduce((index,c,i)=>p>=c.start?i:index,0);
 }
-
-export function activeChapter(progress: number): number {
-  return Math.min(chapters.length - 1, Math.max(0, Math.round(clamp01(progress) * (chapters.length - 1))));
+export function sampleChoreography(progress:number) {
+  const p=clamp01(progress);
+  const index=Math.max(0,Math.min(choreography.length-2,choreography.findIndex((_,i)=>i<choreography.length-1&&p<=choreography[i+1].progress)));
+  const a=choreography[index],b=choreography[index+1],t=ease((p-a.progress)/(b.progress-a.progress));
+  const scalar=(key:'scabbardOpacity'|'light'|'ink'|'reflection')=>a[key]+(b[key]-a[key])*t;
+  return {fromRotation:a.rotation,toRotation:b.rotation,rotationMix:t,sword:(()=>{const v=[...mix(a.sword,b.sword,t)] as [number,number,number];v[1]-=sceneConfig.motion.drawDip*Math.sin(Math.PI*clamp01((p-sceneConfig.motion.drawStart)/(sceneConfig.motion.drawEnd-sceneConfig.motion.drawStart)));return v;})(),scabbard:mix(a.scabbard,b.scabbard,t),scabbardOpacity:scalar('scabbardOpacity'),light:scalar('light'),ink:scalar('ink'),reflection:scalar('reflection')};
+}
+export function chapterOpacity(progress:number,index:number):number {
+  const c=chapters[index],p=clamp01(progress);
+  if(p<c.start||p>c.end)return 0;
+  const lightPause=index===4?ease((p-sceneConfig.motion.lightCopyAt)/sceneConfig.motion.lightCopyFade):1;
+  return lightPause*(index===0?1:ease((p-c.start)/sceneConfig.motion.textFade))*(index===chapters.length-1?1:ease((c.end-p)/sceneConfig.motion.textFade));
 }

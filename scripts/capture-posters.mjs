@@ -17,15 +17,16 @@ try {
   for (const [suffix, width, height] of [['', 1440, 900], ['-mobile', 390, 844]]) {
     await page.setViewportSize({ width, height });
     await page.waitForTimeout(200);
-    for (let index = 0; index < 5; index++) {
+    for (let index = 0; index < 6; index++) {
       await page.evaluate(index => window.__katana.captureChapter(index), index);
+      await page.waitForTimeout(80);
       await page.screenshot({ path: path.join(output, `chapter-${index}${suffix}.png`) });
     }
   }
   manifest.postersReady = true;
-  manifest.modifications = 'glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation rotation reset, scabbard and its fitting hidden, model normalized, studio lighting applied. Desktop and portrait chapter posters rendered.';
+  manifest.modifications = 'glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation rotation reset, sword and scabbard grouped and aligned for a reversible unsheathing sequence, runtime transforms normalized, studio lighting and original ink artwork applied. Desktop and portrait chapter posters rendered.';
   await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
-  console.log('Captured ten chapter posters from the official model. Inspect them before the final asset check.');
+  console.log('Captured twelve chapter posters from the official model. Inspect them before the final asset check.');
 } finally {
   await browser.close();
 }

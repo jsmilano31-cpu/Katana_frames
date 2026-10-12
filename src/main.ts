@@ -1,6 +1,6 @@
 import './style.css';
 import { chapters, sceneConfig, type AssetManifest, type CameraPose } from './config';
-import { activeChapter, sampleCamera } from './motion';
+import { activeChapter, sampleCamera, sampleChoreography, chapterOpacity } from './motion';
 import type { KatanaScene, SceneStats } from './scene';
 import type { ScrollJourney } from './scroll';
 
@@ -9,16 +9,16 @@ const down = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17m-6-6
 const replay = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 1.4 8M4 4v6h6" /></svg>';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <a class="skip-link" href="#reveal">Skip to the study</a>
+  <a class="skip-link" href="#presence">Skip to the journey</a>
   <header class="site-header">
-    <a class="wordmark" href="#reveal" aria-label="Katana, return to the reveal"><span class="seal" lang="ja">刀</span><span>KATANA<span class="wordmark-sub">A STUDY IN FORM</span></span></a>
-    <div class="header-right"><span class="header-caption">An object. Five perspectives.</span><button class="about-button" type="button">About the study <span>↗</span></button></div>
+    <a class="wordmark" href="#presence" aria-label="Katana, return to the reveal"><span class="seal" lang="ja">刀</span><span>KATANA<span class="wordmark-sub">INK &amp; STEEL</span></span></a>
+    <div class="header-right"><span class="header-caption">An object. Six movements.</span><button class="about-button" type="button">About the study <span>↗</span></button></div>
   </header>
 
-  <main id="study" class="story" aria-label="A five-part study of a katana">
+  <main id="study" class="story" aria-label="A six-part study of a katana">
     <div class="story-frame">
       <div class="scene-stage" aria-hidden="true">
-        <div class="stage-glow"></div>
+        <div class="stage-glow"></div><div class="film-frame"></div><div class="edition-mark"><span>視点</span><small>A STUDY IN<br>INK &amp; STEEL</small></div>
         <span class="stage-kanji" lang="ja">刀</span>
         <img class="stage-poster" src="/assets/katana-preview.jpg" alt="" />
         <canvas id="katana-canvas"></canvas>
@@ -28,16 +28,17 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         ${chapters.map((chapter, index) => `
           <section class="chapter ${index === 0 ? 'is-active' : ''}" id="${chapter.id}" data-chapter="${index}" aria-labelledby="title-${chapter.id}">
             <div class="chapter-image" aria-hidden="true"><picture><source class="mobile-poster" media="(max-width: 760px)" /><img src="/assets/katana-preview.jpg" alt="" style="--poster-position:${chapter.poster.position};--poster-scale:${chapter.poster.scale}" /></picture><div class="image-shade"></div></div>
+            ${index === 0 ? '<p class="hero-word" aria-hidden="true">KATANA<span>刀</span></p>' : `<p class="ghost-word" aria-hidden="true">${["", "DRAW", "EDGE", "DETAIL", "INK", "FORM"][index]}</p>`}
             <div class="chapter-content">
               <p class="eyebrow"><span class="red-line"></span>${chapter.eyebrow}</p>
-              ${index === 0 ? '<p class="hero-word" aria-hidden="true">KATANA</p>' : `<span class="chapter-kanji" lang="ja" aria-hidden="true">${chapter.japanese}</span>`}
+              <span class="chapter-kanji" lang="ja" aria-hidden="true">${chapter.japanese}</span>
               <${index === 0 ? 'h1' : 'h2'} id="title-${chapter.id}">${chapter.title}</${index === 0 ? 'h1' : 'h2'}>
               <p class="chapter-description">${chapter.description}</p>
-              ${index === 0 ? `<a class="text-link begin-link" href="#blade">Begin the study ${arrow}</a>` : ''}
-              ${index === 4 ? `<div class="final-actions"><button class="primary-button explore-button" type="button" disabled>Explore the form ${arrow}</button><button class="text-link replay-button" type="button">Replay the study ${replay}</button></div><p class="explore-availability">Interactive rotation becomes available in the 3D view.</p>` : ''}
+              ${index === 0 ? `<a class="text-link begin-link" href="#draw">Unfold the story ${arrow}</a>` : ''}
+              ${index === chapters.length - 1 ? `<div class="final-actions"><button class="primary-button explore-button" type="button" disabled>Explore the katana ${arrow}</button><button class="text-link replay-button" type="button">Replay the journey ${replay}</button></div><p class="explore-availability">Interactive rotation becomes available in the 3D view.</p>` : ''}
             </div>
-            <div class="chapter-bottom"><span class="chapter-note">${chapter.note}</span><span class="chapter-number">0${index + 1}<span> / 05</span></span></div>
-            ${index === 0 ? `<a class="scroll-cue" href="#blade"><span>SCROLL TO DISCOVER</span>${down}</a>` : ''}
+            <div class="chapter-bottom"><span class="chapter-note">${chapter.note}</span><span class="chapter-number">0${index + 1}<span> / 06</span></span></div>
+            ${index === 0 ? `<a class="scroll-cue" href="#draw"><span>SCROLL TO DISCOVER</span>${down}</a>` : ''}
           </section>`).join('')}
       </div>
       <div class="object-caption"><span class="caption-line"></span><span><span class="object-caption-title">KATANA</span><span class="object-caption-sub">刀 / THE JAPANESE SWORD</span></span></div>
@@ -65,15 +66,15 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </section>
 
   <footer class="site-footer">
-    <div><span class="footer-kanji" lang="ja">刀</span><p>A closer look.<br>A quieter perspective.</p></div>
+    <div><span class="footer-kanji" lang="ja">刀</span><p>One blade.<br>Six movements.</p></div>
     <p class="asset-credit">3D model &amp; preview: <a href="https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37" target="_blank" rel="noopener noreferrer">Katana by J.AkioHonda ↗</a><br>Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>.<br><span class="modification-credit">Preview cropped for presentation.</span></p>
     <button class="footer-top text-link" type="button">Back to the beginning ↑</button>
   </footer>
 
   <dialog class="about-dialog" aria-labelledby="about-title">
     <button class="close-about" type="button" aria-label="Close about the study">×</button>
-    <p class="eyebrow"><span class="red-line"></span>About the study</p><h2 id="about-title">An invitation<br>to look closer.</h2>
-    <p>This is a visual study of a katana: the curve of its blade, the shape of its guard, and the rhythm of its wrapped handle. Scroll through five perspectives, then explore the full form.</p>
+    <p class="eyebrow"><span class="red-line"></span>About the study</p><h2 id="about-title">Ink. Steel.<br>Perspective.</h2>
+    <p>An unfolding visual study of a katana. Scroll to draw the blade, move around its edge, and discover the details in changing light. Original ink clouds give way to ivory before the final interactive view.</p>
     <p>The digital model is <a href="https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37" target="_blank" rel="noopener noreferrer">Katana by J.AkioHonda</a>, used under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Its creator describes it as a realistic interpretation, without historical accuracy.</p>
     <p class="about-modifications">Preview cropped for presentation. Model import pending.</p>
   </dialog>
@@ -123,16 +124,20 @@ function updateProgress(value: number): void {
   document.documentElement.style.setProperty('--progress', String(value));
   if (isExploring) return;
   panels.forEach((panel, i) => {
-    const distance = Math.abs(value - chapters[i].progress);
-    const opacity = i === index ? Math.min(1, Math.max(0, (0.125 - distance) / 0.055)) : 0;
+    const opacity = chapterOpacity(value, i);
     panel.classList.toggle('is-active', i === index);
     panel.style.setProperty('--chapter-opacity', String(opacity));
-    panel.style.setProperty('--chapter-offset', `${(chapters[i].progress - value) * 65}px`);
+    panel.style.setProperty('--chapter-offset', `${(1 - opacity) * 12}px`);
     panel.setAttribute('aria-hidden', String(i !== index));
     panel.inert = i !== index;
   });
-  $('.object-caption-title').textContent = index === 0 || index === 4 ? 'KATANA' : chapters[index].label.replace('The ', '').toUpperCase();
+  $('.object-caption-title').textContent = index === 0 || index === chapters.length - 1 ? 'KATANA' : chapters[index].label.replace('The ', '').toUpperCase();
   $('.object-caption-sub').textContent = `${chapters[index].japanese} / ${chapters[index].note.toUpperCase()}`;
+  const visual = sampleChoreography(value);
+  document.documentElement.style.setProperty('--paper', String(visual.light));
+  document.documentElement.style.setProperty('--scene-bg', `rgb(${Math.round(19+214*visual.light)} ${Math.round(22+207*visual.light)} ${Math.round(20+195*visual.light)})`);
+  document.body.classList.toggle('is-paper', visual.light > .38);
+  scene?.setStory(value);
   scene?.setPose(currentPose());
 }
 
@@ -142,7 +147,9 @@ function setStaticView(message: string, retry: boolean): void {
   journey = null;
   scene?.dispose();
   scene = null;
-  document.body.classList.remove('is-live', 'is-loading');
+  document.body.classList.remove('is-live', 'is-loading', 'is-paper');
+  document.documentElement.style.setProperty('--paper', '0');
+  document.documentElement.style.setProperty('--scene-bg', '#131614');
   document.body.classList.add('is-static');
   document.body.dataset.view = 'static';
   status.textContent = message;
@@ -174,6 +181,7 @@ function goTo(index: number, immediate = false): void {
 function setPosters(): void {
   if (!manifest?.postersReady) return;
   document.body.classList.add('has-rendered-posters');
+  $<HTMLImageElement>('.stage-poster').src = '/assets/posters/chapter-0.png';
   panels.forEach((panel, index) => {
     const image = panel.querySelector<HTMLImageElement>('.chapter-image img')!;
     image.src = `/assets/posters/chapter-${index}.png`;
@@ -243,13 +251,14 @@ async function initialize(): Promise<void> {
 }
 
 function enterExplore(): void {
-  if (!scene || !journey || currentChapter !== 4 || isExploring) return;
+  if (!scene || !journey || currentChapter !== chapters.length - 1 || isExploring) return;
   savedScroll = scrollY;
   journey.pause();
-  const pose = sampleCamera(1, isMobile());
+  const pose = currentPose();
   scene.beginExplore(pose);
   isExploring = true;
   document.body.classList.add('is-exploring');
+  for (const selector of ['.site-header','.chapter-panels','.chapter-nav','.site-footer']) $(selector).inert = true;
   document.body.style.top = `-${savedScroll}px`;
   explorePanel.hidden = false;
   canvas.tabIndex = 0;
@@ -266,6 +275,7 @@ function exitExplore(returnFocus = true): void {
   if (!isExploring) return;
   isExploring = false;
   document.body.classList.remove('is-exploring');
+  for (const selector of ['.site-header','.chapter-panels','.chapter-nav','.site-footer']) $(selector).inert = false;
   document.body.style.removeProperty('top');
   window.scrollTo({ top: savedScroll, behavior: 'instant' });
   explorePanel.hidden = true;
@@ -286,7 +296,7 @@ document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(link => lin
   event.preventDefault();
   goTo(index);
   if (link.classList.contains('skip-link')) {
-    const heading = $('#title-reveal');
+    const heading = $('#title-presence');
     heading.tabIndex = -1;
     heading.focus({ preventScroll: true });
   }
@@ -321,6 +331,12 @@ canvas.addEventListener('keydown', event => {
   }
 });
 document.addEventListener('keydown', event => {
+  if (isExploring && event.key === 'Tab') {
+    const controls = [canvas, ...explorePanel.querySelectorAll<HTMLButtonElement>('button')];
+    const first = controls[0], last = controls[controls.length-1];
+    if (event.shiftKey && document.activeElement===first) { event.preventDefault();last.focus(); }
+    else if (!event.shiftKey && document.activeElement===last) { event.preventDefault();first.focus(); }
+  }
   if (event.key === 'Escape' && isExploring) { event.preventDefault(); exitExplore(); }
 });
 
@@ -330,15 +346,16 @@ $('.close-about').addEventListener('click', () => aboutDialog.close());
 aboutDialog.addEventListener('click', event => { if (event.target === aboutDialog) aboutDialog.close(); });
 
 window.addEventListener('resize', () => {
+  const preserved = progress;
   clearTimeout(resizeTimer);
   resizeTimer = window.setTimeout(() => {
     scene?.resize();
     if (isExploring) {
-      scene?.endExplore(sampleCamera(1, isMobile()));
-      scene?.beginExplore(sampleCamera(1, isMobile()));
+      scene?.endExplore(currentPose());
+      scene?.beginExplore(currentPose());
     } else {
       scene?.setPose(currentPose());
-      journey?.refresh();
+      journey?.reframe(preserved);
     }
   }, 100);
 });
@@ -358,22 +375,29 @@ window.addEventListener('hashchange', () => {
 declare global {
   interface Window {
     __katana: {
-      state: () => { view: string; chapter: number; progress: number; exploring: boolean; pose: CameraPose; stats: SceneStats | null };
+      state: () => { view: string; chapter: number; progress: number; exploring: boolean; pose: CameraPose; stats: SceneStats | null; choreography: ReturnType<KatanaScene['storyState']> | null };
       captureChapter?: (index: number) => Promise<void>;
+      captureProgress?: (progress: number) => Promise<void>;
     };
   }
 }
 window.__katana = {
   state: () => ({
     view: document.body.dataset.view ?? 'loading', chapter: currentChapter, progress, exploring: isExploring,
-    pose: scene ? { position: scene.camera.position.toArray() as [number, number, number], target: scene.controls.target.toArray() as [number, number, number], fov: scene.camera.fov } : currentPose(), stats,
+    pose: scene ? { position: scene.camera.position.toArray() as [number, number, number], target: scene.controls.target.toArray() as [number, number, number], fov: scene.camera.fov } : currentPose(), stats, choreography: scene?.storyState() ?? null,
   }),
 };
 if (new URLSearchParams(location.search).has('capture')) {
+  window.__katana.captureProgress = async value => {
+    if (!scene || !journey) throw new Error('3D unavailable');
+    journey.pause(); journey.seek(value); scene.setStory(value); scene.setPose(sampleCamera(value,isMobile()));
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+  };
   window.__katana.captureChapter = async index => {
     if (!scene || !journey) throw new Error('The official model must be loaded before capturing posters.');
     journey.pause();
     journey.seek(chapters[index].progress);
+    scene.setStory(chapters[index].progress);
     scene.setPose(sampleCamera(chapters[index].progress, isMobile()));
     await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
   };
