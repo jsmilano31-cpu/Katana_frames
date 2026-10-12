@@ -1,0 +1,55 @@
+import { chromium, devices } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { testGlb } from '../tests/fixture.ts';
+import { readFile } from 'node:fs/promises';
+
+const base = process.env.KATANA_PREVIEW_URL ?? 'http://127.0.0.1:5174';
+const browser = await chromium.launch({ channel: 'msedge', headless: true });
+const realModel = process.argv.includes('--real');
+const manifest = JSON.parse(await readFile('public/assets/model/manifest.json', 'utf8'));
+if (realModel && manifest.status !== 'ready') throw new Error('Import the official model first.');
+const results = [];
+try {
+  for (const [name, options] of [
+    ['Desktop 1440 × 900', { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 }],
+    ['Pixel 7 emulation', devices['Pixel 7']],
+  ]) {
+    const context = await browser.newContext(options);
+    const page = await context.newPage();
+    if (!realModel) {
+      await page.route('**/assets/model/manifest.json?*', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ status: 'ready', url: '/assets/model/katana.glb', modifications: 'Test-only fixture; not the selected katana.', postersReady: false }) }));
+      await page.route('**/assets/model/katana.glb?*', route => route.fulfill({ contentType: 'model/gltf-binary', body: testGlb() }));
+    }
+    await page.goto(base);
+    await page.waitForFunction(() => document.body.dataset.view === '3d');
+    const gpu = await page.evaluate(() => {
+      const context = document.querySelector('canvas').getContext('webgl2');
+      const extension = context.getExtension('WEBGL_debug_renderer_info');
+      return extension ? context.getParameter(extension.UNMASKED_RENDERER_WEBGL) : 'Unavailable';
+    });
+    const samples = await page.evaluate(async () => {
+      const started = performance.now();
+      const end = document.querySelector('.story').getBoundingClientRect().height - innerHeight;
+      const samples = [];
+      await new Promise(resolve => {
+        function step(now) {
+          const t = Math.min(1, (now - started) / 6500);
+          window.scrollTo(0, end * (0.5 - Math.cos(t * Math.PI * 2) * 0.5));
+          if (window.__katana.state().stats) samples.push(window.__katana.state().stats);
+          if (t < 1) requestAnimationFrame(step);
+          else resolve();
+        }
+        requestAnimationFrame(step);
+      });
+      return samples;
+    });
+    const unique = [...new Map(samples.map(sample => [sample.fps, sample])).values()];
+    results.push({ name, browser: await browser.version(), gpu, asset: realModel ? 'Official Katana by J.AkioHonda' : '12-triangle test fixture', measurements: unique, limitation: realModel ? 'Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone.' : 'Renderer/controller smoke test only; portrait is desktop emulation.' });
+    await context.close();
+  }
+  await mkdir('test-results', { recursive: true });
+  await writeFile(realModel ? 'test-results/model-performance.json' : 'test-results/fixture-performance.json', JSON.stringify(results, null, 2));
+  console.log(JSON.stringify(results, null, 2));
+} finally {
+  await browser.close();
+}

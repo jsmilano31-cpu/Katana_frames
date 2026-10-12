@@ -1,0 +1,11 @@
+Model Information:
+* title:	Katana
+* source:	https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37
+* author:	J.AkioHonda (https://sketchfab.com/AkioHonda)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Katana" (https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37) by J.AkioHonda (https://sketchfab.com/AkioHonda) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

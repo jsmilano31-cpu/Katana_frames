@@ -1,0 +1,17 @@
+{
+  "status": "ready",
+  "url": "/assets/model/katana.glb",
+  "name": "Katana",
+  "author": "J.AkioHonda",
+  "source": "https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "modifications": "glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation rotation reset, scabbard and its fitting hidden, model normalized, studio lighting applied. Desktop and portrait chapter posters rendered.",
+  "postersReady": true,
+  "preview": {
+    "source": "https://media.sketchfab.com/models/36e9ab64846246e8964a66b691e62f37/thumbnails/b6058b0c11ca4c62a7f25aed9b4e8ce4/d7b7c85e515a45849de67fd981060e05.jpeg",
+    "credit": "Preview render from the creator’s Sketchfab model page. Cropped for presentation."
+  },
+  "importedAt": "2026-10-12T00:14:33.895Z",
+  "bytes": 15280840
+}
