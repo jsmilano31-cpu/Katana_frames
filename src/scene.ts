@@ -11,8 +11,9 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { sceneConfig, type CameraPose } from './config';
-import { sampleChoreography } from './motion';
+import { ease, sampleChoreography, sampleEffects } from './motion';
 import { createInk } from './ink';
+import { WindEffects } from './effects';
 
 export interface SceneStats { fps: number; dpr: number; drawCalls: number; triangles: number }
 
@@ -28,6 +29,12 @@ export class KatanaScene {
   private sheathMaterials: Material[] = [];
   private bladeMaterials: Material[] = [];
   private mouthX = -1;
+  private mouth = new Vector3();
+  private bladeTip = new Vector3(2,0,0);
+  private effects = new WindEffects();
+  private ambientPaused = new URLSearchParams(location.search).has('capture');
+  private ambientTime = 0;
+  private ambientFrame = 0;
   private bladePlane = new Plane();
   private storyProgress = 0;
   private key = new DirectionalLight('#fff2dd', 2.8);
@@ -72,7 +79,7 @@ export class KatanaScene {
     rim.position.set(2, -1, -3);
     const warm = new DirectionalLight('#b9583e', 0.65);
     warm.position.set(-4, 1, -2);
-    this.scene.add(key, rim, warm, this.model);
+    this.scene.add(key, rim, warm, this.model, this.effects.root);
     this.model.add(this.sword, this.scabbard);
     this.draco.setDecoderPath('/assets/decoders/draco/');
     this.basis.setTranscoderPath('/assets/decoders/basis/').detectSupport(this.renderer);
@@ -106,7 +113,8 @@ export class KatanaScene {
     const align = new Matrix4().makeTranslation(fitted.x,fitted.y,fitted.z)
       .multiply(new Matrix4().makeRotationZ(sceneConfig.model.sheathAngle))
       .multiply(new Matrix4().makeTranslation(-mouth.x,-mouth.y,-mouth.z));
-    this.mouthX = fitted.sub(center).multiplyScalar(scale).x;
+    this.mouth.copy(fitted).sub(center).multiplyScalar(scale);
+    this.mouthX = this.mouth.x;
     for (const object of meshes) {
       const sheath = sceneConfig.model.sheathMeshes.test(object.name);
       const geometry = object.geometry.clone();
@@ -118,6 +126,11 @@ export class KatanaScene {
       object.removeFromParent(); object.position.set(0,0,0); object.quaternion.identity(); object.scale.set(1,1,1);
       const original = Array.isArray(object.material) ? object.material : [object.material];
       const blade = /nagasa|blade/i.test(object.name);
+      if(blade){
+        const positions=geometry.getAttribute('position');
+        this.bladeTip.set(-Infinity,0,0);
+        for(let i=0;i<positions.count;i++)if(positions.getX(i)>this.bladeTip.x)this.bladeTip.fromBufferAttribute(positions,i);
+      }
       const copies = original.map(material => {
         const copy = material.clone();
         if (sheath) { copy.transparent = true; this.sheathMaterials.push(copy); }
@@ -147,6 +160,16 @@ export class KatanaScene {
     this.qb.setFromEuler(this.rotation.set(...state.toRotation));
     this.model.quaternion.copy(this.qa).slerp(this.qb, state.rotationMix);
     this.sword.position.set(...state.sword); this.scabbard.position.set(...state.scabbard);
+    const effects=sampleEffects(progress);
+    const presence=1-ease(progress/.12),portrait=innerWidth<sceneConfig.breakpoint;
+    this.model.position.set((portrait?.15:0)*presence,(portrait?-.22:.28)*presence,0);
+    if(effects.alignment>0){
+      const contact=new Vector3(...sceneConfig.effects.ground);
+      contact.y-=sceneConfig.effects.embedDepth;
+      contact.y+=effects.lift;
+      const tip=this.bladeTip.clone().add(this.sword.position).applyQuaternion(this.model.quaternion);
+      this.model.position.copy(contact.sub(tip).multiplyScalar(effects.alignment));
+    }
     this.scabbard.visible = state.scabbardOpacity > .01;
     this.sheathMaterials.forEach(material => { material.opacity = state.scabbardOpacity; });
     this.model.updateMatrixWorld(true);
@@ -166,13 +189,21 @@ export class KatanaScene {
       material.color.set('#eee1c6').lerp(new Color('#8f8670'),state.light);
       plane.position.x = layer.x + Math.sin(progress*Math.PI)*(artwork.sway+index*artwork.swayStep);
       plane.position.y = layer.y + state.light*artwork.paperLift;
+      plane.userData.baseY=plane.position.y;
+      plane.userData.baseX=plane.position.x;
+      plane.position.y+=Math.sin(this.ambientTime*sceneConfig.effects.ambientSpeed+index)*.025;
+      plane.position.x+=Math.sin(this.ambientTime*.09+index)*.035;
       plane.scale.x = layer.width*(1+state.ink*artwork.growth);
       plane.visible = innerWidth>=sceneConfig.breakpoint || layer.mobile;
     });
+    this.effects.setStory(progress,this.scabbard.localToWorld(this.mouth.clone()),this.model.quaternion);
+    this.effects.update(this.ambientTime);
     this.dirty = true;
   }
 
-  storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible }; }
+  storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible,tip:this.sword.localToWorld(this.bladeTip.clone()).toArray(),effects:this.effects.diagnostics(),ambientPaused:this.ambientPaused,ambientTime:this.ambientTime }; }
+
+  setAmbientPaused(paused:boolean):void { this.ambientPaused=paused;this.ambientFrame=0;this.dirty=true; }
 
   setPose(pose: CameraPose): void {
     if (this.exploring || this.disposed) return;
@@ -261,7 +292,7 @@ export class KatanaScene {
     controls.enableZoom = false;
     controls.enablePan = false;
     controls.minPolarAngle = Math.PI * 0.16;
-    controls.maxPolarAngle = Math.PI * 0.84;
+    controls.maxPolarAngle = Math.PI * 0.49;
     controls.addEventListener('change', this.markDirty);
     return controls;
   }
@@ -276,7 +307,17 @@ export class KatanaScene {
   private contextLost = (event: Event): void => { event.preventDefault(); this.onContextLost(); };
 
   private render = (time: number): void => {
-    if (this.disposed || document.hidden) { this.lastFrame = 0; return; }
+    if (this.disposed || document.hidden) { this.lastFrame = 0; this.ambientFrame=0;return; }
+    if(!this.ambientPaused){
+      if(this.ambientFrame)this.ambientTime+=Math.min((time-this.ambientFrame)/1000,.05);
+      this.ambientFrame=time;
+      this.effects.update(this.ambientTime);
+      this.ink.children.forEach((object,index)=>{
+        object.position.y=(object.userData.baseY??object.position.y)+Math.sin(this.ambientTime*sceneConfig.effects.ambientSpeed+index)*.025;
+        object.position.x=(object.userData.baseX??object.position.x)+Math.sin(this.ambientTime*.09+index)*.035;
+      });
+      this.dirty=true;
+    }
     if (this.exploring) this.controls.update();
     if (!this.dirty) { this.lastFrame = 0; return; }
     if (this.lastFrame) {
@@ -305,6 +346,7 @@ export class KatanaScene {
     if (this.disposed) return;
     this.disposed = true;
     this.renderer.setAnimationLoop(null);
+    this.effects.dispose();
     this.controls.removeEventListener('change', this.markDirty);
     this.controls.dispose();
     this.renderer.domElement.removeEventListener('webglcontextlost', this.contextLost);

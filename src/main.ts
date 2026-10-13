@@ -54,16 +54,19 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="live-announcement sr-only" aria-live="polite"></div>
 
   <section class="explore-panel" aria-label="Explore the katana" hidden>
-    <p class="explore-heading">Your perspective.</p><p class="explore-help" id="explore-help">Drag to rotate. Use arrow keys when the viewer is focused.</p>
+    <p class="explore-heading">A different perspective.</p><p class="explore-help" id="explore-help">Orbit the planted blade. Drag or use arrow keys when the viewer is focused.</p>
     <div class="explore-toolbar">
       <button class="rotate-button" type="button" data-rotate="left" aria-label="Rotate left">←</button>
       <button class="rotate-button" type="button" data-rotate="up" aria-label="Rotate up">↑</button>
       <button class="rotate-button" type="button" data-rotate="down" aria-label="Rotate down">↓</button>
       <button class="rotate-button" type="button" data-rotate="right" aria-label="Rotate right">→</button>
+      <button class="effects-button" type="button" aria-pressed="false">Pause effects</button>
       <button class="reset-button" type="button">Reset view ${replay}</button>
       <button class="exit-button" type="button">Back to the study <span>×</span></button>
     </div>
   </section>
+
+  <button class="effects-button ambient-control" type="button" aria-pressed="false">Pause effects</button>
 
   <footer class="site-footer">
     <div><span class="footer-kanji" lang="ja">刀</span><p>One blade.<br>Six movements.</p></div>
@@ -102,9 +105,10 @@ let savedScroll = 0;
 let resizeTimer = 0;
 let stats: SceneStats | null = null;
 let destroyed = false;
+let effectsPaused = new URLSearchParams(location.search).has('capture');
 
 function isMobile(): boolean { return innerWidth < sceneConfig.breakpoint; }
-function currentPose(): CameraPose { return sampleCamera(progress, isMobile()); }
+function currentPose(): CameraPose { return sampleCamera(progress, isMobile(),innerHeight); }
 
 function selectChapter(index: number): void {
   const changed = index !== currentChapter;
@@ -139,6 +143,7 @@ function updateProgress(value: number): void {
   document.body.classList.toggle('is-paper', visual.light > .38);
   scene?.setStory(value);
   scene?.setPose(currentPose());
+  exploreButton.disabled = !scene || value < sceneConfig.effects.burstEnd;
 }
 
 function setStaticView(message: string, retry: boolean): void {
@@ -217,7 +222,8 @@ async function initialize(): Promise<void> {
     const [{ KatanaScene: Scene }, { ScrollJourney: Journey }] = await Promise.all([import('./scene'), import('./scroll')]);
     scene?.dispose();
     scene = new Scene(canvas, () => setStaticView('Still-image view · 3D interrupted', true));
-    scene.setPose(sampleCamera(chapters[previousChapter].progress, isMobile()));
+    scene.setAmbientPaused(effectsPaused);
+    scene.setPose(sampleCamera(chapters[previousChapter].progress, isMobile(),innerHeight));
     await scene.load(`${manifest.url}?t=${Date.now()}`, percent => {
       status.textContent = percent === null ? 'Preparing the 3D study' : `Preparing the 3D study · ${percent}%`;
     });
@@ -234,7 +240,7 @@ async function initialize(): Promise<void> {
     journey = new Journey(story, updateProgress);
     scene.setStatsCallback(value => { stats = value; });
     status.textContent = 'Scroll to explore';
-    exploreButton.disabled = false;
+    exploreButton.disabled = progress < sceneConfig.effects.burstEnd;
     $('.explore-availability').hidden = true;
     if (previousChapter > 0) journey.goTo(previousChapter, true);
     else if (location.hash) {
@@ -251,7 +257,7 @@ async function initialize(): Promise<void> {
 }
 
 function enterExplore(): void {
-  if (!scene || !journey || currentChapter !== chapters.length - 1 || isExploring) return;
+  if (!scene || !journey || progress < sceneConfig.effects.burstEnd || isExploring) return;
   savedScroll = scrollY;
   journey.pause();
   const pose = currentPose();
@@ -303,6 +309,16 @@ document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(link => lin
 }));
 
 retryButton.addEventListener('click', () => void initialize());
+function syncEffectsButtons():void {
+  document.querySelectorAll<HTMLButtonElement>('.effects-button').forEach(button=>{
+    button.textContent=effectsPaused?'Resume effects':'Pause effects';
+    button.setAttribute('aria-pressed',String(effectsPaused));
+  });
+}
+document.querySelectorAll<HTMLButtonElement>('.effects-button').forEach(button=>button.addEventListener('click',()=>{
+  effectsPaused=!effectsPaused;scene?.setAmbientPaused(effectsPaused);syncEffectsButtons();
+}));
+syncEffectsButtons();
 exploreButton.addEventListener('click', enterExplore);
 $('.exit-button').addEventListener('click', () => exitExplore());
 // Activate on the completed touch pointer as well as click. Browsers can suppress
@@ -390,7 +406,7 @@ window.__katana = {
 if (new URLSearchParams(location.search).has('capture')) {
   window.__katana.captureProgress = async value => {
     if (!scene || !journey) throw new Error('3D unavailable');
-    journey.pause(); journey.seek(value); scene.setStory(value); scene.setPose(sampleCamera(value,isMobile()));
+    journey.pause(); journey.seek(value); scene.setStory(value); scene.setPose(sampleCamera(value,isMobile(),innerHeight));
     await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
   };
   window.__katana.captureChapter = async index => {
@@ -398,7 +414,7 @@ if (new URLSearchParams(location.search).has('capture')) {
     journey.pause();
     journey.seek(chapters[index].progress);
     scene.setStory(chapters[index].progress);
-    scene.setPose(sampleCamera(chapters[index].progress, isMobile()));
+    scene.setPose(sampleCamera(chapters[index].progress, isMobile(),innerHeight));
     await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
   };
 }

@@ -6,7 +6,7 @@ export function cubicBezier(a:Vec3,b:Vec3,c:Vec3,d:Vec3,t:number):Vec3 {
   return [0,1,2].map(i=>u**3*a[i]+3*u*u*v*b[i]+3*u*v*v*c[i]+v**3*d[i]) as unknown as Vec3;
 }
 const mix=(a:Vec3,b:Vec3,t:number):Vec3=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
-export function sampleCamera(progress:number,mobile:boolean):CameraPose {
+export function sampleCamera(progress:number,mobile:boolean,viewportHeight=Infinity):CameraPose {
   const p=clamp01(progress);
   const index=Math.max(0,Math.min(cameraKeys.length-2,cameraKeys.findIndex((_,i)=>i<cameraKeys.length-1&&p<=cameraKeys[i+1].progress)));
   const a=cameraKeys[index],b=cameraKeys[index+1];
@@ -14,8 +14,30 @@ export function sampleCamera(progress:number,mobile:boolean):CameraPose {
   const t=ease((p-a.progress)/(b.progress-a.progress));
   const c1=[...mix(from.position,to.position,.32)] as [number,number,number];
   const c2=[...mix(from.position,to.position,.68)] as [number,number,number];
-  const arc=sceneConfig.motion.cameraArcs[index];c1[0]+=arc;c2[0]+=arc;c1[1]+=sceneConfig.motion.cameraLift;c2[1]+=sceneConfig.motion.cameraLift;
-  return {position:cubicBezier(from.position,c1,c2,to.position,t),target:cubicBezier(from.target,mix(from.target,to.target,.33),mix(from.target,to.target,.67),to.target,t),fov:from.fov+(to.fov-from.fov)*t,roll:(from.roll??0)+((to.roll??0)-(from.roll??0))*t};
+  const arc=sceneConfig.motion.cameraArcs[index]??0;
+  const lift=a.progress>=.94?0:sceneConfig.motion.cameraLift;
+  c1[0]+=arc;c2[0]+=arc;c1[1]+=lift;c2[1]+=lift;
+  const position=[...cubicBezier(from.position,c1,c2,to.position,t)] as [number,number,number];
+  const impact=sampleEffects(p).impactPhase;
+  if(p>=sceneConfig.effects.impact&&impact<1) position[1]+=Math.sin(impact*Math.PI*5)*.035*(1-impact)**2;
+  const target=[...cubicBezier(from.target,mix(from.target,to.target,.33),mix(from.target,to.target,.67),to.target,t)] as [number,number,number];
+  if(mobile&&viewportHeight<sceneConfig.framing.compactPortraitHeight){
+    const presence=1-ease(p/sceneConfig.motion.drawStart);
+    position[2]+=sceneConfig.framing.compactHeroDistance*presence;
+    target[0]+=sceneConfig.framing.compactHeroTargetX*presence;
+  }
+  return {position,target,fov:from.fov+(to.fov-from.fov)*t,roll:(from.roll??0)+((to.roll??0)-(from.roll??0))*t};
+}
+/** Pure scroll sampling keeps gusts, contact and reverse playback deterministic. */
+export function sampleEffects(progress:number) {
+  const p=clamp01(progress),config=sceneConfig.effects;
+  const drawPhase=clamp01((p-sceneConfig.motion.drawStart)/(sceneConfig.motion.drawEnd-sceneConfig.motion.drawStart));
+  const alignment=ease((p-config.alignStart)/(config.alignEnd-config.alignStart));
+  const descent=clamp01((p-config.alignEnd)/(config.impact-config.alignEnd));
+  const impactPhase=clamp01((p-config.impact)/(config.burstEnd-config.impact));
+  return {drawPhase,drawStrength:Math.sin(Math.PI*drawPhase)*(.35+.65*drawPhase),alignment,
+    lift:config.dropHeight*(1-descent**2),groundOpacity:alignment,
+    contact:p>=config.impact,impactPhase,burst:p>=config.impact?Math.sin(Math.PI*impactPhase):0};
 }
 export function activeChapter(progress:number):number {
   const p=clamp01(progress);return chapters.reduce((index,c,i)=>p>=c.start?i:index,0);

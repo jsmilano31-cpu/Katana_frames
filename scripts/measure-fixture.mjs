@@ -44,7 +44,16 @@ try {
       return samples;
     });
     const unique = [...new Map(samples.map(sample => [sample.fps, sample])).values()];
-    results.push({ name, browser: await browser.version(), gpu, asset: realModel ? 'Official Katana by J.AkioHonda' : '12-triangle test fixture', measurements: unique, limitation: realModel ? 'Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone.' : 'Renderer/controller smoke test only; portrait is desktop emulation.' });
+    const effects=[];
+    if(process.argv.includes('--effects')){
+      for(const [phase,progress] of [['unsheathing',.25],['impact gust',.98],['planted ambient',1]]){
+        await page.evaluate(p=>window.scrollTo({top:(document.querySelector('.story').getBoundingClientRect().height-innerHeight)*p,behavior:'instant'}),progress);
+        // Allow catch-up and two full measurement windows before sampling.
+        await page.waitForTimeout(5600);
+        effects.push({phase,...await page.evaluate(()=>window.__katana.state().stats)});
+      }
+    }
+    results.push({ name, browser: await browser.version(), gpu, asset: realModel ? 'Official Katana by J.AkioHonda' : '12-triangle test fixture', measurements: unique, effects, limitation: realModel ? 'Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone.' : 'Renderer/controller smoke test only; portrait is desktop emulation.' });
     await context.close();
   }
   await mkdir('test-results', { recursive: true });

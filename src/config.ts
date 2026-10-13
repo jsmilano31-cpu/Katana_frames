@@ -11,13 +11,13 @@ const mobile = (position: Vec3, target: Vec3, roll = 0.55): CameraPose => ({ pos
 export const chapters: readonly Chapter[] = [
   { id: 'presence', label: 'Presence', japanese: '刀', eyebrow: 'An unfolding study / 01',
     title: 'Quiet.<br>Until drawn.', description: 'Steel, suspended.<br>A story revealed by your scroll.', note: 'SCROLL TO UNFOLD',
-    start: 0, end: .12, progress: 0, desktop: desktop([.1, .6, 6.8], [0, -.2, 0]), mobile: mobile([.15, .25, 8.7], [0, -.25, 0]), poster: {position:'center',scale:1} },
+    start: 0, end: .12, progress: 0, desktop: desktop([.1, .6, 6.8], [0, -.2, 0]), mobile: mobile([.15, .25, 9.2], [0, -.25, 0]), poster: {position:'center',scale:1} },
   { id: 'draw', label: 'The draw', japanese: '抜', eyebrow: 'The draw / 02',
     title: 'The first<br>light.', description: 'Lacquer gives way to steel.<br>The blade emerges, one reflection at a time.', note: 'SAYA / THE SCABBARD',
     start: .12, end: .38, progress: .25, desktop: desktop([.3, .7, 8.9], [-.1, -.3, 0]), mobile: mobile([.2, .4, 11.6], [-.25, -.98, 0], .7), poster: {position:'center',scale:1} },
   { id: 'edge', label: 'The edge', japanese: '刃', eyebrow: 'The edge / 03',
     title: 'A different<br>dimension.', description: 'Across the edge.<br>A line becomes a form.', note: 'NAGASA / THE BLADE',
-    start: .38, end: .56, progress: .47, desktop: desktop([1.5, 1.1, 4.8], [-.3, -.15, 0], 39), mobile: mobile([.7, .5, 7.5], [-.1, -.3, 0], .4), poster: {position:'center',scale:1} },
+    start: .38, end: .56, progress: .47, desktop: desktop([1.5, 1.1, 4.8], [-.55, -.15, 0], 39), mobile: mobile([.7, .5, 7.5], [-.1, -.3, 0], .4), poster: {position:'center',scale:1} },
   { id: 'stillness', label: 'Stillness', japanese: '鍔', eyebrow: 'A closer look / 04',
     title: 'Held in<br>the details.', description: 'The guard. The wrap. The curve.<br>A moment to look closer.', note: 'TSUBA / GUARD · TSUKA / GRIP',
     start: .56, end: .72, progress: .64, desktop: desktop([.7, .7, 3.3], [1.05, .02, 0], 38), mobile: mobile([.7, .2, 6.2], [.95, -.35, 0], .45), poster: {position:'center',scale:1} },
@@ -25,8 +25,8 @@ export const chapters: readonly Chapter[] = [
     title: 'Space.<br>To see.', description: 'The darkness recedes.<br>The whole form returns.', note: 'INK / STEEL / LIGHT',
     start: .72, end: .9, progress: .81, desktop: desktop([.5, .8, 7.8], [0, -.1, 0]), mobile: mobile([.2, .4, 9.4], [0, -.35, 0], -.6), poster: {position:'center',scale:1} },
   { id: 'form', label: 'Your perspective', japanese: '形', eyebrow: 'Your perspective / 06',
-    title: 'The form.<br>Now yours.', description: 'Take the view into your own hands.', note: 'A STUDY IN INK & STEEL',
-    start: .9, end: 1, progress: 1, desktop: desktop([.2, .6, 7], [0, -.15, 0]), mobile: mobile([.15, .3, 9], [0, -.35, 0], -.55), poster: {position:'center',scale:1} },
+    title: 'Motion ends.<br>Form remains.', description: 'Rooted in stone.<br>See the blade from your perspective.', note: 'STEEL / STONE / STILLNESS',
+    start: .9, end: 1, progress: 1, desktop: desktop([.2, 1.7, 8.7], [-.55, .55, 0]), mobile: mobile([.35, 1.3, 9.8], [0, .6, 0], 0), poster: {position:'center',scale:1} },
 ];
 export const cameraKeys = [
   {...chapters[0]},
@@ -35,7 +35,10 @@ export const cameraKeys = [
   {progress:.38,desktop:desktop([.4,.8,10.5],[.1,-.25,0]),mobile:mobile([.2,.4,15],[.1,-.65,0],.85)},
   {...chapters[2]},
   {progress:.56,desktop:desktop([.85,.8,4.2],[.7,-.1,0],38),mobile:mobile([.6,.35,7],[.7,-.3,0],.4)},
-  {...chapters[3]}, {...chapters[4]}, {...chapters[5]},
+  {...chapters[3]}, {...chapters[4]},
+  {progress:.94,desktop:chapters[5].desktop,mobile:chapters[5].mobile},
+  {progress:.965,desktop:chapters[5].desktop,mobile:chapters[5].mobile},
+  {...chapters[5]},
 ] as const;
 
 export interface ChoreographyKey {
@@ -51,14 +54,21 @@ export const choreography: readonly ChoreographyKey[] = [
   {progress:.72,rotation:[.05,3.35,-.08],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:.08,ink:1,reflection:1},
   {progress:.81,rotation:[-.04,3.24,.12],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:1,ink:.9,reflection:1.3},
   {progress:.9,rotation:[-.08,3.15,.28],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:1,ink:.8,reflection:1.5},
-  {progress:1,rotation:[-.08,3.1,.3],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:1,ink:.55,reflection:1.6},
+  {progress:.94,rotation:[0,.25,-Math.PI/2+.12],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:1,ink:.65,reflection:1.6},
+  {progress:1,rotation:[0,.25,-Math.PI/2+.12],sword:[0,0,0],scabbard:[6,-.3,0],scabbardOpacity:0,light:1,ink:.55,reflection:1.6},
 ];
 export const sceneConfig = {
   breakpoint:760,desktopTravel:8,mobileTravel:6,scrubSeconds:.8,
+  framing:{compactPortraitHeight:700,compactHeroDistance:1.6,compactHeroTargetX:-.4},
   model:{length:4,presentationNode:'Sketchfab_model',sourceRotation:[-Math.PI/2,0,0] as Vec3,
     sheathMeshes:/saya|scabbard|sheath|kurikata/i,
     sheathMouth:[-1.235,-.247,0] as Vec3,sheathedMouth:[-1.235,.111,0] as Vec3,sheathAngle:.032},
-  motion:{cameraArcs:[.08,.12,.12,.35,.22,.1,-.12,-.15],cameraLift:.15,textFade:.025,lightCopyAt:.79,lightCopyFade:.018,drawDip:.08,drawStart:.12,drawEnd:.38},
+  motion:{cameraArcs:[.08,.12,.12,.35,.22,.1,-.12,-.15,0,0],cameraLift:.15,textFade:.025,lightCopyAt:.79,lightCopyFade:.018,drawDip:.08,drawStart:.12,drawEnd:.38},
+  effects:{
+    ground:[.95,-1.7,0] as Vec3,embedDepth:.045,
+    alignStart:.9,alignEnd:.94,impact:.965,burstEnd:.995,dropHeight:.65,
+    desktopParticles:100,mobileParticles:48,ribbons:7,ambientSpeed:.18,
+  },
   artwork:{layers:[
     {x:-1.6,y:-.1,z:-3.5,width:13,height:7,angle:-.08,opacity:.7,mobile:true},
     {x:2.6,y:-.8,z:-1.5,width:11.5,height:6.3,angle:.12,opacity:.7,mobile:true},

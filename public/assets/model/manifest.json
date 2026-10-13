@@ -6,7 +6,7 @@
   "source": "https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37",
   "license": "CC BY 4.0",
   "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-  "modifications": "glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation rotation reset, sword and scabbard grouped and aligned for a reversible unsheathing sequence, runtime transforms normalized, studio lighting and original ink artwork applied. Desktop and portrait chapter posters rendered.",
+  "modifications": "glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation rotation reset, sword and scabbard grouped and aligned for reversible unsheathing, runtime transforms normalized. Studio lighting, original ink artwork, procedural wind, and a stone impact setting added. Desktop and portrait chapter posters rendered.",
   "postersReady": true,
   "preview": {
     "source": "https://media.sketchfab.com/models/36e9ab64846246e8964a66b691e62f37/thumbnails/b6058b0c11ca4c62a7f25aed9b4e8ce4/d7b7c85e515a45849de67fd981060e05.jpeg",

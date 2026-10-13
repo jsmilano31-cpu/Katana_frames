@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { chapters, choreography } from '../src/config';
-import { activeChapter, sampleCamera, sampleChoreography } from '../src/motion';
+import { activeChapter, sampleCamera, sampleChoreography, sampleEffects } from '../src/motion';
 
 describe('the reversible camera journey', () => {
   it('hits every authored chapter pose in desktop and portrait framing', () => {
@@ -34,6 +34,28 @@ describe('the reversible camera journey', () => {
     expect(sampleCamera(2, false)).toEqual(sampleCamera(1, false));
     expect(activeChapter(-1)).toBe(0);
     expect(activeChapter(2)).toBe(5);
+  });
+});
+
+describe('wind and ground contact',()=>{
+  it('keeps wind inside extraction and removes impact state when rewound',()=>{
+    expect(sampleEffects(0).drawStrength).toBe(0);
+    expect(sampleEffects(.25).drawStrength).toBeGreaterThan(.3);
+    expect(sampleEffects(.4).drawStrength).toBeCloseTo(0);
+    expect(sampleEffects(.964).contact).toBe(false);
+    expect(sampleEffects(.965).contact).toBe(true);
+    expect(sampleEffects(.98).burst).toBeGreaterThan(.9);
+    expect(sampleEffects(1).burst).toBeCloseTo(0);
+    const forward=Array.from({length:1001},(_,i)=>sampleEffects(i/1000));
+    const reverse=Array.from({length:1001},(_,i)=>sampleEffects((1000-i)/1000)).reverse();
+    expect(reverse).toEqual(forward);
+  });
+  it('holds the planted transform and camera after settling',()=>{
+    const contact=sampleChoreography(.965),settled=sampleChoreography(1);
+    expect(contact.toRotation).toEqual(settled.toRotation);
+    for(const p of [.965,.98,1])expect(sampleEffects(p).lift).toBe(0);
+    expect(sampleCamera(.995,false)).toEqual(sampleCamera(1,false));
+    expect(sampleEffects(.94).lift).toBeGreaterThan(sampleEffects(.95).lift);
   });
 });
 

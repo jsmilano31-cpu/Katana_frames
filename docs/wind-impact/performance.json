@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Desktop 1440 × 900",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "asset": "Official Katana by J.AkioHonda",
+    "measurements": [
+      {
+        "fps": 96.206569961617,
+        "dpr": 1,
+        "drawCalls": 30,
+        "triangles": 22090
+      },
+      {
+        "fps": 96.99515024248778,
+        "dpr": 1,
+        "drawCalls": 31,
+        "triangles": 19516
+      },
+      {
+        "fps": 114.9999999999999,
+        "dpr": 1,
+        "drawCalls": 15,
+        "triangles": 21194
+      }
+    ],
+    "effects": [
+      {
+        "phase": "unsheathing",
+        "fps": 164.98350164983498,
+        "dpr": 1,
+        "drawCalls": 30,
+        "triangles": 22090
+      },
+      {
+        "phase": "impact gust",
+        "fps": 165.02143783029248,
+        "dpr": 1,
+        "drawCalls": 31,
+        "triangles": 19516
+      },
+      {
+        "phase": "planted ambient",
+        "fps": 164.99175041247986,
+        "dpr": 1,
+        "drawCalls": 30,
+        "triangles": 19516
+      }
+    ],
+    "limitation": "Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone."
+  },
+  {
+    "name": "Pixel 7 emulation",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "asset": "Official Katana by J.AkioHonda",
+    "measurements": [
+      {
+        "fps": 111.99999999999977,
+        "dpr": 1.25,
+        "drawCalls": 23,
+        "triangles": 21704
+      },
+      {
+        "fps": 153.48465153484625,
+        "dpr": 1.25,
+        "drawCalls": 30,
+        "triangles": 19514
+      },
+      {
+        "fps": 162.49999999999972,
+        "dpr": 1.25,
+        "drawCalls": 11,
+        "triangles": 19224
+      }
+    ],
+    "effects": [
+      {
+        "phase": "unsheathing",
+        "fps": 164.99675988235882,
+        "dpr": 1.25,
+        "drawCalls": 23,
+        "triangles": 21704
+      },
+      {
+        "phase": "impact gust",
+        "fps": 164.97208931419482,
+        "dpr": 1.25,
+        "drawCalls": 30,
+        "triangles": 19514
+      },
+      {
+        "phase": "planted ambient",
+        "fps": 165.00498504486572,
+        "dpr": 1.25,
+        "drawCalls": 29,
+        "triangles": 19514
+      }
+    ],
+    "limitation": "Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone."
+  }
+]

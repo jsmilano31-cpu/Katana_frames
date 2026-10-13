@@ -1,0 +1,75 @@
+{
+  "viewport": {
+    "width": 320,
+    "height": 568
+  },
+  "errors": [],
+  "bounds": {
+    "x": 14,
+    "y": 4,
+    "width": 292,
+    "height": 144.1875
+  },
+  "state": {
+    "view": "3d",
+    "chapter": 5,
+    "progress": 1,
+    "exploring": true,
+    "pose": {
+      "position": [
+        0.35000000000000003,
+        1.3000000000000012,
+        9.800000000000002
+      ],
+      "target": [
+        0,
+        0.6,
+        0
+      ],
+      "fov": 43
+    },
+    "stats": null,
+    "choreography": {
+      "progress": 1,
+      "rotation": [
+        -0.08271338415436376,
+        0.09328603982595819,
+        -0.658257086887238,
+        0.7423973453737893
+      ],
+      "sword": [
+        0,
+        -9.797174393178826e-18,
+        0
+      ],
+      "scabbard": [
+        6,
+        -0.3,
+        0
+      ],
+      "scabbardVisible": false,
+      "tip": [
+        0.95,
+        -1.7449999999999999,
+        4.163336342344337e-17
+      ],
+      "effects": {
+        "mouth": [
+          1.057219621964839,
+          -4.736399479671864,
+          -0.027377656002673997
+        ],
+        "drawPhase": 1,
+        "drawStrength": 1.2246467991473532e-16,
+        "alignment": 1,
+        "lift": 0,
+        "groundOpacity": 1,
+        "contact": true,
+        "impactPhase": 1,
+        "burst": 1.2246467991473532e-16
+      },
+      "ambientPaused": true,
+      "ambientTime": 0
+    }
+  }
+}

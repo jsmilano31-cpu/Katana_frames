@@ -11,7 +11,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
   await page.goto(`${base}/?capture=1`);
   await page.waitForFunction(() => window.__katana?.state().view === '3d', undefined, { timeout: 60000 });
-  await page.addStyleTag({ content: '.site-header,.chapter-panels,.chapter-panels *,.chapter-nav,.object-caption,.view-status,.site-footer,.journey-progress,.skip-link{visibility:hidden!important} .scene-stage{visibility:visible!important} canvas{transition:none!important;opacity:1!important}' });
+  await page.addStyleTag({ content: '.site-header,.chapter-panels,.chapter-panels *,.chapter-nav,.object-caption,.view-status,.site-footer,.journey-progress,.skip-link,.ambient-control{visibility:hidden!important} .scene-stage{visibility:visible!important} canvas{transition:none!important;opacity:1!important}' });
   const output = path.join(process.cwd(), 'public/assets/posters');
   await mkdir(output, { recursive: true });
   for (const [suffix, width, height] of [['', 1440, 900], ['-mobile', 390, 844]]) {
@@ -24,7 +24,7 @@ try {
     }
   }
   manifest.postersReady = true;
-  manifest.modifications = 'glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation rotation reset, sword and scabbard grouped and aligned for a reversible unsheathing sequence, runtime transforms normalized, studio lighting and original ink artwork applied. Desktop and portrait chapter posters rendered.';
+  manifest.modifications = 'glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation rotation reset, sword and scabbard grouped and aligned for reversible unsheathing, runtime transforms normalized. Studio lighting, original ink artwork, procedural wind, and a stone impact setting added. Desktop and portrait chapter posters rendered.';
   await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
   console.log('Captured twelve chapter posters from the official model. Inspect them before the final asset check.');
 } finally {
