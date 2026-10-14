@@ -2,7 +2,7 @@ import {
   ACESFilmicToneMapping, Box3, Color, DirectionalLight, Group, HemisphereLight,
   LoadingManager, Material, Mesh, PerspectiveCamera, PMREMGenerator, Scene,
   Quaternion, Spherical, Texture, Vector3, WebGLRenderer, type WebGLRenderTarget,
-  Euler, Matrix4, Plane, MeshBasicMaterial, ShaderMaterial,
+  Euler, Matrix4, Plane, MeshBasicMaterial, ShaderMaterial, FogExp2,
 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -16,6 +16,7 @@ import { createInk } from './ink';
 import { WindEffects } from './effects';
 import { awakeningMaterial } from './awakening';
 import { LandingImpact } from './impact';
+import { MoonlitGrove } from './grove';
 
 export interface SceneStats { fps: number; dpr: number; drawCalls: number; triangles: number }
 
@@ -47,6 +48,11 @@ export class KatanaScene {
   private frameClock=0;
   private authoredCamera=new Vector3();
   private effects = new WindEffects();
+  private grove = new MoonlitGrove();
+  private groveFog = new FogExp2('#14262f',0);
+  private exploreOrigin = new Vector3();
+  private exploreUp = new Vector3(0,1,0);
+  private exploreStarted = 0;
   private ambientPaused = new URLSearchParams(location.search).has('capture');
   private ambientTime = 0;
   private ambientFrame = 0;
@@ -94,7 +100,8 @@ export class KatanaScene {
     rim.position.set(2, -1, -3);
     const warm = new DirectionalLight('#89c5ca', 0.45);
     warm.position.set(-4, 1, -2);
-    this.scene.add(key, rim, warm, this.model, this.effects.root);
+    this.scene.add(key, rim, warm, this.model, this.effects.root,this.grove.root);
+    this.scene.fog=this.groveFog;
     this.model.add(this.sword, this.scabbard);
     this.draco.setDecoderPath('/assets/decoders/draco/');
     this.basis.setTranscoderPath('/assets/decoders/basis/').detectSupport(this.renderer);
@@ -183,6 +190,14 @@ export class KatanaScene {
     this.ink = await createInk(); this.scene.add(this.ink);
     this.setStory(this.storyProgress);
     await this.renderer.compileAsync(this.scene, this.camera);
+    // Warm the finale's instanced shaders during loading, rather than at impact.
+    const groveVisible=this.grove.root.visible;
+    this.grove.root.visible=true;
+    await this.renderer.compileAsync(this.scene,this.camera);
+    // Upload the grove buffers and local textures while the loading poster is visible.
+    this.renderer.render(this.scene,this.camera);
+    this.grove.root.visible=groveVisible;
+    this.renderer.render(this.scene,this.camera);
     this.dirty = true;
   }
 
@@ -198,6 +213,8 @@ export class KatanaScene {
     const previousImpact=this.impact.mode;
     if(this.captureMode)this.impact.restore(progress);else this.impact.observe(progress,this.ambientPaused);
     const state = sampleChoreography(progress);
+    this.grove.setProgress(progress);
+    this.groveFog.density=sceneConfig.grove.fogDensity*this.grove.diagnostics().reveal;
     this.qa.setFromEuler(this.rotation.set(...state.fromRotation));
     this.qb.setFromEuler(this.rotation.set(...state.toRotation));
     this.model.quaternion.copy(this.qa).slerp(this.qb, state.rotationMix);
@@ -225,7 +242,7 @@ export class KatanaScene {
       const plane = object as Mesh;
       const material = plane.material as MeshBasicMaterial;
       const artwork=sceneConfig.artwork,layer=artwork.layers[index];
-      material.opacity = state.ink * layer.opacity * (1-state.light*artwork.paperFade) * (innerWidth<sceneConfig.breakpoint?artwork.mobileOpacity:1);
+      material.opacity = state.ink * layer.opacity * (1-state.light*artwork.paperFade) * (innerWidth<sceneConfig.breakpoint?artwork.mobileOpacity:1) * (1-this.grove.diagnostics().reveal);
       material.color.set('#86afaf').lerp(new Color('#91b6bd'),state.light);
       plane.position.x = layer.x + Math.sin(progress*Math.PI)*(artwork.sway+index*artwork.swayStep);
       plane.position.y = layer.y + state.light*artwork.paperLift;
@@ -243,7 +260,7 @@ export class KatanaScene {
     this.dirty = true;
   }
 
-  storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible,tip:this.sword.localToWorld(this.bladeTip.clone()).toArray(),effects:{...this.effects.diagnostics(),awakening:sampleAwakening(this.storyProgress,this.exposed),exposed:this.exposed},impact:this.impact.snapshot(),ambientPaused:this.ambientPaused,ambientTime:this.ambientTime }; }
+  storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible,tip:this.sword.localToWorld(this.bladeTip.clone()).toArray(),effects:{...this.effects.diagnostics(),awakening:sampleAwakening(this.storyProgress,this.exposed),exposed:this.exposed},impact:this.impact.snapshot(),ambientPaused:this.ambientPaused,ambientTime:this.ambientTime,grove:this.grove.diagnostics(),exploration:{origin:this.exploreOrigin.toArray(),minimumDistance:this.controls.minDistance,maximumDistance:this.controls.maxDistance,panRadius:sceneConfig.model.length*sceneConfig.explore.panRadius} }; }
 
   get impactSettled(){return this.impact.mode!=='playing';}
   setImpactCallback(callback:()=>void){this.onImpact=callback;}
@@ -302,6 +319,7 @@ export class KatanaScene {
     this.camera.aspect = innerWidth / innerHeight;
     this.camera.updateProjectionMatrix();
     this.dirty = true;
+    this.grove.setProgress(this.storyProgress);
     // Never exceed the portrait performance cap after rotating/resizing.
     const cap = Math.min(devicePixelRatio, innerWidth < sceneConfig.breakpoint ? sceneConfig.renderer.mobileDpr : sceneConfig.renderer.desktopDpr);
     if (this.pixelRatio > cap) this.setPixelRatio(cap);
@@ -310,13 +328,15 @@ export class KatanaScene {
   beginExplore(pose: CameraPose): void {
     this.impact.settle();
     this.setPose(pose);
-    // OrbitControls caches the camera's up axis at construction. Recreate it
-    // after applying portrait roll so touch and keyboard share the same axes.
+    this.exploreUp.copy(this.camera.up);
+    this.camera.up.set(0,1,0);
+    this.exploreStarted=performance.now();
+    // Recreate controls against world-up, including after a portrait resize.
     this.controls.removeEventListener('change', this.markDirty);
     this.controls.dispose();
     this.controls = this.createControls();
     this.controls.target.set(...pose.target);
-    this.resetPose = pose;
+    this.configureExplore(pose);
     this.exploring = true;
     this.controls.enabled = true;
     this.controls.enableDamping = false;
@@ -331,7 +351,8 @@ export class KatanaScene {
     this.controls.enableDamping = false;
     this.controls.update();
     this.camera.position.set(...this.resetPose.position);
-    this.camera.up.set(Math.sin(this.resetPose.roll ?? 0), Math.cos(this.resetPose.roll ?? 0), 0);
+    this.camera.up.set(0,1,0);
+    this.exploreStarted=0;
     this.camera.fov = this.resetPose.fov;
     this.camera.updateProjectionMatrix();
     this.controls.target.set(...this.resetPose.target);
@@ -352,11 +373,62 @@ export class KatanaScene {
     this.dirty = true;
   }
 
+  pan(horizontal:number,vertical:number):void {
+    if(!this.exploring)return;
+    this.camera.updateMatrixWorld();
+    const offset=new Vector3().setFromMatrixColumn(this.camera.matrixWorld,0).multiplyScalar(horizontal)
+      .add(new Vector3().setFromMatrixColumn(this.camera.matrixWorld,1).multiplyScalar(vertical));
+    this.camera.position.add(offset);this.controls.target.add(offset);
+    this.constrainExplore();this.controls.update();this.dirty=true;
+  }
+
+  zoom(factor:number):void {
+    if(!this.exploring)return;
+    const offset=this.camera.position.clone().sub(this.controls.target);
+    offset.setLength(Math.max(this.controls.minDistance,Math.min(this.controls.maxDistance,offset.length()*factor)));
+    this.camera.position.copy(this.controls.target).add(offset);
+    this.constrainExplore();this.controls.update();this.dirty=true;
+  }
+
+  reframeExplore(pose:CameraPose):void {
+    if(!this.exploring)return;
+    const delta=this.controls.target.clone().sub(this.exploreOrigin);
+    this.configureExplore(pose);
+    const newTarget=this.exploreOrigin.clone().add(delta);
+    this.camera.position.add(newTarget.clone().sub(this.controls.target));this.controls.target.copy(newTarget);
+    this.constrainExplore();this.controls.update();this.dirty=true;
+  }
+
+  private configureExplore(pose:CameraPose){
+    this.resetPose={...pose,roll:0};this.exploreOrigin.set(...pose.target);
+    this.controls.cursor.copy(this.exploreOrigin);
+    this.controls.maxTargetRadius=sceneConfig.model.length*sceneConfig.explore.panRadius;
+    const distance=new Vector3(...pose.position).distanceTo(this.exploreOrigin);
+    this.controls.minDistance=distance*sceneConfig.explore.minimumDistance;
+    this.controls.maxDistance=distance*sceneConfig.explore.maximumDistance;
+  }
+
+  private constrainExplore(){
+    const radius=sceneConfig.model.length*sceneConfig.explore.panRadius;
+    const target=this.controls.target.clone(),offset=target.clone().sub(this.exploreOrigin);
+    if(offset.length()>radius)target.copy(this.exploreOrigin).add(offset.setLength(radius));
+    this.camera.position.add(target.clone().sub(this.controls.target));this.controls.target.copy(target);
+    const view=this.camera.position.clone().sub(target);
+    const spherical=new Spherical().setFromVector3(view);
+    spherical.radius=Math.max(this.controls.minDistance,Math.min(this.controls.maxDistance,spherical.radius));
+    spherical.phi=Math.max(this.controls.minPolarAngle,Math.min(this.controls.maxPolarAngle,spherical.phi));
+    const minimumY=sceneConfig.grove.groundY+sceneConfig.explore.groundClearance;
+    const safePhi=Math.acos(Math.max(-1,Math.min(1,(minimumY-target.y)/spherical.radius)));
+    spherical.phi=Math.min(spherical.phi,safePhi);
+    this.camera.position.copy(target).add(view.setFromSpherical(spherical));
+  }
+
   endExplore(pose: CameraPose): void {
     this.exploring = false;
     this.controls.enabled = false;
     this.controls.enableDamping = false;
     this.controls.update();
+    this.controls.maxTargetRadius=Infinity;
     this.renderer.domElement.style.touchAction = '';
     this.setPose(pose);
     this.setStory(this.storyProgress);
@@ -370,10 +442,12 @@ export class KatanaScene {
     controls.enabled = false;
     controls.enableDamping = true;
     controls.dampingFactor = 0.075;
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.minPolarAngle = Math.PI * 0.16;
-    controls.maxPolarAngle = Math.PI * 0.49;
+    controls.enableZoom = true;
+    controls.enablePan = true;
+    controls.zoomSpeed = .65;
+    controls.panSpeed = .65;
+    controls.minPolarAngle = sceneConfig.explore.minPolarAngle;
+    controls.maxPolarAngle = sceneConfig.explore.maxPolarAngle;
     controls.addEventListener('change', this.markDirty);
     return controls;
   }
@@ -414,8 +488,15 @@ export class KatanaScene {
       }
       this.camera.lookAt(this.controls.target);
     }
-    if (this.exploring) this.controls.update();
+    if (this.exploring) {
+      this.camera.up.set(0,1,0);this.controls.update();this.constrainExplore();
+      const t=this.exploreStarted?ease(clamp01((time-this.exploreStarted)/(sceneConfig.explore.transitionSeconds*1000))):1;
+      this.camera.up.copy(this.exploreUp).lerp(new Vector3(0,1,0),t).normalize();this.camera.lookAt(this.controls.target);
+      if(t<1)this.dirty=true;
+    }
     if (!this.dirty) { this.lastFrame = 0; return; }
+    this.effects.faceCamera(this.camera);
+    this.grove.update(this.ambientTime,this.camera);
     if (this.lastFrame) {
       const seconds = Math.min((time - this.lastFrame) / 1000, 0.2);
       this.frameSeconds += seconds;
@@ -443,6 +524,7 @@ export class KatanaScene {
     this.disposed = true;
     this.renderer.setAnimationLoop(null);
     this.effects.dispose();
+    this.grove.dispose();
     this.controls.removeEventListener('change', this.markDirty);
     this.controls.dispose();
     this.renderer.domElement.removeEventListener('webglcontextlost', this.contextLost);

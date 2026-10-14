@@ -1,6 +1,6 @@
 import {
   AdditiveBlending, BufferAttribute, BufferGeometry, CanvasTexture, DoubleSide,
-  Group, Matrix4, Mesh, MeshBasicMaterial, PlaneGeometry, Sprite, SpriteMaterial, Vector3,
+  Group, Matrix4, Mesh, MeshBasicMaterial, PlaneGeometry, Sprite, SpriteMaterial, Vector3, type PerspectiveCamera,
 } from 'three';
 import { sceneConfig } from './config';
 import { sampleAwakening } from './motion';
@@ -105,7 +105,7 @@ export class MistField {
     this.glint.visible=awakening.glint>.001;
     for(let i=0;i<this.fog.length;i++){
       const plane=this.fog[i],ground=this.progress>=.9&&i<2;
-      plane.visible=i<(mobile?config.mobileMistLayers:config.mistLayers);
+      plane.visible=i<(mobile?config.mobileMistLayers:config.mistLayers)&&!(this.progress>=sceneConfig.grove.revealEnd&&i>=2);
       if(ground){
         plane.position.set(config.ground[0]+Math.sin(time*.07+i)*.6,config.ground[1]+.12+i*.12,-.2+i*.5);
         plane.scale.set(6.5,1.1,1);plane.material.opacity=.28;
@@ -115,6 +115,11 @@ export class MistField {
       }
       plane.rotation.z=Math.sin(time*.04+i)*.09;
     }
+  }
+
+  faceCamera(camera:PerspectiveCamera){
+    if(this.progress<sceneConfig.grove.revealStart)return;
+    for(const plane of this.fog)plane.quaternion.copy(camera.quaternion);
   }
 
   private at(points:Vector3[],t:number){

@@ -78,6 +78,21 @@ try {
         effects.push({phase,...await page.evaluate(()=>window.__katana.state().stats)});
       }
     }
+    await page.evaluate(()=>window.scrollTo({top:document.querySelector('.story').getBoundingClientRect().height-innerHeight,behavior:'instant'}));
+    await page.waitForFunction(()=>window.__katana.state().progress>.999&&window.__katana.state().choreography.impact.mode!=='playing');
+    await page.locator('.explore-button').click();await page.waitForTimeout(600);
+    await page.locator('canvas').focus();
+    const orbit=await page.evaluate(async()=>{
+      const frames=[],started=performance.now(),canvas=document.querySelector('canvas'),gl=canvas.getContext('webgl2');
+      await new Promise(resolve=>{
+        function frame(now){
+          if(frames.length%4===0)canvas.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));
+          gl.finish();frames.push(now);if(now-started<5000)requestAnimationFrame(frame);else resolve();
+        }requestAnimationFrame(frame);
+      });
+      return{fps:(frames.length-1)*1000/(frames.at(-1)-frames[0]),reportedStats:window.__katana.state().stats,grove:window.__katana.state().choreography.grove};
+    });
+    effects.push({phase:'Moonlit grove camera orbit',...orbit,method:'Five-second real-model orbit with active ambient effects and gl.finish() frame synchronization.'});
     results.push({ name, browser: await browser.version(), gpu, asset: realModel ? 'Official Katana by J.AkioHonda' : '12-triangle test fixture', measurements: unique, effects, limitation: realModel ? 'Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone.' : 'Renderer/controller smoke test only; portrait is desktop emulation.' });
     await context.close();
   }

@@ -2,7 +2,7 @@ import {
   BufferAttribute, BufferGeometry, CanvasTexture, Color, CylinderGeometry, DoubleSide,
   Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshStandardMaterial,
   PlaneGeometry, Points, PointsMaterial, Quaternion, RingGeometry, Vector3,
-  AdditiveBlending, IcosahedronGeometry, InstancedMesh, Object3D,
+  AdditiveBlending, IcosahedronGeometry, InstancedMesh, Object3D, type PerspectiveCamera,
 } from 'three';
 import { sceneConfig } from './config';
 import { sampleEffects } from './motion';
@@ -212,6 +212,7 @@ export class WindEffects {
   }
 
   diagnostics(){return {mouth:this.mouth.toArray(),...sampleEffects(this.progress),landingPhase:this.impactPhase};}
+  faceCamera(camera:PerspectiveCamera){this.mist.faceCamera(camera);}
 
   dispose(){
     this.mist.dispose();

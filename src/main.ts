@@ -35,7 +35,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
               <${index === 0 ? 'h1' : 'h2'} id="title-${chapter.id}">${chapter.title}</${index === 0 ? 'h1' : 'h2'}>
               <p class="chapter-description">${chapter.description}</p>
               ${index === 0 ? `<a class="text-link begin-link" href="#draw">Unfold the story ${arrow}</a>` : ''}
-              ${index === chapters.length - 1 ? `<div class="final-actions"><button class="primary-button explore-button" type="button" disabled>Explore the katana ${arrow}</button><button class="text-link replay-button" type="button">Replay the journey ${replay}</button></div><p class="explore-availability">Interactive rotation becomes available in the 3D view.</p>` : ''}
+              ${index === chapters.length - 1 ? `<div class="final-actions"><button class="primary-button explore-button" type="button" disabled>Explore the grove ${arrow}</button><button class="text-link replay-button" type="button">Replay the journey ${replay}</button></div><p class="explore-availability">The grove becomes interactive in the 3D view.</p>` : ''}
             </div>
             <div class="chapter-bottom"><span class="chapter-note">${chapter.note}</span><span class="chapter-number">0${index + 1}<span> / 06</span></span></div>
             ${index === 0 ? `<a class="scroll-cue" href="#draw"><span>SCROLL TO DISCOVER</span>${down}</a>` : ''}
@@ -53,13 +53,15 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="view-status" role="status"><span class="status-dot"></span><span class="status-text">Preparing the study</span><button class="retry-button" type="button" hidden>Retry 3D ↗</button></div>
   <div class="live-announcement sr-only" aria-live="polite"></div>
 
-  <section class="explore-panel" aria-label="Explore the katana" hidden>
-    <p class="explore-heading">A different perspective.</p><p class="explore-help" id="explore-help">Orbit the planted blade. Drag or use arrow keys when the viewer is focused.</p>
+  <section class="explore-panel" aria-label="Explore the moonlit grove" hidden>
+    <p class="explore-heading">Inside the moonlit grove.</p><p class="explore-help" id="explore-help">Drag to orbit · scroll or pinch to zoom · Shift-drag or two-finger drag to pan.<br>Keyboard: arrows orbit · Shift + arrows pan · + / − zoom · R resets · Escape exits.</p>
     <div class="explore-toolbar">
       <button class="rotate-button" type="button" data-rotate="left" aria-label="Rotate left">←</button>
       <button class="rotate-button" type="button" data-rotate="up" aria-label="Rotate up">↑</button>
       <button class="rotate-button" type="button" data-rotate="down" aria-label="Rotate down">↓</button>
       <button class="rotate-button" type="button" data-rotate="right" aria-label="Rotate right">→</button>
+      <button class="zoom-button" type="button" data-zoom="in" aria-label="Zoom in">+</button>
+      <button class="zoom-button" type="button" data-zoom="out" aria-label="Zoom out">−</button>
       <button class="effects-button" type="button" aria-pressed="false">Pause effects</button>
       <button class="reset-button" type="button">Reset view ${replay}</button>
       <button class="exit-button" type="button">Back to the study <span>×</span></button>
@@ -272,12 +274,12 @@ function enterExplore(): void {
   explorePanel.hidden = false;
   canvas.tabIndex = 0;
   canvas.setAttribute('role', 'application');
-  canvas.setAttribute('aria-label', 'Katana rotation viewer');
+  canvas.setAttribute('aria-label', 'Moonlit grove 3D viewer');
   canvas.setAttribute('aria-describedby', 'explore-help');
   canvas.closest('.scene-stage')!.removeAttribute('aria-hidden');
   status.textContent = 'Explore mode';
   canvas.focus({ preventScroll: true });
-  $('.live-announcement').textContent = 'Explore mode. Drag or use the arrow keys to rotate. Escape returns to the study.';
+  $('.live-announcement').textContent = 'Explore the grove. Drag to orbit, pinch or scroll to zoom. Shift and arrow keys pan. Escape returns to the study.';
 }
 
 function exitExplore(returnFocus = true): void {
@@ -337,12 +339,18 @@ $('.replay-button').addEventListener('click', () => goTo(0));
 
 const rotations: Record<string, [number, number]> = { left: [-0.12, 0], right: [0.12, 0], up: [0, -0.12], down: [0, 0.12] };
 document.querySelectorAll<HTMLButtonElement>('[data-rotate]').forEach(button => button.addEventListener('click', () => scene?.rotate(...rotations[button.dataset.rotate!])));
+document.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach(button=>button.addEventListener('click',()=>scene?.zoom(button.dataset.zoom==='in'?sceneConfig.explore.zoomStep:1/sceneConfig.explore.zoomStep)));
 canvas.addEventListener('keydown', event => {
   if (!isExploring) return;
   const direction = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' }[event.key];
   if (direction) {
     event.preventDefault();
-    scene?.rotate(...rotations[direction]);
+    if(event.shiftKey){
+      const step=sceneConfig.explore.panStep;
+      scene?.pan(direction==='left'?-step:direction==='right'?step:0,direction==='up'?step:direction==='down'?-step:0);
+    }else scene?.rotate(...rotations[direction]);
+  } else if (['+','=','-','_'].includes(event.key)) {
+    event.preventDefault();scene?.zoom(event.key==='+'||event.key==='='?sceneConfig.explore.zoomStep:1/sceneConfig.explore.zoomStep);
   } else if (event.key.toLowerCase() === 'r' || event.key === 'Home') {
     event.preventDefault();
     scene?.resetExplore();
@@ -369,8 +377,7 @@ window.addEventListener('resize', () => {
   resizeTimer = window.setTimeout(() => {
     scene?.resize();
     if (isExploring) {
-      scene?.endExplore(currentPose());
-      scene?.beginExplore(currentPose());
+      scene?.reframeExplore(currentPose());
     } else {
       scene?.setPose(currentPose());
       journey?.reframe(preserved);

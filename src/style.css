@@ -170,3 +170,9 @@ body{background:var(--scene-bg);color:var(--ivory)}
 .about-dialog a{color:#d0eee9}
 .about-modifications{overflow-wrap:anywhere}
 .explore-panel .effects-button{color:#c1e2df}
+.zoom-button{min-width:40px;min-height:44px;border:1px solid var(--line);background:#23383c;color:#dcf3ed;font-size:19px}
+.zoom-button:hover{background:#365054}
+.is-exploring .explore-panel{width:760px;max-width:calc(100vw - 28px)}
+.explore-toolbar .effects-button{min-height:44px}
+@media(max-width:760px){.is-exploring .explore-panel{width:calc(100vw - 28px)}.zoom-button{min-width:36px}}
+@media(max-height:500px) and (min-width:761px){.is-exploring .explore-panel{width:255px}.explore-help{font-size:8px}.zoom-button,.rotate-button{min-width:36px}}

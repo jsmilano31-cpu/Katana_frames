@@ -25,7 +25,7 @@ export const chapters: readonly Chapter[] = [
     title: 'The veil<br>parts.', description: 'Mist recedes.<br>The whole form returns.', note: 'MIST / STEEL / SILENCE',
     start: .72, end: .9, progress: .81, desktop: desktop([.5, .8, 7.8], [0, -.1, 0]), mobile: mobile([.2, .4, 9.4], [0, -.35, 0], -.6), poster: {position:'center',scale:1} },
   { id: 'form', label: 'Your perspective', japanese: '形', eyebrow: 'Your perspective / 06',
-    title: 'Motion ends.<br>Form remains.', description: 'Rooted in stone.<br>See the blade from your perspective.', note: 'STEEL / STONE / STILLNESS',
+    title: 'Motion ends.<br>Form remains.', description: 'Rooted in stone. Wrapped in moonlight.<br>The grove is yours to explore.', note: 'STEEL / STONE / MOONLIGHT',
     start: .9, end: 1, progress: 1, desktop: desktop([.2, 1.7, 8.7], [-.55, .55, 0]), mobile: mobile([.35, 1.3, 9.8], [0, .6, 0], 0), poster: {position:'center',scale:1} },
 ];
 export const cameraKeys = [
@@ -78,6 +78,13 @@ export const sceneConfig = {
     {x:2.6,y:-.8,z:-1.5,width:11.5,height:6.3,angle:.12,opacity:.7,mobile:true},
     {x:-1.6,y:-1.5,z:.5,width:10,height:5.6,angle:-.08,opacity:.32,mobile:false},
   ],sway:.6,swayStep:.25,growth:.06,paperLift:.4,paperFade:.25,mobileOpacity:.75},
+  grove:{revealStart:.9,revealEnd:.965,groundY:-1.94,innerRadius:26,outerRadius:39,
+    desktopStalks:180,mobileStalks:90,desktopRocks:42,mobileRocks:24,
+    sway:.11,swaySpeed:.35,motes:70,mobileMotes:32,fogDensity:.022,
+    moonColor:'#c9e5ef',bambooColor:'#324f50',groundColor:'#0c1a20'},
+  explore:{minimumDistance:.65,maximumDistance:1.8,panRadius:.25,groundClearance:.38,
+    minPolarAngle:Math.PI*.08,maxPolarAngle:Math.PI*.49,transitionSeconds:.28,
+    panStep:.12,zoomStep:.88},
   lighting:{environment:.85,paperBoost:.25,reflectionRotation:.7,keyStart:[-3,4,3.5] as Vec3,keyTravel:5,rimStart:[3,-1,-3] as Vec3,rimTravel:-3},
   renderer:{desktopDpr:1.75,mobileDpr:1.25,minimumDpr:.75,exposure:1.05},
 } as const;

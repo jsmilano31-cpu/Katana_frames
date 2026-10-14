@@ -8,6 +8,8 @@ License: Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/
 
 The runtime resets the original presentation orientation, normalizes the sword, aligns the scabbard opening, and separates sword/scabbard animation groups. The scabbard fitting travels with its scabbard. During the draw a temporary clipping plane conceals steel inside the scabbard. Original geometry, materials, and UVs remain in the delivered GLB; runtime geometry transforms are baked into clones for animation. A separate clipped awakening light layer preserves the steel's PBR material. Studio lighting, original ink clouds, and procedural mist surround the model. In the finale the actual blade tip is anchored in a procedural stone setting with animated mist, fissures, and fragments; only the camera orbits during exploration. Six desktop and six portrait fallback images are rendered from this sequence.
 
+The final setting also includes an original procedural moonlit bamboo grove with instanced foliage, rocks, ground textures, fog, and motes. Exploration moves the camera through bounded orbit, zoom, and pan; the model and its embedded tip remain stationary. The licensed GLB and original PBR textures are unchanged.
+
 For future replacement imports, from the project root:
 
     npm.cmd run assets:import -- "C:\path\to\official-download.zip"

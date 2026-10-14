@@ -1,0 +1,512 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900,
+    "errors": [],
+    "consoleErrors": [],
+    "failed": [],
+    "state": {
+      "view": "3d",
+      "chapter": 5,
+      "progress": 1,
+      "exploring": false,
+      "pose": {
+        "position": [
+          0.2,
+          1.7,
+          8.7
+        ],
+        "target": [
+          -0.55,
+          0.55,
+          0
+        ],
+        "fov": 36
+      },
+      "stats": null,
+      "choreography": {
+        "progress": 1,
+        "rotation": [
+          -0.08271338415436376,
+          0.09328603982595819,
+          -0.658257086887238,
+          0.7423973453737893
+        ],
+        "sword": [
+          0,
+          -9.797174393178826e-18,
+          0
+        ],
+        "scabbard": [
+          6,
+          -0.3,
+          0
+        ],
+        "scabbardVisible": false,
+        "tip": [
+          0.95,
+          -1.7449999999999999,
+          4.163336342344337e-17
+        ],
+        "effects": {
+          "mouth": [
+            1.057219621964839,
+            -4.736399479671864,
+            -0.027377656002673997
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 0.988,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1.2246467991473532e-16
+          },
+          "exposed": 1
+        },
+        "impact": {
+          "mode": "settled",
+          "phase": 1,
+          "count": 0,
+          "armed": false
+        },
+        "ambientPaused": true,
+        "ambientTime": 0,
+        "grove": {
+          "reveal": 1,
+          "stalks": 180,
+          "leaves": 6300,
+          "ambientTime": 0,
+          "innerRadius": 26
+        },
+        "exploration": {
+          "origin": [
+            -0.55,
+            0.55,
+            0
+          ],
+          "minimumDistance": 5.7249836244307275,
+          "maximumDistance": 15.853800806115862,
+          "panRadius": 1
+        }
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  },
+  {
+    "name": "wide",
+    "width": 1809,
+    "height": 685,
+    "errors": [],
+    "consoleErrors": [],
+    "failed": [],
+    "state": {
+      "view": "3d",
+      "chapter": 5,
+      "progress": 1,
+      "exploring": false,
+      "pose": {
+        "position": [
+          0.2,
+          1.7,
+          8.7
+        ],
+        "target": [
+          -0.55,
+          0.55,
+          0
+        ],
+        "fov": 36
+      },
+      "stats": null,
+      "choreography": {
+        "progress": 1,
+        "rotation": [
+          -0.08271338415436376,
+          0.09328603982595819,
+          -0.658257086887238,
+          0.7423973453737893
+        ],
+        "sword": [
+          0,
+          -9.797174393178826e-18,
+          0
+        ],
+        "scabbard": [
+          6,
+          -0.3,
+          0
+        ],
+        "scabbardVisible": false,
+        "tip": [
+          0.95,
+          -1.7449999999999999,
+          4.163336342344337e-17
+        ],
+        "effects": {
+          "mouth": [
+            1.057219621964839,
+            -4.736399479671864,
+            -0.027377656002673997
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 0.988,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1.2246467991473532e-16
+          },
+          "exposed": 1
+        },
+        "impact": {
+          "mode": "settled",
+          "phase": 1,
+          "count": 0,
+          "armed": false
+        },
+        "ambientPaused": true,
+        "ambientTime": 0,
+        "grove": {
+          "reveal": 1,
+          "stalks": 180,
+          "leaves": 6300,
+          "ambientTime": 0,
+          "innerRadius": 26
+        },
+        "exploration": {
+          "origin": [
+            -0.55,
+            0.55,
+            0
+          ],
+          "minimumDistance": 5.7249836244307275,
+          "maximumDistance": 15.853800806115862,
+          "panRadius": 1
+        }
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  },
+  {
+    "name": "portrait",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "consoleErrors": [],
+    "failed": [],
+    "state": {
+      "view": "3d",
+      "chapter": 5,
+      "progress": 1,
+      "exploring": false,
+      "pose": {
+        "position": [
+          0.35,
+          1.3,
+          9.8
+        ],
+        "target": [
+          0,
+          0.6,
+          0
+        ],
+        "fov": 43
+      },
+      "stats": null,
+      "choreography": {
+        "progress": 1,
+        "rotation": [
+          -0.08271338415436376,
+          0.09328603982595819,
+          -0.658257086887238,
+          0.7423973453737893
+        ],
+        "sword": [
+          0,
+          -9.797174393178826e-18,
+          0
+        ],
+        "scabbard": [
+          6,
+          -0.3,
+          0
+        ],
+        "scabbardVisible": false,
+        "tip": [
+          0.95,
+          -1.7449999999999999,
+          4.163336342344337e-17
+        ],
+        "effects": {
+          "mouth": [
+            1.057219621964839,
+            -4.736399479671864,
+            -0.027377656002673997
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 0.988,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1.2246467991473532e-16
+          },
+          "exposed": 1
+        },
+        "impact": {
+          "mode": "settled",
+          "phase": 1,
+          "count": 0,
+          "armed": false
+        },
+        "ambientPaused": true,
+        "ambientTime": 0,
+        "grove": {
+          "reveal": 1,
+          "stalks": 90,
+          "leaves": 3150,
+          "ambientTime": 0,
+          "innerRadius": 26
+        },
+        "exploration": {
+          "origin": [
+            0,
+            0.6,
+            0
+          ],
+          "minimumDistance": 6.390280216860605,
+          "maximumDistance": 17.69616060053706,
+          "panRadius": 1
+        }
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  },
+  {
+    "name": "landscape",
+    "width": 844,
+    "height": 390,
+    "errors": [],
+    "consoleErrors": [],
+    "failed": [],
+    "state": {
+      "view": "3d",
+      "chapter": 5,
+      "progress": 1,
+      "exploring": false,
+      "pose": {
+        "position": [
+          0.2,
+          1.7,
+          8.7
+        ],
+        "target": [
+          -0.55,
+          0.55,
+          0
+        ],
+        "fov": 36
+      },
+      "stats": null,
+      "choreography": {
+        "progress": 1,
+        "rotation": [
+          -0.08271338415436376,
+          0.09328603982595819,
+          -0.658257086887238,
+          0.7423973453737893
+        ],
+        "sword": [
+          0,
+          -9.797174393178826e-18,
+          0
+        ],
+        "scabbard": [
+          6,
+          -0.3,
+          0
+        ],
+        "scabbardVisible": false,
+        "tip": [
+          0.95,
+          -1.7449999999999999,
+          4.163336342344337e-17
+        ],
+        "effects": {
+          "mouth": [
+            1.057219621964839,
+            -4.736399479671864,
+            -0.027377656002673997
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 0.988,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1.2246467991473532e-16
+          },
+          "exposed": 1
+        },
+        "impact": {
+          "mode": "settled",
+          "phase": 1,
+          "count": 0,
+          "armed": false
+        },
+        "ambientPaused": true,
+        "ambientTime": 0,
+        "grove": {
+          "reveal": 1,
+          "stalks": 180,
+          "leaves": 6300,
+          "ambientTime": 0,
+          "innerRadius": 26
+        },
+        "exploration": {
+          "origin": [
+            -0.55,
+            0.55,
+            0
+          ],
+          "minimumDistance": 5.7249836244307275,
+          "maximumDistance": 15.853800806115862,
+          "panRadius": 1
+        }
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  },
+  {
+    "name": "compact",
+    "width": 320,
+    "height": 568,
+    "errors": [],
+    "consoleErrors": [],
+    "failed": [],
+    "state": {
+      "view": "3d",
+      "chapter": 5,
+      "progress": 1,
+      "exploring": false,
+      "pose": {
+        "position": [
+          0.35,
+          1.3,
+          9.8
+        ],
+        "target": [
+          0,
+          0.6,
+          0
+        ],
+        "fov": 43
+      },
+      "stats": null,
+      "choreography": {
+        "progress": 1,
+        "rotation": [
+          -0.08271338415436376,
+          0.09328603982595819,
+          -0.658257086887238,
+          0.7423973453737893
+        ],
+        "sword": [
+          0,
+          -9.797174393178826e-18,
+          0
+        ],
+        "scabbard": [
+          6,
+          -0.3,
+          0
+        ],
+        "scabbardVisible": false,
+        "tip": [
+          0.95,
+          -1.7449999999999999,
+          4.163336342344337e-17
+        ],
+        "effects": {
+          "mouth": [
+            1.057219621964839,
+            -4.736399479671864,
+            -0.027377656002673997
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 0.988,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1.2246467991473532e-16
+          },
+          "exposed": 1
+        },
+        "impact": {
+          "mode": "settled",
+          "phase": 1,
+          "count": 0,
+          "armed": false
+        },
+        "ambientPaused": true,
+        "ambientTime": 0,
+        "grove": {
+          "reveal": 1,
+          "stalks": 90,
+          "leaves": 3150,
+          "ambientTime": 0,
+          "innerRadius": 26
+        },
+        "exploration": {
+          "origin": [
+            0,
+            0.6,
+            0
+          ],
+          "minimumDistance": 6.390280216860605,
+          "maximumDistance": 17.69616060053706,
+          "panRadius": 1
+        }
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  }
+]
