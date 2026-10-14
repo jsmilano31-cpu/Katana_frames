@@ -1,0 +1,202 @@
+[
+  {
+    "name": "Desktop 1440 × 900",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "asset": "Official Katana by J.AkioHonda",
+    "measurements": [
+      {
+        "fps": 89.49552522373867,
+        "dpr": 1,
+        "drawCalls": 30,
+        "triangles": 21942
+      },
+      {
+        "fps": 103.18528488111251,
+        "dpr": 1,
+        "drawCalls": 54,
+        "triangles": 136522
+      },
+      {
+        "fps": 108.49999999999996,
+        "dpr": 1,
+        "drawCalls": 29,
+        "triangles": 19062
+      }
+    ],
+    "effects": [
+      {
+        "phase": "awakening and mist",
+        "fps": 164.00797607178473,
+        "dpr": 1,
+        "drawCalls": 38,
+        "triangles": 22454
+      },
+      {
+        "phase": "repeated landing bursts",
+        "measurements": [
+          {
+            "reportedStats": {
+              "fps": 125.5980861244019,
+              "dpr": 1,
+              "drawCalls": 51,
+              "triangles": 136330
+            },
+            "fps": 98.8620199146515
+          },
+          {
+            "reportedStats": {
+              "fps": 93.22033898305094,
+              "dpr": 1,
+              "drawCalls": 52,
+              "triangles": 137188
+            },
+            "fps": 100.98854988976586
+          },
+          {
+            "reportedStats": {
+              "fps": 98.99505024748777,
+              "dpr": 1,
+              "drawCalls": 56,
+              "triangles": 137382
+            },
+            "fps": 104.11502231036208
+          }
+        ],
+        "method": "Three native-scroll landings; frame timings synchronized with gl.finish()."
+      },
+      {
+        "phase": "planted ambient",
+        "fps": 106.84822582248293,
+        "dpr": 1,
+        "drawCalls": 48,
+        "triangles": 136324
+      },
+      {
+        "phase": "Field of blades camera orbit",
+        "fps": 121.70790103750988,
+        "reportedStats": {
+          "fps": 123.13674659753734,
+          "dpr": 1,
+          "drawCalls": 48,
+          "triangles": 136324
+        },
+        "grove": {
+          "reveal": 1,
+          "stalks": 180,
+          "leaves": 6300,
+          "ambientTime": 31.881800000000737,
+          "innerRadius": 26
+        },
+        "field": {
+          "count": 160,
+          "reveal": 1,
+          "faded": 0,
+          "trianglesPerSword": 368
+        },
+        "method": "Five-second real-model orbit with the complete silhouette field, active ambient effects, and gl.finish() frame synchronization."
+      }
+    ],
+    "limitation": "Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone."
+  },
+  {
+    "name": "Pixel 7 emulation",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "asset": "Official Katana by J.AkioHonda",
+    "measurements": [
+      {
+        "fps": 93.92016785732109,
+        "dpr": 1.25,
+        "drawCalls": 23,
+        "triangles": 21742
+      },
+      {
+        "fps": 151.99240037998095,
+        "dpr": 1.25,
+        "drawCalls": 43,
+        "triangles": 78142
+      },
+      {
+        "fps": 154.98450154984488,
+        "dpr": 1.25,
+        "drawCalls": 20,
+        "triangles": 18734
+      }
+    ],
+    "effects": [
+      {
+        "phase": "awakening and mist",
+        "fps": 164.99999999999991,
+        "dpr": 1.25,
+        "drawCalls": 27,
+        "triangles": 21998
+      },
+      {
+        "phase": "repeated landing bursts",
+        "measurements": [
+          {
+            "reportedStats": {
+              "fps": 141.07676969092714,
+              "dpr": 1.25,
+              "drawCalls": 41,
+              "triangles": 78014
+            },
+            "fps": 119.46241911398697
+          },
+          {
+            "reportedStats": {
+              "fps": 132.59558347041556,
+              "dpr": 1.25,
+              "drawCalls": 45,
+              "triangles": 78638
+            },
+            "fps": 144.2888620371031
+          },
+          {
+            "reportedStats": {
+              "fps": 141.0697373012313,
+              "dpr": 1.25,
+              "drawCalls": 48,
+              "triangles": 78768
+            },
+            "fps": 147.92688997937574
+          }
+        ],
+        "method": "Three native-scroll landings; frame timings synchronized with gl.finish()."
+      },
+      {
+        "phase": "planted ambient",
+        "fps": 165.0132110274694,
+        "dpr": 1.25,
+        "drawCalls": 41,
+        "triangles": 78014
+      },
+      {
+        "phase": "Field of blades camera orbit",
+        "fps": 163.6065442617705,
+        "reportedStats": {
+          "fps": 164.05704597586572,
+          "dpr": 1.25,
+          "drawCalls": 41,
+          "triangles": 78014
+        },
+        "grove": {
+          "reveal": 1,
+          "stalks": 90,
+          "leaves": 3150,
+          "ambientTime": 31.884900000001096,
+          "innerRadius": 26
+        },
+        "field": {
+          "count": 80,
+          "reveal": 1,
+          "faded": 0,
+          "trianglesPerSword": 368
+        },
+        "method": "Five-second real-model orbit with the complete silhouette field, active ambient effects, and gl.finish() frame synchronization."
+      }
+    ],
+    "limitation": "Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone."
+  }
+]

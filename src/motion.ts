@@ -53,7 +53,12 @@ export function sampleChoreography(progress:number) {
   const index=Math.max(0,Math.min(choreography.length-2,choreography.findIndex((_,i)=>i<choreography.length-1&&p<=choreography[i+1].progress)));
   const a=choreography[index],b=choreography[index+1],t=ease((p-a.progress)/(b.progress-a.progress));
   const scalar=(key:'scabbardOpacity'|'light'|'ink'|'reflection')=>a[key]+(b[key]-a[key])*t;
-  return {fromRotation:a.rotation,toRotation:b.rotation,rotationMix:t,sword:(()=>{const v=[...mix(a.sword,b.sword,t)] as [number,number,number];v[1]-=sceneConfig.motion.drawDip*Math.sin(Math.PI*clamp01((p-sceneConfig.motion.drawStart)/(sceneConfig.motion.drawEnd-sceneConfig.motion.drawStart)));return v;})(),scabbard:mix(a.scabbard,b.scabbard,t),scabbardOpacity:scalar('scabbardOpacity'),light:scalar('light'),ink:scalar('ink'),reflection:scalar('reflection')};
+  const sword=[...mix(a.sword,b.sword,t)] as [number,number,number],scabbard=[...mix(a.scabbard,b.scabbard,t)] as [number,number,number];
+  const axis=sceneConfig.model.collarFrame.axis;
+  const aligned=1-ease((p-sceneConfig.motion.drawEnd)/.09);
+  sword[1]+=sword[0]*axis[1]/axis[0]*aligned;
+  scabbard[1]+=scabbard[0]*axis[1]/axis[0]*aligned;
+  return {fromRotation:a.rotation,toRotation:b.rotation,rotationMix:t,sword,scabbard,scabbardOpacity:scalar('scabbardOpacity'),light:scalar('light'),ink:scalar('ink'),reflection:scalar('reflection')};
 }
 export function chapterOpacity(progress:number,index:number):number {
   const c=chapters[index],p=clamp01(progress);

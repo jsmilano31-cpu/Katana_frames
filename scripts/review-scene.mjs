@@ -33,7 +33,7 @@ try{
       await page.evaluate(()=>window.__katana.captureProgress(1));
     }
     report.push({name,width,height,status:response.status(),errors,consoleErrors,failed,final:await page.evaluate(()=>window.__katana.state()),overflow:await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),bottomGap:await page.evaluate(()=>document.documentElement.scrollHeight-document.querySelector('.story').getBoundingClientRect().height)});
-    await page.locator('.explore-button').click();
+    await page.locator('.explore-button').focus();await page.keyboard.press('Enter');
     await page.screenshot({path:`${output}/${name}-explore.png`});
     for(let i=0;i<8;i++)await page.keyboard.press('ArrowRight');
     await page.waitForTimeout(500);

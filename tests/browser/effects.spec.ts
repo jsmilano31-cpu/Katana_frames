@@ -1,3 +1,4 @@
+import {enterViewer,viewerControl} from './viewer';
 import { test, expect } from '@playwright/test';
 import { sceneConfig } from '../../src/config';
 
@@ -22,7 +23,7 @@ test('wind rewinds cleanly and planted contact survives exploration and resizing
   await expect(page.locator('body')).toHaveAttribute('data-view','3d');
   await expect(page.locator('.explore-button')).toBeEnabled();
   const tip=await page.evaluate(()=>window.__katana.state().choreography!.tip);
-  await page.locator('.explore-button').click();
+  await enterViewer(page);
   for(let i=0;i<20;i++)await page.keyboard.press('ArrowDown');
   await page.keyboard.press('ArrowRight');
   const orbited=await page.evaluate(()=>window.__katana.state());
@@ -31,9 +32,9 @@ test('wind rewinds cleanly and planted contact survives exploration and resizing
   await page.setViewportSize({width:844,height:390});
   await page.waitForTimeout(350);
   expect(await page.evaluate(()=>window.__katana.state().choreography!.tip)).toEqual(tip);
-  await page.locator('.reset-button').click();
-  await page.locator('.exit-button').click();
-  await expect(page.locator('.explore-panel')).toBeHidden();
+  await viewerControl(page,'.reset-button');
+  await viewerControl(page,'.exit-button');
+  await expect(page.locator('.explore-ui')).toBeHidden();
   expect(await page.evaluate(()=>window.__katana.state().choreography!.tip)).toEqual(tip);
 });
 
@@ -101,8 +102,8 @@ test('pausing during impact settles the scene and keeps exploration available',a
   await page.locator('.ambient-control').click();
   expect(await page.evaluate(()=>window.__katana.state().choreography!.impact.mode)).toBe('settled');
   await expect(page.locator('.explore-button')).toBeEnabled();
-  await page.locator('.explore-button').click();
-  await expect(page.locator('.explore-panel')).toBeVisible();
+  await enterViewer(page);
+  await expect(page.locator('.explore-ui')).toBeVisible();
   await page.keyboard.press('Escape');
 });
 

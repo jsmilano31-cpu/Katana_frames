@@ -17,6 +17,7 @@ import { WindEffects } from './effects';
 import { awakeningMaterial } from './awakening';
 import { LandingImpact } from './impact';
 import { MoonlitGrove } from './grove';
+import { SwordField } from './sword-field';
 
 export interface SceneStats { fps: number; dpr: number; drawCalls: number; triangles: number }
 
@@ -31,7 +32,7 @@ export class KatanaScene {
   private ink = new Group();
   private sheathMaterials: Material[] = [];
   private bladeMaterials: Material[] = [];
-  private mouthX = -1;
+  private mouthAxis=new Vector3(...sceneConfig.model.collarFrame.axis).normalize();
   private mouth = new Vector3();
   private bladeTip = new Vector3(2,0,0);
   private bladeGuide=[new Vector3(-1,0,0),new Vector3(2,0,0)];
@@ -49,6 +50,7 @@ export class KatanaScene {
   private authoredCamera=new Vector3();
   private effects = new WindEffects();
   private grove = new MoonlitGrove();
+  private field:SwordField|null=null;
   private groveFog = new FogExp2('#14262f',0);
   private exploreOrigin = new Vector3();
   private exploreUp = new Vector3(0,1,0);
@@ -130,13 +132,13 @@ export class KatanaScene {
     const center = bounds.getCenter(new Vector3());
     const scale = sceneConfig.model.length / length;
     const normalize = new Matrix4().makeScale(scale, scale, scale).multiply(new Matrix4().makeTranslation(-center.x,-center.y,-center.z));
-    const mouth = new Vector3(...sceneConfig.model.sheathMouth);
-    const fitted = new Vector3(...sceneConfig.model.sheathedMouth);
+    const mouth = new Vector3(...sceneConfig.model.sheathFrame.center);
+    const fitted = new Vector3(...sceneConfig.model.collarFrame.center);
+    const fitRotation=new Quaternion().setFromUnitVectors(new Vector3(...sceneConfig.model.sheathFrame.axis).normalize(),this.mouthAxis);
     const align = new Matrix4().makeTranslation(fitted.x,fitted.y,fitted.z)
-      .multiply(new Matrix4().makeRotationZ(sceneConfig.model.sheathAngle))
+      .multiply(new Matrix4().makeRotationFromQuaternion(fitRotation))
       .multiply(new Matrix4().makeTranslation(-mouth.x,-mouth.y,-mouth.z));
     this.mouth.copy(fitted).sub(center).multiplyScalar(scale);
-    this.mouthX = this.mouth.x;
     for (const object of meshes) {
       const sheath = sceneConfig.model.sheathMeshes.test(object.name);
       const geometry = object.geometry.clone();
@@ -187,16 +189,19 @@ export class KatanaScene {
         }
       }
     }
+    this.field=new SwordField(this.bladeGuide,this.bladeTip);this.grove.root.add(this.field.root);
     this.ink = await createInk(); this.scene.add(this.ink);
     this.setStory(this.storyProgress);
     await this.renderer.compileAsync(this.scene, this.camera);
     // Warm the finale's instanced shaders during loading, rather than at impact.
     const groveVisible=this.grove.root.visible;
+    this.field?.setProgress(1);
     this.grove.root.visible=true;
     await this.renderer.compileAsync(this.scene,this.camera);
     // Upload the grove buffers and local textures while the loading poster is visible.
     this.renderer.render(this.scene,this.camera);
     this.grove.root.visible=groveVisible;
+    this.field?.setProgress(this.storyProgress);
     this.renderer.render(this.scene,this.camera);
     this.dirty = true;
   }
@@ -214,6 +219,7 @@ export class KatanaScene {
     if(this.captureMode)this.impact.restore(progress);else this.impact.observe(progress,this.ambientPaused);
     const state = sampleChoreography(progress);
     this.grove.setProgress(progress);
+    this.field?.setProgress(progress);
     this.groveFog.density=sceneConfig.grove.fogDensity*this.grove.diagnostics().reveal;
     this.qa.setFromEuler(this.rotation.set(...state.fromRotation));
     this.qb.setFromEuler(this.rotation.set(...state.toRotation));
@@ -224,8 +230,9 @@ export class KatanaScene {
     this.sheathMaterials.forEach(material => { material.opacity = state.scabbardOpacity; });
     this.model.updateMatrixWorld(true);
     // Expose only the portion past the saya mouth while the curved blade is drawn.
-    this.bladePlane.set(new Vector3(-1,0,0),this.mouthX+state.scabbard[0]).applyMatrix4(this.model.matrixWorld);
-    this.exposed=clamp01((this.mouthX+state.scabbard[0]-state.sword[0]-this.bladeMinX)/(this.bladeTip.x-this.bladeMinX));
+    const mouthPoint=this.mouth.clone().add(this.scabbard.position);
+    this.bladePlane.set(this.mouthAxis.clone().negate(),mouthPoint.dot(this.mouthAxis)).applyMatrix4(this.model.matrixWorld);
+    this.exposed=this.exposure(this.sword.position,this.scabbard.position);
     const awakening=sampleAwakening(progress,this.exposed);
     if(this.aura){
       this.aura.uniforms.uPulse.value=awakening.pulsePosition;
@@ -260,7 +267,7 @@ export class KatanaScene {
     this.dirty = true;
   }
 
-  storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible,tip:this.sword.localToWorld(this.bladeTip.clone()).toArray(),effects:{...this.effects.diagnostics(),awakening:sampleAwakening(this.storyProgress,this.exposed),exposed:this.exposed},impact:this.impact.snapshot(),ambientPaused:this.ambientPaused,ambientTime:this.ambientTime,grove:this.grove.diagnostics(),exploration:{origin:this.exploreOrigin.toArray(),minimumDistance:this.controls.minDistance,maximumDistance:this.controls.maxDistance,panRadius:sceneConfig.model.length*sceneConfig.explore.panRadius} }; }
+  storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible,tip:this.sword.localToWorld(this.bladeTip.clone()).toArray(),effects:{...this.effects.diagnostics(),awakening:sampleAwakening(this.storyProgress,this.exposed),exposed:this.exposed},impact:this.impact.snapshot(),ambientPaused:this.ambientPaused,ambientTime:this.ambientTime,grove:this.grove.diagnostics(),field:this.field?.diagnostics(),fit:{mouth:this.mouth.toArray(),axis:this.mouthAxis.toArray()},exploration:{origin:this.exploreOrigin.toArray(),minimumDistance:this.controls.minDistance,maximumDistance:this.controls.maxDistance,panRadius:sceneConfig.model.length*sceneConfig.explore.panRadius} }; }
 
   get impactSettled(){return this.impact.mode!=='playing';}
   setImpactCallback(callback:()=>void){this.onImpact=callback;}
@@ -291,12 +298,17 @@ export class KatanaScene {
       const state=sampleChoreography(p);
       const q=new Quaternion().setFromEuler(new Euler(...state.fromRotation)).slerp(new Quaternion().setFromEuler(new Euler(...state.toRotation)),state.rotationMix);
       const sword=new Vector3(...state.sword);
-      const exposed=clamp01((this.mouthX+state.scabbard[0]-state.sword[0]-this.bladeMinX)/(this.bladeTip.x-this.bladeMinX));
+      const exposed=this.exposure(sword,new Vector3(...state.scabbard));
       const at=exposed*(this.bladeGuide.length-1),index=Math.min(this.bladeGuide.length-2,Math.floor(at));
       const tip=new Vector3().lerpVectors(this.bladeGuide[index],this.bladeGuide[index+1],at-index);
       points.push(tip.add(sword).applyQuaternion(q).add(this.modelPosition(p,q,sword)));
     }
     return points;
+  }
+
+  private exposure(sword:Vector3,scabbard:Vector3){
+    const start=this.bladeGuide[0].dot(this.mouthAxis),end=this.bladeTip.dot(this.mouthAxis);
+    return clamp01((this.mouth.clone().add(scabbard).sub(sword).dot(this.mouthAxis)-start)/(end-start));
   }
 
   private updateEffects(){this.effects.update(this.ambientTime,this.captureImpactPhase??this.impact.phase,this.movement);}
@@ -320,6 +332,7 @@ export class KatanaScene {
     this.camera.updateProjectionMatrix();
     this.dirty = true;
     this.grove.setProgress(this.storyProgress);
+    this.field?.setProgress(this.storyProgress);
     // Never exceed the portrait performance cap after rotating/resizing.
     const cap = Math.min(devicePixelRatio, innerWidth < sceneConfig.breakpoint ? sceneConfig.renderer.mobileDpr : sceneConfig.renderer.desktopDpr);
     if (this.pixelRatio > cap) this.setPixelRatio(cap);
@@ -497,6 +510,7 @@ export class KatanaScene {
     if (!this.dirty) { this.lastFrame = 0; return; }
     this.effects.faceCamera(this.camera);
     this.grove.update(this.ambientTime,this.camera);
+    this.field?.update(this.camera,this.sword.localToWorld(this.bladeTip.clone()),this.sword.localToWorld(new Vector3(-sceneConfig.model.length/2,this.bladeGuide[0].y,0)));
     if (this.lastFrame) {
       const seconds = Math.min((time - this.lastFrame) / 1000, 0.2);
       this.frameSeconds += seconds;
@@ -524,6 +538,7 @@ export class KatanaScene {
     this.disposed = true;
     this.renderer.setAnimationLoop(null);
     this.effects.dispose();
+    this.field?.dispose();
     this.grove.dispose();
     this.controls.removeEventListener('change', this.markDirty);
     this.controls.dispose();

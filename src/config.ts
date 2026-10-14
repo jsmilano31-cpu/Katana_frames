@@ -62,8 +62,10 @@ export const sceneConfig = {
   framing:{compactPortraitHeight:700,compactHeroDistance:1.6,compactHeroTargetX:-.4},
   model:{length:4,presentationNode:'Sketchfab_model',sourceRotation:[-Math.PI/2,0,0] as Vec3,
     sheathMeshes:/saya|scabbard|sheath|kurikata/i,
-    sheathMouth:[-1.235,-.247,0] as Vec3,sheathedMouth:[-1.235,.111,0] as Vec3,sheathAngle:.032},
-  motion:{cameraArcs:[.08,.12,.12,.35,.22,.1,-.12,-.15,0,0],cameraLift:.15,textFade:.025,lightCopyAt:.79,lightCopyFade:.018,drawDip:.08,drawStart:.12,drawEnd:.38},
+    // Source-space measurements of Saya and Habaki cross-sections, before normalization.
+    sheathFrame:{center:[-1.23,-.315725,0] as Vec3,axis:[.991174,.132572,0] as Vec3},
+    collarFrame:{center:[-1.23,.106985,0] as Vec3,axis:[.991172,.132589,0] as Vec3}},
+  motion:{cameraArcs:[.08,.12,.12,.35,.22,.1,-.12,-.15,0,0],cameraLift:.15,textFade:.025,lightCopyAt:.79,lightCopyFade:.018,drawDip:0,drawStart:.12,drawEnd:.38},
   effects:{
     ground:[.95,-1.7,0] as Vec3,embedDepth:.045,
     alignStart:.9,alignEnd:.94,impact:.965,burstEnd:.995,dropHeight:.65,
@@ -85,6 +87,10 @@ export const sceneConfig = {
   explore:{minimumDistance:.65,maximumDistance:1.8,panRadius:.25,groundClearance:.38,
     minPolarAngle:Math.PI*.08,maxPolarAngle:Math.PI*.49,transitionSeconds:.28,
     panStep:.12,zoomStep:.88},
+  swordField:{desktopCount:160,mobileCount:80,innerRadius:5.5,outerRadius:24.5,
+    minimumScale:.64,maximumScale:.91,maximumLean:.22,color:'#050b0f',
+    nearFadeStart:1.1,nearFadeEnd:.35,occlusionRadius:.5,minimumOcclusionOpacity:.12},
+  interaction:{tapTravel:10,tapMilliseconds:450},
   lighting:{environment:.85,paperBoost:.25,reflectionRotation:.7,keyStart:[-3,4,3.5] as Vec3,keyTravel:5,rimStart:[3,-1,-3] as Vec3,rimTravel:-3},
   renderer:{desktopDpr:1.75,mobileDpr:1.25,minimumDpr:.75,exposure:1.05},
 } as const;

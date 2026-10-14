@@ -172,6 +172,25 @@ body{background:var(--scene-bg);color:var(--ivory)}
 .explore-panel .effects-button{color:#c1e2df}
 .zoom-button{min-width:40px;min-height:44px;border:1px solid var(--line);background:#23383c;color:#dcf3ed;font-size:19px}
 .zoom-button:hover{background:#365054}
+.keyboard-entry{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.final-actions{position:relative}
+.keyboard-entry:focus-visible{position:absolute;top:calc(100% + 8px);left:0;width:auto;height:auto;clip-path:none;padding:12px 16px;background:#b3ddd7;color:#10272c;z-index:2}
+.scene-entry-hint{margin:0 0 6px;font-size:11px;line-height:1.6;color:#b5cfcd;letter-spacing:.02em}
+.explore-ui{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:60;--red:#8adbcf;--line:rgba(180,220,220,.2)}
+.viewer-menu-toggle{display:grid;place-items:center;margin-left:auto;width:44px;height:44px;border:1px solid var(--line);border-radius:50%;background:rgba(12,24,29,.65);color:#c5e7e1;backdrop-filter:blur(8px)}
+.viewer-menu-toggle svg{width:22px;height:22px}
+.viewer-menu{position:absolute;right:0;bottom:56px;width:245px;max-width:calc(100vw - 36px);max-height:calc(100svh - 96px);overflow:auto;background:rgba(10,22,27,.94);border:1px solid var(--line);padding:8px;backdrop-filter:blur(14px);color:#d6e6e3}
+.viewer-menu>button{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;padding:10px 12px;margin:0;border:0;background:none;font-size:11px;text-align:left}
+.viewer-menu>button:hover,.viewer-help summary:hover{background:#20343a}
+.viewer-menu svg{width:15px;height:15px;color:#8adbcf}
+.viewer-help{border-block:1px solid var(--line);font-size:11px;margin:3px 0}
+.viewer-help summary{padding:14px 12px;cursor:pointer;min-height:44px}
+.viewer-help p{font-size:10px;color:#a3bdc0;line-height:1.7;margin:0;padding:0 12px 12px}
+.viewer-direction-controls{display:flex;flex-wrap:wrap;gap:4px;padding:0 8px 12px}
+.viewer-direction-controls button{min-width:44px;min-height:44px}
+.is-exploring .view-status{visibility:hidden}
+.viewer-pointer-entry canvas:focus-visible{outline:none}
+@media(max-width:760px){.scene-entry-hint{font-size:9px;max-width:175px}.explore-ui{right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom))}}
 .is-exploring .explore-panel{width:760px;max-width:calc(100vw - 28px)}
 .explore-toolbar .effects-button{min-height:44px}
 @media(max-width:760px){.is-exploring .explore-panel{width:calc(100vw - 28px)}.zoom-button{min-width:36px}}

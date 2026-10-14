@@ -1,3 +1,4 @@
+import {enterViewer,openViewerMenu,viewerControl} from './viewer';
 import { expect, test, type Page } from '@playwright/test';
 import { testGlb } from '../fixture';
 import { chapters } from '../../src/config';
@@ -77,18 +78,18 @@ test('exploration rotates by keyboard and drag, resets, and restores the authore
   await waitForProgress(page, 1);
   const authored = await page.evaluate(() => window.__katana.state().pose);
   const scroll = await page.evaluate(() => scrollY);
-  await page.locator('.explore-button').click();
-  await expect(page.locator('.explore-panel')).toBeVisible();
+  await enterViewer(page);
+  await expect(page.locator('.explore-ui')).toBeVisible();
   await expect(page.locator('#katana-canvas')).toBeFocused();
   await page.keyboard.press('Shift+Tab');
-  await expect(page.locator('.exit-button')).toBeFocused();
+  await expect(page.locator('.viewer-menu-toggle')).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(page.locator('#katana-canvas')).toBeFocused();
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('ArrowUp');
   const rotated = await page.evaluate(() => window.__katana.state().pose);
   expect(rotated.position).not.toEqual(authored.position);
-  await page.locator('.reset-button').click();
+  await viewerControl(page,'.reset-button');
   const reset = await page.evaluate(() => window.__katana.state().pose);
   reset.position.forEach((value, axis) => expect(value).toBeCloseTo(authored.position[axis], 1));
   await page.mouse.move(210, 220);
@@ -99,7 +100,7 @@ test('exploration rotates by keyboard and drag, resets, and restores the authore
   await expect.poll(async () => JSON.stringify(await page.evaluate(() => window.__katana.state().pose.position))).not.toBe(JSON.stringify(beforeDrag));
   await page.locator('#katana-canvas').focus();
   await page.keyboard.press('Escape');
-  await expect(page.locator('.explore-panel')).toBeHidden();
+  await expect(page.locator('.explore-ui')).toBeHidden();
   await expect(page.locator('.explore-button')).toBeFocused();
   const restored = await page.evaluate(() => window.__katana.state().pose);
   restored.position.forEach((value, axis) => expect(value).toBeCloseTo(authored.position[axis], 2));
@@ -154,10 +155,10 @@ test('a runtime reduced-motion change exits exploration and keeps navigation usa
   await expect(page.locator('body')).toHaveAttribute('data-view', '3d');
   await page.locator('[data-nav="5"]').click();
   await waitForProgress(page, 1);
-  await page.locator('.explore-button').click();
+  await enterViewer(page);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('.status-text')).toHaveText('Still-image view · reduced motion');
-  await expect(page.locator('.explore-panel')).toBeHidden();
+  await expect(page.locator('.explore-ui')).toBeHidden();
   await page.locator('[data-nav="1"]').click();
   await expect(page.locator('[data-nav="1"]')).toHaveAttribute('aria-current', 'step');
 });
@@ -169,7 +170,7 @@ test('portrait exploration responds to a touch drag and exits through its toolba
   await expect(page.locator('body')).toHaveAttribute('data-view', '3d');
   await page.locator('[data-nav="5"]').click();
   await waitForProgress(page, 1);
-  await page.locator('.explore-button').tap();
+  await enterViewer(page);
   const before = await page.evaluate(() => window.__katana.state().pose.position);
   const cdp = await context.newCDPSession(page);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 130, y: 220 }] });
@@ -180,8 +181,8 @@ test('portrait exploration responds to a touch drag and exits through its toolba
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
   await expect.poll(async () => JSON.stringify(await page.evaluate(() => window.__katana.state().pose.position))).not.toBe(JSON.stringify(before));
-  await page.locator('.exit-button').tap();
-  await expect(page.locator('.explore-panel')).toBeHidden();
+  await openViewerMenu(page);await page.locator('.exit-button').tap();
+  await expect(page.locator('.explore-ui')).toBeHidden();
   await waitForProgress(page, 1);
 });
 
@@ -201,10 +202,10 @@ test('the official katana loads with local textures and all six authored views',
     expect(state.pose.position.every(Number.isFinite)).toBe(true);
     expect(state.chapter).toBe(index);
   }
-  await page.locator('.explore-button').click();
+  await enterViewer(page);
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('Escape');
-  await expect(page.locator('.explore-panel')).toBeHidden();
+  await expect(page.locator('.explore-ui')).toBeHidden();
   await page.locator('[data-nav="1"]').click();
   await waitForProgress(page,chapters[1].progress);
   const draw=await page.evaluate(()=>window.__katana.state().choreography!);

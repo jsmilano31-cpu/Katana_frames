@@ -7,6 +7,11 @@ import type { ScrollJourney } from './scroll';
 const arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6" /></svg>';
 const down = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v17m-6-6 6 6 6-6" /></svg>';
 const replay = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 1.4 8M4 4v6h6" /></svg>';
+let initialHashIndex:number|null=chapters.findIndex(chapter=>`#${chapter.id}`===location.hash);
+if(initialHashIndex<0)initialHashIndex=null;
+// Own initial chapter routing: native fragment scrolling can otherwise target
+// the fixed HTML panel after WebGL replaces the static layout.
+if(initialHashIndex!==null)history.replaceState(null,'',`${location.pathname}${location.search}`);
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <a class="skip-link" href="#presence">Skip to the journey</a>
@@ -35,7 +40,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
               <${index === 0 ? 'h1' : 'h2'} id="title-${chapter.id}">${chapter.title}</${index === 0 ? 'h1' : 'h2'}>
               <p class="chapter-description">${chapter.description}</p>
               ${index === 0 ? `<a class="text-link begin-link" href="#draw">Unfold the story ${arrow}</a>` : ''}
-              ${index === chapters.length - 1 ? `<div class="final-actions"><button class="primary-button explore-button" type="button" disabled>Explore the grove ${arrow}</button><button class="text-link replay-button" type="button">Replay the journey ${replay}</button></div><p class="explore-availability">The grove becomes interactive in the 3D view.</p>` : ''}
+              ${index === chapters.length - 1 ? `<div class="final-actions"><button class="explore-button keyboard-entry" type="button" disabled>Enter the grove</button><p class="scene-entry-hint" hidden>Touch or click the scene to explore</p><button class="text-link replay-button" type="button">Replay the journey ${replay}</button></div><p class="explore-availability">The grove becomes interactive in the 3D view.</p>` : ''}
             </div>
             <div class="chapter-bottom"><span class="chapter-note">${chapter.note}</span><span class="chapter-number">0${index + 1}<span> / 06</span></span></div>
             ${index === 0 ? `<a class="scroll-cue" href="#draw"><span>SCROLL TO DISCOVER</span>${down}</a>` : ''}
@@ -53,20 +58,26 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="view-status" role="status"><span class="status-dot"></span><span class="status-text">Preparing the study</span><button class="retry-button" type="button" hidden>Retry 3D ↗</button></div>
   <div class="live-announcement sr-only" aria-live="polite"></div>
 
-  <section class="explore-panel" aria-label="Explore the moonlit grove" hidden>
-    <p class="explore-heading">Inside the moonlit grove.</p><p class="explore-help" id="explore-help">Drag to orbit · scroll or pinch to zoom · Shift-drag or two-finger drag to pan.<br>Keyboard: arrows orbit · Shift + arrows pan · + / − zoom · R resets · Escape exits.</p>
-    <div class="explore-toolbar">
+  <div class="explore-ui" hidden>
+    <p class="sr-only" id="explore-help">Drag to orbit, scroll or pinch to zoom, Shift-drag or two-finger drag to pan. Arrow keys orbit; Shift and arrows pan; plus and minus zoom; R resets. Escape closes controls or returns to the study.</p>
+    <button class="viewer-menu-toggle" type="button" aria-label="View controls" title="View controls" aria-expanded="false" aria-controls="viewer-menu"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+    <section class="viewer-menu" id="viewer-menu" aria-label="View controls" hidden>
+      <button class="reset-button" type="button">Reset view ${replay}</button>
+      <button class="effects-button" type="button" aria-pressed="false">Pause effects</button>
+      <button class="viewer-replay" type="button">Replay the journey ${replay}</button>
+      <details class="viewer-help"><summary>Controls &amp; keyboard</summary>
+      <p>Drag to orbit. Pinch or scroll to zoom. Two fingers or Shift-drag to pan.<br>Arrows orbit · Shift + arrows pan · + / − zoom · R resets.</p>
+      <div class="viewer-direction-controls">
       <button class="rotate-button" type="button" data-rotate="left" aria-label="Rotate left">←</button>
       <button class="rotate-button" type="button" data-rotate="up" aria-label="Rotate up">↑</button>
       <button class="rotate-button" type="button" data-rotate="down" aria-label="Rotate down">↓</button>
       <button class="rotate-button" type="button" data-rotate="right" aria-label="Rotate right">→</button>
       <button class="zoom-button" type="button" data-zoom="in" aria-label="Zoom in">+</button>
       <button class="zoom-button" type="button" data-zoom="out" aria-label="Zoom out">−</button>
-      <button class="effects-button" type="button" aria-pressed="false">Pause effects</button>
-      <button class="reset-button" type="button">Reset view ${replay}</button>
+      </div></details>
       <button class="exit-button" type="button">Back to the study <span>×</span></button>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <button class="effects-button ambient-control" type="button" aria-pressed="false">Pause effects</button>
 
@@ -87,7 +98,9 @@ const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')]
 const status = $('.status-text');
 const retryButton = $<HTMLButtonElement>('.retry-button');
 const exploreButton = $<HTMLButtonElement>('.explore-button');
-const explorePanel = $('.explore-panel');
+const explorePanel = $('.explore-ui');
+const viewerMenu=$('.viewer-menu');
+const menuToggle=$<HTMLButtonElement>('.viewer-menu-toggle');
 const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
 let scene: KatanaScene | null = null;
 let journey: ScrollJourney | null = null;
@@ -108,6 +121,7 @@ function currentPose(): CameraPose { return sampleCamera(progress, isMobile(),in
 
 function refreshExploreAvailability():void {
   exploreButton.disabled=!scene||progress<sceneConfig.effects.burstEnd||!scene.impactSettled;
+  $('.scene-entry-hint').hidden=exploreButton.disabled||isExploring;
   if(document.body.dataset.view==='3d'&&!isExploring){
     status.textContent=progress>=sceneConfig.effects.impact
       ?(scene?.impactSettled?'Explore or replay':'The blade takes root'):'Scroll to explore';
@@ -163,6 +177,7 @@ function setStaticView(message: string, retry: boolean): void {
   status.textContent = message;
   retryButton.hidden = !retry;
   exploreButton.disabled = true;
+  $('.scene-entry-hint').hidden=true;
   $('.explore-availability').hidden = false;
   panels.forEach(panel => {
     panel.removeAttribute('aria-hidden');
@@ -178,12 +193,18 @@ function setStaticView(message: string, retry: boolean): void {
 }
 
 function goTo(index: number, immediate = false): void {
+  initialHashIndex=null;
   if (isExploring) exitExplore(false);
   clearTimeout(resizeTimer);
   scene?.resize();
   if (journey) journey.goTo(index, immediate || motionQuery.matches);
   else panels[index].scrollIntoView({ behavior: immediate || motionQuery.matches ? 'instant' : 'smooth', block: 'start' });
   history.replaceState(null, '', `#${chapters[index].id}`);
+}
+
+function restoreInitialChapter():void {
+  if(initialHashIndex===null)return;
+  const index=initialHashIndex;initialHashIndex=null;goTo(index,true);
 }
 
 function setPosters(): void {
@@ -212,10 +233,12 @@ async function initialize(): Promise<void> {
     setPosters();
     if (motionQuery.matches) {
       setStaticView('Still-image view · reduced motion', false);
+      restoreInitialChapter();
       return;
     }
     if (manifest.status !== 'ready') {
       setStaticView('Still-image view · 3D unavailable', true);
+      restoreInitialChapter();
       return;
     }
     document.body.classList.add('is-loading');
@@ -240,28 +263,27 @@ async function initialize(): Promise<void> {
     document.body.classList.remove('is-static', 'is-loading');
     document.body.classList.add('is-live');
     document.body.dataset.view = '3d';
-    const hashIndex=chapters.findIndex(chapter=>`#${chapter.id}`===location.hash);
-    scene.prepareEntry((previousChapter>0?previousChapter:hashIndex)===chapters.length-1);
+    const hashIndex=initialHashIndex??chapters.findIndex(chapter=>`#${chapter.id}`===location.hash);
+    const destination=previousChapter>0?previousChapter:hashIndex;
+    scene.prepareEntry(destination===chapters.length-1);
     journey = new Journey(story, updateProgress);
     scene.setStatsCallback(value => { stats = value; });
     status.textContent = 'Scroll to explore';
     refreshExploreAvailability();
     $('.explore-availability').hidden = true;
-    if (previousChapter > 0) journey.goTo(previousChapter, true);
-    else if (location.hash) {
-      const index = chapters.findIndex(chapter => `#${chapter.id}` === location.hash);
-      if (index >= 0) journey.goTo(index, true);
-    }
-    journey.refresh();
+    if(destination>=0){
+      goTo(destination,true);journey.reframe(chapters[destination].progress);
+    }else journey.refresh();
   } catch (error) {
     console.warn('The 3D study could not be loaded:', error);
     setStaticView('Still-image view · 3D unavailable', !motionQuery.matches);
+    restoreInitialChapter();
   } finally {
     isLoading = false;
   }
 }
 
-function enterExplore(): void {
+function enterExplore(input:'pointer'|'keyboard'='keyboard'): void {
   if (!scene || !journey || progress < sceneConfig.effects.burstEnd || !scene.impactSettled || isExploring) return;
   savedScroll = scrollY;
   journey.pause();
@@ -269,9 +291,11 @@ function enterExplore(): void {
   scene.beginExplore(pose);
   isExploring = true;
   document.body.classList.add('is-exploring');
+  document.body.classList.toggle('viewer-pointer-entry',input==='pointer');
   for (const selector of ['.site-header','.chapter-panels','.chapter-nav']) $(selector).inert = true;
   document.body.style.top = `-${savedScroll}px`;
   explorePanel.hidden = false;
+  setMenuOpen(false);
   canvas.tabIndex = 0;
   canvas.setAttribute('role', 'application');
   canvas.setAttribute('aria-label', 'Moonlit grove 3D viewer');
@@ -286,10 +310,12 @@ function exitExplore(returnFocus = true): void {
   if (!isExploring) return;
   isExploring = false;
   document.body.classList.remove('is-exploring');
+  document.body.classList.remove('viewer-pointer-entry');
   for (const selector of ['.site-header','.chapter-panels','.chapter-nav']) $(selector).inert = false;
   document.body.style.removeProperty('top');
   window.scrollTo({ top: savedScroll, behavior: 'instant' });
   explorePanel.hidden = true;
+  setMenuOpen(false);
   canvas.tabIndex = -1;
   canvas.removeAttribute('role');
   canvas.removeAttribute('aria-label');
@@ -324,7 +350,42 @@ document.querySelectorAll<HTMLButtonElement>('.effects-button').forEach(button=>
   effectsPaused=!effectsPaused;scene?.setAmbientPaused(effectsPaused);syncEffectsButtons();
 }));
 syncEffectsButtons();
-exploreButton.addEventListener('click', enterExplore);
+exploreButton.addEventListener('click',()=>enterExplore());
+function setMenuOpen(open:boolean,focus=false):void {
+  viewerMenu.hidden=!open;menuToggle.setAttribute('aria-expanded',String(open));
+  if(!open)$<HTMLDetailsElement>('.viewer-help').open=false;
+  if(focus)menuToggle.focus({preventScroll:true});
+}
+menuToggle.addEventListener('click',()=>setMenuOpen(viewerMenu.hidden));
+$('.viewer-replay').addEventListener('click',()=>goTo(0));
+document.addEventListener('pointerdown',event=>{
+  if(isExploring&&!viewerMenu.hidden&&!explorePanel.contains(event.target as Node))setMenuOpen(false);
+});
+
+let entryTap:{id:number;x:number;y:number;time:number;scroll:number}|null=null;
+const entryPointers=new Set<number>();
+const interactiveTarget=(target:EventTarget|null)=>target instanceof Element&&!!target.closest('button,a,summary,input,select,textarea,dialog,.explore-ui');
+document.addEventListener('pointerdown',event=>{
+  entryPointers.add(event.pointerId);
+  if(entryPointers.size!==1){entryTap=null;return;}
+  entryTap=null;
+  if(window.getSelection()?.isCollapsed===false)return;
+  if(isExploring||exploreButton.disabled||event.button!==0||interactiveTarget(event.target)||!story.contains(event.target as Node))return;
+  entryTap={id:event.pointerId,x:event.clientX,y:event.clientY,time:performance.now(),scroll:scrollY};
+},{passive:true});
+document.addEventListener('pointermove',event=>{
+  if(entryTap?.id===event.pointerId&&Math.hypot(event.clientX-entryTap.x,event.clientY-entryTap.y)>sceneConfig.interaction.tapTravel)entryTap=null;
+},{passive:true});
+document.addEventListener('pointercancel',event=>{entryPointers.delete(event.pointerId);entryTap=null;},{passive:true});
+document.addEventListener('wheel',()=>{entryTap=null;},{passive:true});
+document.addEventListener('scroll',()=>{if(entryTap&&Math.abs(scrollY-entryTap.scroll)>1)entryTap=null;},{passive:true});
+document.addEventListener('pointerup',event=>{
+  entryPointers.delete(event.pointerId);const tap=entryTap;entryTap=null;
+  if(!tap||tap.id!==event.pointerId||isExploring||exploreButton.disabled||interactiveTarget(event.target))return;
+  if(performance.now()-tap.time>sceneConfig.interaction.tapMilliseconds||Math.abs(scrollY-tap.scroll)>1||Math.hypot(event.clientX-tap.x,event.clientY-tap.y)>sceneConfig.interaction.tapTravel)return;
+  if(window.getSelection()?.isCollapsed===false)return;
+  event.preventDefault();enterExplore('pointer');
+});
 $('.exit-button').addEventListener('click', () => exitExplore());
 // Activate on the completed touch pointer as well as click. Browsers can suppress
 // the compatibility click when a toolbar tap immediately follows an orbit drag.
@@ -357,13 +418,14 @@ canvas.addEventListener('keydown', event => {
   }
 });
 document.addEventListener('keydown', event => {
+  if(isExploring)document.body.classList.remove('viewer-pointer-entry');
   if (isExploring && event.key === 'Tab') {
-    const controls = [canvas, ...explorePanel.querySelectorAll<HTMLButtonElement>('button')];
+    const controls = [canvas, ...[...explorePanel.querySelectorAll<HTMLElement>('button,summary')].filter(element=>element.getClientRects().length>0)];
     const first = controls[0], last = controls[controls.length-1];
     if (event.shiftKey && document.activeElement===first) { event.preventDefault();last.focus(); }
     else if (!event.shiftKey && document.activeElement===last) { event.preventDefault();first.focus(); }
   }
-  if (event.key === 'Escape' && isExploring) { event.preventDefault(); exitExplore(); }
+  if (event.key === 'Escape' && isExploring) { event.preventDefault();if(!viewerMenu.hidden)setMenuOpen(false,true);else exitExplore(); }
 });
 
 const aboutDialog = $<HTMLDialogElement>('.about-dialog');
@@ -404,6 +466,7 @@ declare global {
       captureChapter?: (index: number) => Promise<void>;
       captureProgress?: (progress: number) => Promise<void>;
       captureImpact?: (phase: number) => Promise<void>;
+      capturePose?: (pose:CameraPose)=>Promise<void>;
     };
   }
 }
@@ -414,6 +477,9 @@ window.__katana = {
   }),
 };
 if (new URLSearchParams(location.search).has('capture')) {
+  window.__katana.capturePose=async pose=>{
+    scene?.setPose(pose);await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
+  };
   window.__katana.captureProgress = async value => {
     if (!scene || !journey) throw new Error('3D unavailable');
     scene.setCaptureImpact(null);

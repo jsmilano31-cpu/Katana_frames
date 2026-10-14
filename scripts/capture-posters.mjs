@@ -24,7 +24,7 @@ try {
     }
   }
   manifest.postersReady = true;
-  manifest.modifications = 'glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation orientation reset; sword/scabbard groups aligned and normalized for reversible unsheathing. Separate awakening light layer, original procedural mist and ink artwork, studio lighting, and a stone impact setting added. Original procedural moonlit bamboo grove with camera orbit, zoom, and pan added. Desktop and portrait chapter posters rendered.';
+  manifest.modifications = 'glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation orientation reset; sheath opening and blade collar calibrated from geometry, normalized, and grouped for reversible unsheathing. Separate awakening light layer, original procedural mist and ink artwork, studio lighting, and a stone impact setting added. Original procedural moonlit bamboo grove and instanced silhouette katana field added. Desktop and portrait chapter posters rendered.';
   await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
   console.log('Captured twelve chapter posters from the official model. Inspect them before the final asset check.');
 } finally {

@@ -1,3 +1,4 @@
+import {enterViewer,openViewerMenu,viewerControl} from './viewer';
 import {expect,test,type Page} from '@playwright/test';
 import {testGlb} from '../fixture';
 import {sceneConfig} from '../../src/config';
@@ -6,7 +7,7 @@ async function openGrove(page:Page){
   await page.route('**/assets/model/manifest.json?*',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({status:'ready',url:'/assets/model/katana.glb',modifications:'Test-only fixture',postersReady:false})}));
   await page.route('**/assets/model/katana.glb?*',route=>route.fulfill({contentType:'model/gltf-binary',body:testGlb()}));
   await page.goto('/?capture=1#form');await expect(page.locator('body')).toHaveAttribute('data-view','3d');
-  await page.evaluate(()=>window.__katana.captureProgress!(1));await page.locator('.explore-button').click();
+  await page.evaluate(()=>window.__katana.captureProgress!(1));await enterViewer(page);
   await page.waitForTimeout(350);
 }
 const state=(page:Page)=>page.evaluate(()=>window.__katana.state());
@@ -35,8 +36,8 @@ test('keyboard and toolbar zoom and pan stay bounded without moving tip or scrol
   for(let i=0;i<30;i++)await page.keyboard.press('ArrowDown');
   expect((await state(page)).pose.position[1]).toBeGreaterThan(sceneConfig.grove.groundY+sceneConfig.explore.groundClearance-.001);
   expect((await state(page)).choreography!.tip).toEqual(before.choreography!.tip);expect(await page.evaluate(()=>scrollY)).toBe(scroll);
-  await page.locator('.reset-button').click();const reset=await state(page);reset.pose.position.forEach((n,i)=>expect(n).toBeCloseTo(before.pose.position[i],5));
-  await page.locator('[data-zoom="in"]').click();expect(distance((await state(page)).pose.position,(await state(page)).pose.target)).toBeLessThan(distance(reset.pose.position,reset.pose.target));
+  await viewerControl(page,'.reset-button');const reset=await state(page);reset.pose.position.forEach((n,i)=>expect(n).toBeCloseTo(before.pose.position[i],5));
+  await viewerControl(page,'[data-zoom="in"]');expect(distance((await state(page)).pose.position,(await state(page)).pose.target)).toBeLessThan(distance(reset.pose.position,reset.pose.target));
   await page.keyboard.press('Escape');expect((await state(page)).choreography!.impact.count).toBe(before.choreography!.impact.count);
 });
 
@@ -46,7 +47,7 @@ test('mouse wheel and right drag control the view and reset clears damping',asyn
   expect(distance((await state(page)).pose.position,(await state(page)).pose.target)).toBeLessThan(distance(before.pose.position,before.pose.target));
   await page.mouse.down({button:'right'});await page.mouse.move(980,540,{steps:8});await page.mouse.up({button:'right'});await page.waitForTimeout(200);
   expect((await state(page)).pose.target).not.toEqual(before.pose.target);
-  await page.locator('.reset-button').click();const reset=await state(page);await page.waitForTimeout(500);
+  await viewerControl(page,'.reset-button');const reset=await state(page);await page.waitForTimeout(500);
   (await state(page)).pose.position.forEach((n,i)=>expect(n).toBeCloseTo(reset.pose.position[i],5));
 });
 
@@ -58,10 +59,10 @@ test('orientation change preserves orbit and paused grove still permits camera m
   direction.forEach((n,i)=>expect(nextDirection[i]/distance(after.pose.position,after.pose.target)).toBeCloseTo(n/distance(before.pose.position,before.pose.target),3));
   expect(after.choreography!.tip).toEqual(before.choreography!.tip);expect(after.choreography!.impact.count).toBe(before.choreography!.impact.count);
   // Capture starts with effects paused; enable, then explicitly pause again.
-  await page.locator('.explore-panel .effects-button').click();await page.waitForTimeout(150);await page.locator('.explore-panel .effects-button').click();
+  await viewerControl(page,'.explore-ui .effects-button');await page.waitForTimeout(150);await viewerControl(page,'.explore-ui .effects-button');
   const clock=(await state(page)).choreography!.ambientTime;await page.waitForTimeout(250);
   expect((await state(page)).choreography!.ambientTime).toBe(clock);
-  await page.locator('[data-rotate="right"]').click();expect((await state(page)).pose.position).not.toEqual(after.pose.position);
+  await viewerControl(page,'[data-rotate="right"]');expect((await state(page)).pose.position).not.toEqual(after.pose.position);
 });
 
 test('two-finger pinch and pan move the mobile camera',async({page,context,isMobile})=>{
@@ -73,5 +74,5 @@ test('two-finger pinch and pan move the mobile camera',async({page,context,isMob
   await session.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForTimeout(350);
   const after=await state(page);expect(distance(after.pose.position,after.pose.target)).toBeLessThan(distance(before.pose.position,before.pose.target));
   expect(after.pose.target).not.toEqual(before.pose.target);expect(after.choreography!.tip).toEqual(before.choreography!.tip);
-  await page.locator('.exit-button').tap();await expect(page.locator('.explore-panel')).toBeHidden();
+  await openViewerMenu(page);await page.locator('.exit-button').tap();await expect(page.locator('.explore-ui')).toBeHidden();
 });
