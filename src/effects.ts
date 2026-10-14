@@ -2,12 +2,14 @@ import {
   BufferAttribute, BufferGeometry, CanvasTexture, Color, CylinderGeometry, DoubleSide,
   Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshStandardMaterial,
   PlaneGeometry, Points, PointsMaterial, Quaternion, RingGeometry, Vector3,
+  AdditiveBlending, IcosahedronGeometry, InstancedMesh, Object3D,
 } from 'three';
 import { sceneConfig } from './config';
 import { sampleEffects } from './motion';
+import { MistField, type MistAnchors } from './mist';
 
 const seed = (n:number) => { const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v); };
-const white = new Color('#dbddc9'), charcoal = new Color('#565b50');
+const white = new Color(sceneConfig.effects.mistColor);
 
 function mistTexture():CanvasTexture {
   const canvas=document.createElement('canvas');canvas.width=canvas.height=64;
@@ -24,7 +26,7 @@ function ribbon():Mesh<BufferGeometry,MeshBasicMaterial> {
   const indices:number[]=[];
   for(let i=0;i<32;i++){const a=i*2;indices.push(a,a+1,a+2,a+1,a+3,a+2);}
   geometry.setIndex(indices);
-  return new Mesh(geometry,new MeshBasicMaterial({color:white,transparent:true,opacity:0,side:DoubleSide,depthWrite:false,toneMapped:false}));
+  return new Mesh(geometry,new MeshBasicMaterial({color:white,transparent:true,opacity:0,side:DoubleSide,forceSinglePass:true,depthWrite:false,toneMapped:false}));
 }
 
 /** Small, bounded effect pools. All major motion is sampled, never accumulated. */
@@ -32,6 +34,7 @@ export class WindEffects {
   readonly root=new Group();
   readonly sheath=new Group();
   readonly ground=new Group();
+  private mist=new MistField();
   private ribbons=Array.from({length:sceneConfig.effects.ribbons},()=>ribbon());
   private impactRibbons=Array.from({length:5},()=>ribbon());
   private texture=mistTexture();
@@ -43,13 +46,17 @@ export class WindEffects {
   private ring:Mesh<RingGeometry,MeshBasicMaterial>;
   private ringOuter:Mesh<RingGeometry,MeshBasicMaterial>;
   private cracks:LineSegments<BufferGeometry,LineBasicMaterial>;
+  private flare:Mesh<PlaneGeometry,MeshBasicMaterial>;
+  private fragments:InstancedMesh<IcosahedronGeometry,MeshStandardMaterial>;
+  private fragmentPose=new Object3D();
+  private impactPhase=1;
   private mouth=new Vector3();
   private orientation=new Quaternion();
   private progress=0;
   private count=sceneConfig.effects.desktopParticles as number;
 
   constructor(){
-    this.root.add(this.sheath,this.ground);
+    this.root.add(this.sheath,this.ground,this.mist.root);
     this.sheath.add(...this.ribbons);
     this.ground.add(...this.impactRibbons);
     const points=(size:number)=>{
@@ -68,7 +75,7 @@ export class WindEffects {
       positions.setXYZ(i,x*irregular,positions.getY(i),z*irregular*.59);
     }
     stoneGeometry.computeVertexNormals();
-    const stoneMaterial=new MeshStandardMaterial({color:'#4a5046',roughness:.96,metalness:.03,flatShading:true,transparent:true});
+    const stoneMaterial=new MeshStandardMaterial({color:sceneConfig.effects.groundColor,roughness:.96,metalness:.03,flatShading:true,transparent:true});
     // Object-space mineral grain stays attached to the slab as the camera orbits.
     stoneMaterial.onBeforeCompile=shader=>{
       shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vStone;').replace('#include <begin_vertex>','#include <begin_vertex>\nvStone=position;');
@@ -82,7 +89,7 @@ export class WindEffects {
     this.stone=new Mesh(stoneGeometry,stoneMaterial);this.stone.position.y=-.12;
     this.ground.position.set(...sceneConfig.effects.ground);this.ground.add(this.stone);
 
-    this.wash=new Mesh(new PlaneGeometry(6,3.3),new MeshBasicMaterial({color:'#282f26',map:this.texture,transparent:true,depthWrite:false,opacity:.3,side:DoubleSide}));
+    this.wash=new Mesh(new PlaneGeometry(6,3.3),new MeshBasicMaterial({color:'#0b1519',map:this.texture,transparent:true,depthWrite:false,opacity:.3,side:DoubleSide,forceSinglePass:true}));
     this.wash.rotation.x=-Math.PI/2;this.wash.position.y=-.235;this.ground.add(this.wash);
     // A small, flat contact mark makes the shallow embed legible.
     const contact=new Mesh(new PlaneGeometry(.5,.32),new MeshBasicMaterial({color:'#101510',map:this.texture,transparent:true,depthWrite:false,opacity:.85}));
@@ -93,29 +100,38 @@ export class WindEffects {
     for(let branch=0;branch<7;branch++){
       const angle=branch*Math.PI*2/7+.2;let x=0,z=0;
       for(let part=1;part<=4;part++){
-        const distance=part*.09*(.7+seed(branch+9)*.7);
+        const distance=part*.2*(.7+seed(branch+9)*.7);
         const nextX=Math.cos(angle)*distance+(seed(branch*10+part)-.5)*.13;
         const nextZ=Math.sin(angle)*distance*.7+(seed(branch*11+part)-.5)*.08;
         crackPositions.push(x,.005,z,nextX,.005,nextZ);x=nextX;z=nextZ;
       }
     }
     const crackGeometry=new BufferGeometry();crackGeometry.setAttribute('position',new BufferAttribute(new Float32Array(crackPositions),3));
-    this.cracks=new LineSegments(crackGeometry,new LineBasicMaterial({color:'#20271f',transparent:true,opacity:0}));this.ground.add(this.cracks);
+    this.cracks=new LineSegments(crackGeometry,new LineBasicMaterial({color:'#80bdba',transparent:true,opacity:0,toneMapped:false}));this.ground.add(this.cracks);
     const ring=()=>{
-      const mesh=new Mesh(new RingGeometry(.94,1,96),new MeshBasicMaterial({color:'#8d9585',transparent:true,opacity:0,side:DoubleSide,depthWrite:false,toneMapped:false}));
+      const mesh=new Mesh(new RingGeometry(.94,1,96),new MeshBasicMaterial({color:'#bcece4',transparent:true,opacity:0,side:DoubleSide,forceSinglePass:true,depthWrite:false,toneMapped:false,blending:AdditiveBlending}));
       mesh.rotation.x=-Math.PI/2;mesh.position.y=.035;this.ground.add(mesh);return mesh;
     };
     this.ring=ring();this.ringOuter=ring();
+    this.flare=new Mesh(new PlaneGeometry(1,1),new MeshBasicMaterial({map:this.texture,color:'#a9fff0',transparent:true,depthWrite:false,side:DoubleSide,forceSinglePass:true,blending:AdditiveBlending,toneMapped:false}));
+    this.flare.rotation.x=-Math.PI/2;this.flare.position.y=.014;this.ground.add(this.flare);
+    this.fragments=new InstancedMesh(new IcosahedronGeometry(.065,0),new MeshStandardMaterial({color:'#344b4d',roughness:.9,flatShading:true,transparent:true}),sceneConfig.effects.stoneFragments);
+    this.fragments.frustumCulled=false;this.ground.add(this.fragments);
   }
 
-  setStory(progress:number,mouth:Vector3,orientation:Quaternion){
+  setStory(progress:number,mouth:Vector3,orientation:Quaternion,anchors:MistAnchors){
     this.progress=progress;this.mouth.copy(mouth);this.orientation.copy(orientation);
     this.count=innerWidth<sceneConfig.breakpoint?sceneConfig.effects.mobileParticles:sceneConfig.effects.desktopParticles;
     for(const pool of [this.drawDust,this.impactDust,this.ambient])pool.geometry.setDrawRange(0,this.count);
+    this.mist.setStory(progress,anchors);
   }
 
-  update(time:number){
-    const state=sampleEffects(this.progress),paper=this.progress>.78;
+  update(time:number,impactPhase=1,movement=0){
+    const sampled=sampleEffects(this.progress);
+    const phase=sampled.contact?impactPhase:0;
+    this.impactPhase=phase;
+    const state={...sampled,impactPhase:phase,burst:sampled.contact?Math.sin(Math.PI*phase):0};
+    this.mist.update(time,movement);
     this.sheath.position.copy(this.mouth);this.sheath.quaternion.copy(this.orientation);
     this.sheath.visible=state.drawStrength>.001;
     for(let i=0;i<this.ribbons.length;i++){
@@ -147,17 +163,34 @@ export class WindEffects {
     draw.needsUpdate=impact.needsUpdate=ambient.needsUpdate=true;
     this.drawDust.material.opacity=state.drawStrength*.27;
     this.impactDust.visible=state.burst>.001;this.impactDust.material.opacity=state.burst*.7;
-    this.impactDust.material.color.copy(charcoal);
-    this.ambient.material.color.copy(paper?charcoal:white);this.ambient.material.opacity=paper?.16:.24;
+    this.impactDust.material.color.set('#bcebe7');
+    this.ambient.material.color.copy(white);this.ambient.material.opacity=.36;
     this.ground.visible=state.groundOpacity>.001;
     this.stone.material.opacity=state.groundOpacity;
     this.wash.material.opacity=state.groundOpacity*.65;
     this.ground.getObjectByName('contact')!.visible=state.contact;
-    this.cracks.material.opacity=state.contact?.8:0;
+    this.cracks.geometry.setDrawRange(0,state.contact?Math.ceil(Math.min(1,phase*4)*28)*2:0);
+    this.cracks.material.opacity=state.contact?.26+state.burst*.5:0;
     this.ring.scale.setScalar(.1+state.impactPhase*4.5);
     this.ringOuter.scale.setScalar(.15+state.impactPhase*5.8);
-    this.ring.material.opacity=state.burst*.45;
-    this.ringOuter.material.opacity=state.burst*.18;
+    this.ring.material.opacity=state.burst*.6;
+    this.ringOuter.material.opacity=state.burst*.25;
+    this.ring.visible=this.ringOuter.visible=state.burst>.001;
+    this.flare.visible=state.contact&&phase<.4;
+    this.flare.scale.setScalar(.3+phase*6);
+    this.flare.material.opacity=Math.exp(-phase*16)*.85;
+    this.fragments.visible=state.contact&&phase<.95;
+    this.fragments.count=innerWidth<sceneConfig.breakpoint?sceneConfig.effects.mobileStoneFragments:sceneConfig.effects.stoneFragments;
+    for(let i=0;i<this.fragments.count;i++){
+      const angle=seed(i+57)*Math.PI*2,speed=.6+seed(i+27)*1.2;
+      const travel=phase*2.5*speed;
+      this.fragmentPose.position.set(Math.cos(angle)*travel,Math.max(-.06,Math.sin(Math.PI*phase)*(.3+seed(i+17)*.7)),Math.sin(angle)*travel*.65);
+      this.fragmentPose.rotation.set(phase*(i+2),phase*(i+5),phase*3);
+      this.fragmentPose.scale.set(.7+seed(i)*.8,.4+seed(i+3)*1.2,.6+seed(i+8));
+      this.fragmentPose.updateMatrix();this.fragments.setMatrixAt(i,this.fragmentPose.matrix);
+    }
+    this.fragments.instanceMatrix.needsUpdate=true;
+    this.fragments.material.opacity=Math.min(1,(1-phase)*2.5);
     for(let i=0;i<this.impactRibbons.length;i++){
       const mesh=this.impactRibbons[i],positions=mesh.geometry.getAttribute('position') as BufferAttribute;
       const angle=i*2.399+.25;
@@ -172,15 +205,17 @@ export class WindEffects {
         positions.setXYZ(j*2+1,Math.cos(arc)*radius,y+width,Math.sin(arc)*radius*.7);
       }
       positions.needsUpdate=true;mesh.frustumCulled=false;
-      mesh.material.color.set('#65705d');mesh.material.opacity=state.burst*.6+(state.contact?.07*settle:0);
+      mesh.material.color.set('#b0e2dd');mesh.material.opacity=state.burst*.65+(state.contact?.1*settle:0);
     }
     // Very faint breathing mist remains near the planted blade after the burst.
     this.wash.rotation.z=Math.sin(time*.05)*.025;
   }
 
-  diagnostics(){return {mouth:this.mouth.toArray(),...sampleEffects(this.progress)};}
+  diagnostics(){return {mouth:this.mouth.toArray(),...sampleEffects(this.progress),landingPhase:this.impactPhase};}
 
   dispose(){
+    this.mist.dispose();
+    this.fragments.dispose();
     this.root.traverse(object=>{
       if(object instanceof Mesh||object instanceof Points||object instanceof LineSegments){
         object.geometry.dispose();

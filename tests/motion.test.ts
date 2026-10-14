@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { chapters, choreography } from '../src/config';
-import { activeChapter, sampleCamera, sampleChoreography, sampleEffects } from '../src/motion';
+import { activeChapter, sampleCamera, sampleChoreography, sampleEffects, sampleAwakening } from '../src/motion';
+import { LandingImpact } from '../src/impact';
 
 describe('the reversible camera journey', () => {
   it('hits every authored chapter pose in desktop and portrait framing', () => {
@@ -44,8 +45,7 @@ describe('wind and ground contact',()=>{
     expect(sampleEffects(.4).drawStrength).toBeCloseTo(0);
     expect(sampleEffects(.964).contact).toBe(false);
     expect(sampleEffects(.965).contact).toBe(true);
-    expect(sampleEffects(.98).burst).toBeGreaterThan(.9);
-    expect(sampleEffects(1).burst).toBeCloseTo(0);
+    expect(sampleEffects(1).groundOpacity).toBe(1);
     const forward=Array.from({length:1001},(_,i)=>sampleEffects(i/1000));
     const reverse=Array.from({length:1001},(_,i)=>sampleEffects((1000-i)/1000)).reverse();
     expect(reverse).toEqual(forward);
@@ -56,6 +56,37 @@ describe('wind and ground contact',()=>{
     for(const p of [.965,.98,1])expect(sampleEffects(p).lift).toBe(0);
     expect(sampleCamera(.995,false)).toEqual(sampleCamera(1,false));
     expect(sampleEffects(.94).lift).toBeGreaterThan(sampleEffects(.95).lift);
+  });
+});
+
+describe('awakening and independent landing playback',()=>{
+  it('keeps awakening on exposed steel and returns to a dormant blade on reversal',()=>{
+    expect(sampleAwakening(.1).aura).toBe(0);
+    expect(sampleAwakening(.25).pulseStrength).toBeGreaterThan(.7);
+    expect(sampleAwakening(.25,.2).pulsePosition).toBeLessThan(.2);
+    expect(sampleAwakening(.4).glint).toBeGreaterThan(.9);
+    expect(sampleAwakening(.5).pulseStrength).toBe(0);
+    expect(sampleAwakening(.1).aura).toBe(0);
+  });
+  it('completes a landing without another scroll update and never repeats at the bottom',()=>{
+    const impact=new LandingImpact();impact.observe(.93);impact.observe(.97);
+    expect(impact.mode).toBe('playing');expect(impact.count).toBe(1);
+    impact.advance(.2);expect(impact.phase).toBeGreaterThan(0);
+    impact.advance(1.4);expect(impact.mode).toBe('settled');expect(impact.phase).toBe(1);
+    impact.observe(1);impact.observe(1);expect(impact.count).toBe(1);
+  });
+  it('cancels on reversal and requires leaving the landing region to re-arm',()=>{
+    const impact=new LandingImpact();impact.observe(.97);impact.advance(.2);impact.observe(.95);
+    expect(impact.phase).toBe(0);expect(impact.mode).toBe('armed');
+    impact.observe(.97);expect(impact.mode).toBe('settled');expect(impact.count).toBe(1);
+    impact.observe(.93);impact.observe(.97);expect(impact.mode).toBe('playing');expect(impact.count).toBe(2);
+  });
+  it('suppresses initial final-chapter entry and paused landings, then permits replay',()=>{
+    const direct=new LandingImpact();direct.prepareEntry(true);direct.observe(0);direct.observe(1);
+    expect(direct.mode).toBe('settled');expect(direct.count).toBe(0);
+    direct.observe(0);direct.observe(1);expect(direct.mode).toBe('playing');
+    direct.settle();expect(direct.mode).toBe('settled');
+    const paused=new LandingImpact();paused.observe(1,true);expect(paused.mode).toBe('settled');expect(paused.count).toBe(0);
   });
 });
 

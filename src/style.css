@@ -150,3 +150,23 @@ body{background:var(--scene-bg);color:var(--ivory)}
   .explore-heading{font-size:20px;margin-bottom:2px}
   .explore-help{line-height:1.4;margin-bottom:2px}
 }
+
+/* Legendary steel: cool light and mist, with the final scene as the page end. */
+.is-live .chapter-panels{position:fixed;inset:0}
+:root{--scene-bg:#0e1417;--ink:#0e1417;--ivory:#e6f1ee;--muted:#9eafb1;--red:#8adbcf;--line:rgba(192,220,215,.16)}
+.stage-glow{background:radial-gradient(ellipse at 55% 42%,rgba(81,137,139,.1),transparent 68%);background-color:var(--scene-bg)}
+.primary-button{background:#a2d8d0;border-color:#a2d8d0;color:#102023}
+.primary-button:hover:enabled{background:#c4f0e7;color:#102023}
+.chapter[data-chapter='5'] .ghost-word{opacity:.025}
+.chapter[data-chapter='5'] .chapter-description{color:#a9c2c4}
+.is-static{background:#0e1417;color:#e6f1ee;--muted:#9eafb1;--red:#8adbcf}
+.is-static .chapter[data-chapter='4'],.is-static .chapter[data-chapter='5']{color:#e6f1ee;--muted:#9eafb1;--red:#8adbcf}
+.is-static[data-chapter='4'] .site-header,.is-static[data-chapter='5'] .site-header,
+.is-static[data-chapter='4'] .chapter-nav,.is-static[data-chapter='5'] .chapter-nav,
+.is-static[data-chapter='4'] .view-status,.is-static[data-chapter='5'] .view-status{color:#e6f1ee;--muted:#9eafb1;--red:#8adbcf}
+.is-static[data-chapter='4'] .chapter-nav a[aria-current] .nav-index,
+.is-static[data-chapter='5'] .chapter-nav a[aria-current] .nav-index{color:#e6f1ee}
+.about-dialog,.explore-panel{background:rgba(14,24,28,.96);color:#e6f1ee;--red:#8adbcf;--muted:#a9c2c4}
+.about-dialog a{color:#d0eee9}
+.about-modifications{overflow-wrap:anywhere}
+.explore-panel .effects-button{color:#c1e2df}

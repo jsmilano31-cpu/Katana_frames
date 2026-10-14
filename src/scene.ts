@@ -2,7 +2,7 @@ import {
   ACESFilmicToneMapping, Box3, Color, DirectionalLight, Group, HemisphereLight,
   LoadingManager, Material, Mesh, PerspectiveCamera, PMREMGenerator, Scene,
   Quaternion, Spherical, Texture, Vector3, WebGLRenderer, type WebGLRenderTarget,
-  Euler, Matrix4, Plane, MeshBasicMaterial,
+  Euler, Matrix4, Plane, MeshBasicMaterial, ShaderMaterial,
 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -11,9 +11,11 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { sceneConfig, type CameraPose } from './config';
-import { ease, sampleChoreography, sampleEffects } from './motion';
+import { clamp01, ease, sampleAwakening, sampleChoreography, sampleEffects } from './motion';
 import { createInk } from './ink';
 import { WindEffects } from './effects';
+import { awakeningMaterial } from './awakening';
+import { LandingImpact } from './impact';
 
 export interface SceneStats { fps: number; dpr: number; drawCalls: number; triangles: number }
 
@@ -31,14 +33,27 @@ export class KatanaScene {
   private mouthX = -1;
   private mouth = new Vector3();
   private bladeTip = new Vector3(2,0,0);
+  private bladeGuide=[new Vector3(-1,0,0),new Vector3(2,0,0)];
+  private bladeMinX=-1;
+  private aura:ShaderMaterial|null=null;
+  private exposed=0;
+  private impact=new LandingImpact();
+  private captureMode=new URLSearchParams(location.search).has('capture');
+  private captureImpactPhase:number|null=null;
+  private onImpact?:()=>void;
+  private movement=0;
+  private direction=1;
+  private lastStoryTime=0;
+  private frameClock=0;
+  private authoredCamera=new Vector3();
   private effects = new WindEffects();
   private ambientPaused = new URLSearchParams(location.search).has('capture');
   private ambientTime = 0;
   private ambientFrame = 0;
   private bladePlane = new Plane();
   private storyProgress = 0;
-  private key = new DirectionalLight('#fff2dd', 2.8);
-  private rim = new DirectionalLight('#c6cddd', 2);
+  private key = new DirectionalLight('#e3f3f0', 2.8);
+  private rim = new DirectionalLight('#87cbc9', 2);
   private qa = new Quaternion();
   private qb = new Quaternion();
   private rotation = new Euler();
@@ -72,12 +87,12 @@ export class KatanaScene {
     this.scene.environmentIntensity = 0.75;
     room.dispose();
     pmrem.dispose();
-    this.scene.add(new HemisphereLight('#efe8d9', '#302921', 0.8));
+    this.scene.add(new HemisphereLight('#d9eeeb', '#192b32', 0.8));
     const key = this.key;
     key.position.set(-2, 4, 5);
     const rim = this.rim;
     rim.position.set(2, -1, -3);
-    const warm = new DirectionalLight('#b9583e', 0.65);
+    const warm = new DirectionalLight('#89c5ca', 0.45);
     warm.position.set(-4, 1, -2);
     this.scene.add(key, rim, warm, this.model, this.effects.root);
     this.model.add(this.sword, this.scabbard);
@@ -130,6 +145,25 @@ export class KatanaScene {
         const positions=geometry.getAttribute('position');
         this.bladeTip.set(-Infinity,0,0);
         for(let i=0;i<positions.count;i++)if(positions.getX(i)>this.bladeTip.x)this.bladeTip.fromBufferAttribute(positions,i);
+        geometry.computeBoundingBox();this.bladeMinX=geometry.boundingBox!.min.x;
+        this.bladeGuide=[];
+        for(let step=0;step<=32;step++){
+          const x=this.bladeMinX+(this.bladeTip.x-this.bladeMinX)*step/32;
+          let minY=Infinity,maxY=-Infinity;
+          for(let i=0;i<positions.count;i++)if(Math.abs(positions.getX(i)-x)<(this.bladeTip.x-this.bladeMinX)/40){
+            minY=Math.min(minY,positions.getY(i));maxY=Math.max(maxY,positions.getY(i));
+          }
+          this.bladeGuide.push(new Vector3(x,Number.isFinite(minY)?(minY+maxY)/2:this.bladeTip.y,0));
+        }
+        this.bladeGuide[32].copy(this.bladeTip);
+        const startY=this.bladeGuide[0].y,midY=this.bladeGuide[16].y,endY=this.bladeTip.y;
+        const controlY=2*midY-(startY+endY)/2;
+        this.bladeGuide.forEach((point,index)=>{
+          const t=index/32;point.y=(1-t)**2*startY+2*(1-t)*t*controlY+t*t*endY;
+        });
+        this.aura=awakeningMaterial(this.bladePlane,this.bladeMinX,this.bladeTip.x);
+        const overlay=new Mesh(geometry.clone(),this.aura);overlay.name='Blade awakening layer';
+        this.sword.add(overlay);
       }
       const copies = original.map(material => {
         const copy = material.clone();
@@ -154,27 +188,33 @@ export class KatanaScene {
 
   setStory(progress: number): void {
     if (this.disposed || this.exploring) return;
+    const now=performance.now(),difference=progress-this.storyProgress;
+    if(Math.abs(difference)>1e-8){
+      this.direction=Math.sign(difference);
+      this.movement=this.captureMode?.55:Math.min(1,Math.abs(difference)/Math.max(.016,(now-this.lastStoryTime)/1000)/sceneConfig.effects.maximumVelocity);
+    }
+    this.lastStoryTime=now;
     this.storyProgress = progress;
+    const previousImpact=this.impact.mode;
+    if(this.captureMode)this.impact.restore(progress);else this.impact.observe(progress,this.ambientPaused);
     const state = sampleChoreography(progress);
     this.qa.setFromEuler(this.rotation.set(...state.fromRotation));
     this.qb.setFromEuler(this.rotation.set(...state.toRotation));
     this.model.quaternion.copy(this.qa).slerp(this.qb, state.rotationMix);
     this.sword.position.set(...state.sword); this.scabbard.position.set(...state.scabbard);
-    const effects=sampleEffects(progress);
-    const presence=1-ease(progress/.12),portrait=innerWidth<sceneConfig.breakpoint;
-    this.model.position.set((portrait?.15:0)*presence,(portrait?-.22:.28)*presence,0);
-    if(effects.alignment>0){
-      const contact=new Vector3(...sceneConfig.effects.ground);
-      contact.y-=sceneConfig.effects.embedDepth;
-      contact.y+=effects.lift;
-      const tip=this.bladeTip.clone().add(this.sword.position).applyQuaternion(this.model.quaternion);
-      this.model.position.copy(contact.sub(tip).multiplyScalar(effects.alignment));
-    }
+    this.model.position.copy(this.modelPosition(progress,this.model.quaternion,this.sword.position));
     this.scabbard.visible = state.scabbardOpacity > .01;
     this.sheathMaterials.forEach(material => { material.opacity = state.scabbardOpacity; });
     this.model.updateMatrixWorld(true);
     // Expose only the portion past the saya mouth while the curved blade is drawn.
     this.bladePlane.set(new Vector3(-1,0,0),this.mouthX+state.scabbard[0]).applyMatrix4(this.model.matrixWorld);
+    this.exposed=clamp01((this.mouthX+state.scabbard[0]-state.sword[0]-this.bladeMinX)/(this.bladeTip.x-this.bladeMinX));
+    const awakening=sampleAwakening(progress,this.exposed);
+    if(this.aura){
+      this.aura.uniforms.uPulse.value=awakening.pulsePosition;
+      this.aura.uniforms.uStrength.value=awakening.pulseStrength;
+      this.aura.uniforms.uAura.value=awakening.aura;
+    }
     const lighting=sceneConfig.lighting;
     this.key.position.set(...lighting.keyStart);this.key.position.x+=state.reflection*lighting.keyTravel;
     this.rim.position.set(...lighting.rimStart);this.rim.position.x+=state.reflection*lighting.rimTravel;
@@ -186,7 +226,7 @@ export class KatanaScene {
       const material = plane.material as MeshBasicMaterial;
       const artwork=sceneConfig.artwork,layer=artwork.layers[index];
       material.opacity = state.ink * layer.opacity * (1-state.light*artwork.paperFade) * (innerWidth<sceneConfig.breakpoint?artwork.mobileOpacity:1);
-      material.color.set('#eee1c6').lerp(new Color('#8f8670'),state.light);
+      material.color.set('#86afaf').lerp(new Color('#91b6bd'),state.light);
       plane.position.x = layer.x + Math.sin(progress*Math.PI)*(artwork.sway+index*artwork.swayStep);
       plane.position.y = layer.y + state.light*artwork.paperLift;
       plane.userData.baseY=plane.position.y;
@@ -196,18 +236,58 @@ export class KatanaScene {
       plane.scale.x = layer.width*(1+state.ink*artwork.growth);
       plane.visible = innerWidth>=sceneConfig.breakpoint || layer.mobile;
     });
-    this.effects.setStory(progress,this.scabbard.localToWorld(this.mouth.clone()),this.model.quaternion);
-    this.effects.update(this.ambientTime);
+    this.effects.setStory(progress,this.scabbard.localToWorld(this.mouth.clone()),this.model.quaternion,
+      {bladeMatrix:this.sword.matrixWorld.clone(),guide:this.bladeGuide,trail:this.sampleTrail(progress),exposed:this.exposed});
+    this.updateEffects();
+    if(previousImpact!==this.impact.mode)this.onImpact?.();
     this.dirty = true;
   }
 
-  storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible,tip:this.sword.localToWorld(this.bladeTip.clone()).toArray(),effects:this.effects.diagnostics(),ambientPaused:this.ambientPaused,ambientTime:this.ambientTime }; }
+  storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible,tip:this.sword.localToWorld(this.bladeTip.clone()).toArray(),effects:{...this.effects.diagnostics(),awakening:sampleAwakening(this.storyProgress,this.exposed),exposed:this.exposed},impact:this.impact.snapshot(),ambientPaused:this.ambientPaused,ambientTime:this.ambientTime }; }
 
-  setAmbientPaused(paused:boolean):void { this.ambientPaused=paused;this.ambientFrame=0;this.dirty=true; }
+  get impactSettled(){return this.impact.mode!=='playing';}
+  setImpactCallback(callback:()=>void){this.onImpact=callback;}
+  prepareEntry(settled:boolean){this.impact.prepareEntry(settled);}
+  setCaptureImpact(phase:number|null){
+    if(!this.captureMode)return;
+    this.captureImpactPhase=phase===null?null:clamp01(phase);this.updateEffects();this.dirty=true;
+  }
+  setAmbientPaused(paused:boolean):void {
+    this.ambientPaused=paused;this.ambientFrame=0;this.frameClock=0;
+    if(paused)this.impact.settle();this.updateEffects();this.onImpact?.();this.dirty=true;
+  }
+
+  private modelPosition(progress:number,rotation:Quaternion,sword:Vector3){
+    const state=sampleEffects(progress),presence=1-ease(progress/.12),portrait=innerWidth<sceneConfig.breakpoint;
+    const position=new Vector3((portrait?.15:0)*presence,(portrait?-.22:.28)*presence,0);
+    if(state.alignment>0){
+      const contact=new Vector3(...sceneConfig.effects.ground);contact.y+=state.lift-sceneConfig.effects.embedDepth;
+      position.copy(contact.sub(this.bladeTip.clone().add(sword).applyQuaternion(rotation)).multiplyScalar(state.alignment));
+    }
+    return position;
+  }
+
+  private sampleTrail(progress:number){
+    const points:Vector3[]=[];
+    for(let i=0;i<7;i++){
+      const p=clamp01(progress-this.direction*(.008+sceneConfig.effects.trailSpan*this.movement)*i/6);
+      const state=sampleChoreography(p);
+      const q=new Quaternion().setFromEuler(new Euler(...state.fromRotation)).slerp(new Quaternion().setFromEuler(new Euler(...state.toRotation)),state.rotationMix);
+      const sword=new Vector3(...state.sword);
+      const exposed=clamp01((this.mouthX+state.scabbard[0]-state.sword[0]-this.bladeMinX)/(this.bladeTip.x-this.bladeMinX));
+      const at=exposed*(this.bladeGuide.length-1),index=Math.min(this.bladeGuide.length-2,Math.floor(at));
+      const tip=new Vector3().lerpVectors(this.bladeGuide[index],this.bladeGuide[index+1],at-index);
+      points.push(tip.add(sword).applyQuaternion(q).add(this.modelPosition(p,q,sword)));
+    }
+    return points;
+  }
+
+  private updateEffects(){this.effects.update(this.ambientTime,this.captureImpactPhase??this.impact.phase,this.movement);}
 
   setPose(pose: CameraPose): void {
     if (this.exploring || this.disposed) return;
     this.camera.position.set(...pose.position);
+    this.authoredCamera.copy(this.camera.position);
     this.camera.up.set(Math.sin(pose.roll ?? 0), Math.cos(pose.roll ?? 0), 0);
     this.camera.fov = pose.fov;
     this.camera.updateProjectionMatrix();
@@ -228,6 +308,7 @@ export class KatanaScene {
   }
 
   beginExplore(pose: CameraPose): void {
+    this.impact.settle();
     this.setPose(pose);
     // OrbitControls caches the camera's up axis at construction. Recreate it
     // after applying portrait roll so touch and keyboard share the same axes.
@@ -307,16 +388,31 @@ export class KatanaScene {
   private contextLost = (event: Event): void => { event.preventDefault(); this.onContextLost(); };
 
   private render = (time: number): void => {
-    if (this.disposed || document.hidden) { this.lastFrame = 0; this.ambientFrame=0;return; }
+    if (this.disposed || document.hidden) { this.lastFrame = 0; this.ambientFrame=0;this.frameClock=0;return; }
+    const seconds=this.frameClock?Math.min((time-this.frameClock)/1000,.05):0;
+    this.frameClock=time;
+    const previousImpact=this.impact.mode;
+    if(!this.ambientPaused)this.impact.advance(seconds);
+    if(previousImpact!==this.impact.mode)this.onImpact?.();
     if(!this.ambientPaused){
       if(this.ambientFrame)this.ambientTime+=Math.min((time-this.ambientFrame)/1000,.05);
       this.ambientFrame=time;
-      this.effects.update(this.ambientTime);
+      this.movement*=Math.exp(-seconds*4);
+      this.updateEffects();
       this.ink.children.forEach((object,index)=>{
         object.position.y=(object.userData.baseY??object.position.y)+Math.sin(this.ambientTime*sceneConfig.effects.ambientSpeed+index)*.025;
         object.position.x=(object.userData.baseX??object.position.x)+Math.sin(this.ambientTime*.09+index)*.035;
       });
       this.dirty=true;
+    }
+    if(!this.exploring){
+      this.camera.position.copy(this.authoredCamera);
+      const phase=this.captureImpactPhase??this.impact.phase;
+      if(this.impact.mode==='playing'||this.captureImpactPhase!==null){
+        const impulse=Math.sin(phase*Math.PI*13)*Math.exp(-phase*10);
+        this.camera.position.y+=impulse*.045;this.camera.position.x+=impulse*.015;
+      }
+      this.camera.lookAt(this.controls.target);
     }
     if (this.exploring) this.controls.update();
     if (!this.dirty) { this.lastFrame = 0; return; }

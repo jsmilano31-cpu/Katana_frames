@@ -68,16 +68,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
   <button class="effects-button ambient-control" type="button" aria-pressed="false">Pause effects</button>
 
-  <footer class="site-footer">
-    <div><span class="footer-kanji" lang="ja">刀</span><p>One blade.<br>Six movements.</p></div>
-    <p class="asset-credit">3D model &amp; preview: <a href="https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37" target="_blank" rel="noopener noreferrer">Katana by J.AkioHonda ↗</a><br>Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>.<br><span class="modification-credit">Preview cropped for presentation.</span></p>
-    <button class="footer-top text-link" type="button">Back to the beginning ↑</button>
-  </footer>
-
   <dialog class="about-dialog" aria-labelledby="about-title">
     <button class="close-about" type="button" aria-label="Close about the study">×</button>
     <p class="eyebrow"><span class="red-line"></span>About the study</p><h2 id="about-title">Ink. Steel.<br>Perspective.</h2>
-    <p>An unfolding visual study of a katana. Scroll to draw the blade, move around its edge, and discover the details in changing light. Original ink clouds give way to ivory before the final interactive view.</p>
+    <p>A cinematic study of steel, mist, and movement. Scroll to awaken the blade, travel around its edge, and plant it in stone. The final scene is yours to explore.</p>
     <p>The digital model is <a href="https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37" target="_blank" rel="noopener noreferrer">Katana by J.AkioHonda</a>, used under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Its creator describes it as a realistic interpretation, without historical accuracy.</p>
     <p class="about-modifications">Preview cropped for presentation. Model import pending.</p>
   </dialog>
@@ -110,6 +104,14 @@ let effectsPaused = new URLSearchParams(location.search).has('capture');
 function isMobile(): boolean { return innerWidth < sceneConfig.breakpoint; }
 function currentPose(): CameraPose { return sampleCamera(progress, isMobile(),innerHeight); }
 
+function refreshExploreAvailability():void {
+  exploreButton.disabled=!scene||progress<sceneConfig.effects.burstEnd||!scene.impactSettled;
+  if(document.body.dataset.view==='3d'&&!isExploring){
+    status.textContent=progress>=sceneConfig.effects.impact
+      ?(scene?.impactSettled?'Explore or replay':'The blade takes root'):'Scroll to explore';
+  }
+}
+
 function selectChapter(index: number): void {
   const changed = index !== currentChapter;
   currentChapter = index;
@@ -139,11 +141,10 @@ function updateProgress(value: number): void {
   $('.object-caption-sub').textContent = `${chapters[index].japanese} / ${chapters[index].note.toUpperCase()}`;
   const visual = sampleChoreography(value);
   document.documentElement.style.setProperty('--paper', String(visual.light));
-  document.documentElement.style.setProperty('--scene-bg', `rgb(${Math.round(19+214*visual.light)} ${Math.round(22+207*visual.light)} ${Math.round(20+195*visual.light)})`);
-  document.body.classList.toggle('is-paper', visual.light > .38);
+  document.documentElement.style.setProperty('--scene-bg', `rgb(${Math.round(14+4*visual.light)} ${Math.round(20+10*visual.light)} ${Math.round(23+11*visual.light)})`);
   scene?.setStory(value);
   scene?.setPose(currentPose());
-  exploreButton.disabled = !scene || value < sceneConfig.effects.burstEnd;
+  refreshExploreAvailability();
 }
 
 function setStaticView(message: string, retry: boolean): void {
@@ -205,7 +206,6 @@ async function initialize(): Promise<void> {
     const response = await fetch(`/assets/model/manifest.json?t=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Asset manifest unavailable.');
     manifest = await response.json() as AssetManifest;
-    $('.modification-credit').textContent = manifest.modifications;
     $('.about-modifications').textContent = manifest.modifications;
     setPosters();
     if (motionQuery.matches) {
@@ -223,6 +223,7 @@ async function initialize(): Promise<void> {
     scene?.dispose();
     scene = new Scene(canvas, () => setStaticView('Still-image view · 3D interrupted', true));
     scene.setAmbientPaused(effectsPaused);
+    scene.setImpactCallback(refreshExploreAvailability);
     scene.setPose(sampleCamera(chapters[previousChapter].progress, isMobile(),innerHeight));
     await scene.load(`${manifest.url}?t=${Date.now()}`, percent => {
       status.textContent = percent === null ? 'Preparing the 3D study' : `Preparing the 3D study · ${percent}%`;
@@ -237,10 +238,12 @@ async function initialize(): Promise<void> {
     document.body.classList.remove('is-static', 'is-loading');
     document.body.classList.add('is-live');
     document.body.dataset.view = '3d';
+    const hashIndex=chapters.findIndex(chapter=>`#${chapter.id}`===location.hash);
+    scene.prepareEntry((previousChapter>0?previousChapter:hashIndex)===chapters.length-1);
     journey = new Journey(story, updateProgress);
     scene.setStatsCallback(value => { stats = value; });
     status.textContent = 'Scroll to explore';
-    exploreButton.disabled = progress < sceneConfig.effects.burstEnd;
+    refreshExploreAvailability();
     $('.explore-availability').hidden = true;
     if (previousChapter > 0) journey.goTo(previousChapter, true);
     else if (location.hash) {
@@ -257,14 +260,14 @@ async function initialize(): Promise<void> {
 }
 
 function enterExplore(): void {
-  if (!scene || !journey || progress < sceneConfig.effects.burstEnd || isExploring) return;
+  if (!scene || !journey || progress < sceneConfig.effects.burstEnd || !scene.impactSettled || isExploring) return;
   savedScroll = scrollY;
   journey.pause();
   const pose = currentPose();
   scene.beginExplore(pose);
   isExploring = true;
   document.body.classList.add('is-exploring');
-  for (const selector of ['.site-header','.chapter-panels','.chapter-nav','.site-footer']) $(selector).inert = true;
+  for (const selector of ['.site-header','.chapter-panels','.chapter-nav']) $(selector).inert = true;
   document.body.style.top = `-${savedScroll}px`;
   explorePanel.hidden = false;
   canvas.tabIndex = 0;
@@ -281,7 +284,7 @@ function exitExplore(returnFocus = true): void {
   if (!isExploring) return;
   isExploring = false;
   document.body.classList.remove('is-exploring');
-  for (const selector of ['.site-header','.chapter-panels','.chapter-nav','.site-footer']) $(selector).inert = false;
+  for (const selector of ['.site-header','.chapter-panels','.chapter-nav']) $(selector).inert = false;
   document.body.style.removeProperty('top');
   window.scrollTo({ top: savedScroll, behavior: 'instant' });
   explorePanel.hidden = true;
@@ -292,7 +295,7 @@ function exitExplore(returnFocus = true): void {
   canvas.closest('.scene-stage')!.setAttribute('aria-hidden', 'true');
   scene?.endExplore(currentPose());
   journey?.resume();
-  status.textContent = 'Scroll to explore';
+  refreshExploreAvailability();
   if (returnFocus) exploreButton.focus({ preventScroll: true });
 }
 
@@ -331,7 +334,6 @@ $('.exit-button').addEventListener('pointerup', event => {
 });
 $('.reset-button').addEventListener('click', () => scene?.resetExplore());
 $('.replay-button').addEventListener('click', () => goTo(0));
-$('.footer-top').addEventListener('click', () => goTo(0));
 
 const rotations: Record<string, [number, number]> = { left: [-0.12, 0], right: [0.12, 0], up: [0, -0.12], down: [0, 0.12] };
 document.querySelectorAll<HTMLButtonElement>('[data-rotate]').forEach(button => button.addEventListener('click', () => scene?.rotate(...rotations[button.dataset.rotate!])));
@@ -394,6 +396,7 @@ declare global {
       state: () => { view: string; chapter: number; progress: number; exploring: boolean; pose: CameraPose; stats: SceneStats | null; choreography: ReturnType<KatanaScene['storyState']> | null };
       captureChapter?: (index: number) => Promise<void>;
       captureProgress?: (progress: number) => Promise<void>;
+      captureImpact?: (phase: number) => Promise<void>;
     };
   }
 }
@@ -406,16 +409,23 @@ window.__katana = {
 if (new URLSearchParams(location.search).has('capture')) {
   window.__katana.captureProgress = async value => {
     if (!scene || !journey) throw new Error('3D unavailable');
+    scene.setCaptureImpact(null);
     journey.pause(); journey.seek(value); scene.setStory(value); scene.setPose(sampleCamera(value,isMobile(),innerHeight));
     await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
   };
   window.__katana.captureChapter = async index => {
     if (!scene || !journey) throw new Error('The official model must be loaded before capturing posters.');
     journey.pause();
+    scene.setCaptureImpact(null);
     journey.seek(chapters[index].progress);
     scene.setStory(chapters[index].progress);
     scene.setPose(sampleCamera(chapters[index].progress, isMobile(),innerHeight));
     await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+  };
+  window.__katana.captureImpact=async phase=>{
+    if(!scene||!journey)throw new Error('3D unavailable');
+    scene.setCaptureImpact(phase);
+    await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
   };
 }
 

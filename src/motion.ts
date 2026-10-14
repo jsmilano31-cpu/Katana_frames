@@ -18,8 +18,6 @@ export function sampleCamera(progress:number,mobile:boolean,viewportHeight=Infin
   const lift=a.progress>=.94?0:sceneConfig.motion.cameraLift;
   c1[0]+=arc;c2[0]+=arc;c1[1]+=lift;c2[1]+=lift;
   const position=[...cubicBezier(from.position,c1,c2,to.position,t)] as [number,number,number];
-  const impact=sampleEffects(p).impactPhase;
-  if(p>=sceneConfig.effects.impact&&impact<1) position[1]+=Math.sin(impact*Math.PI*5)*.035*(1-impact)**2;
   const target=[...cubicBezier(from.target,mix(from.target,to.target,.33),mix(from.target,to.target,.67),to.target,t)] as [number,number,number];
   if(mobile&&viewportHeight<sceneConfig.framing.compactPortraitHeight){
     const presence=1-ease(p/sceneConfig.motion.drawStart);
@@ -34,10 +32,18 @@ export function sampleEffects(progress:number) {
   const drawPhase=clamp01((p-sceneConfig.motion.drawStart)/(sceneConfig.motion.drawEnd-sceneConfig.motion.drawStart));
   const alignment=ease((p-config.alignStart)/(config.alignEnd-config.alignStart));
   const descent=clamp01((p-config.alignEnd)/(config.impact-config.alignEnd));
-  const impactPhase=clamp01((p-config.impact)/(config.burstEnd-config.impact));
   return {drawPhase,drawStrength:Math.sin(Math.PI*drawPhase)*(.35+.65*drawPhase),alignment,
     lift:config.dropHeight*(1-descent**2),groundOpacity:alignment,
-    contact:p>=config.impact,impactPhase,burst:p>=config.impact?Math.sin(Math.PI*impactPhase):0};
+    contact:p>=config.impact};
+}
+export function sampleAwakening(progress:number,exposedFraction=1){
+  const p=clamp01(progress),config=sceneConfig.effects;
+  const phase=ease((p-config.awakeningStart)/(config.awakeningEnd-config.awakeningStart));
+  const active=p>config.awakeningStart&&p<config.awakeningEnd;
+  return {phase,pulsePosition:Math.min(phase,Math.max(0,exposedFraction-.012)),
+    pulseStrength:active?Math.sin(Math.PI*phase)**.4:0,
+    aura:ease((p-config.awakeningStart)/.1)*config.auraIntensity,
+    glint:p>=config.awakeningEnd?Math.sin(Math.PI*clamp01((p-config.awakeningEnd)/(config.glintEnd-config.awakeningEnd))):0};
 }
 export function activeChapter(progress:number):number {
   const p=clamp01(progress);return chapters.reduce((index,c,i)=>p>=c.start?i:index,0);

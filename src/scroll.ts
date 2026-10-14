@@ -13,12 +13,22 @@ export class ScrollJourney {
   private trigger: ScrollTrigger;
   private playhead = { progress: 0 };
   private paused = false;
+  private refreshing=false;
+  private refreshProgress=0;
+  private refreshStart=()=>{this.refreshing=true;this.refreshProgress=this.playhead.progress;};
+  private refreshEnd=()=>{
+    this.timeline.progress(this.refreshProgress);
+    this.refreshing=false;
+    if(!this.paused)this.onProgress(this.refreshProgress);
+  };
 
   constructor(story: HTMLElement, private onProgress: (progress: number) => void) {
     this.timeline = gsap.timeline({ paused: true }).to(this.playhead, {
       progress: 1, duration: 1, ease: 'none',
-      onUpdate: () => { if (!this.paused) this.onProgress(this.playhead.progress); },
+      onUpdate: () => { if (!this.paused&&!this.refreshing) this.onProgress(this.playhead.progress); },
     });
+    ScrollTrigger.addEventListener('refreshInit',this.refreshStart);
+    ScrollTrigger.addEventListener('refresh',this.refreshEnd);
     this.trigger = ScrollTrigger.create({
       trigger: story,
       start: 'top top', end: 'bottom bottom',
@@ -45,10 +55,12 @@ export class ScrollJourney {
   }
 
   resume(): void {
-    this.paused = false;
+    const preserved=this.playhead.progress;
     this.trigger.enable(false, false);
     this.trigger.refresh();
     this.trigger.update();
+    this.timeline.progress(preserved);
+    this.paused = false;
     this.onProgress(this.playhead.progress);
   }
 
@@ -70,5 +82,9 @@ export class ScrollJourney {
     this.timeline.progress(preserved);
     this.onProgress(preserved);
   }
-  dispose(): void { this.trigger.kill(); this.timeline.kill(); }
+  dispose(): void {
+    ScrollTrigger.removeEventListener('refreshInit',this.refreshStart);
+    ScrollTrigger.removeEventListener('refresh',this.refreshEnd);
+    this.trigger.kill(); this.timeline.kill();
+  }
 }

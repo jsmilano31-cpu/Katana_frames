@@ -46,7 +46,32 @@ try {
     const unique = [...new Map(samples.map(sample => [sample.fps, sample])).values()];
     const effects=[];
     if(process.argv.includes('--effects')){
-      for(const [phase,progress] of [['unsheathing',.25],['impact gust',.98],['planted ambient',1]]){
+      for(const [phase,progress] of [['awakening and mist',.25],['repeated landing bursts',1],['planted ambient',1]]){
+        if(phase==='repeated landing bursts'){
+          const bursts=[];
+          for(let cycle=0;cycle<3;cycle++){
+            await page.evaluate(()=>window.scrollTo({top:(document.querySelector('.story').getBoundingClientRect().height-innerHeight)*.93,behavior:'instant'}));
+            await page.waitForTimeout(1100);
+            await page.evaluate(()=>window.scrollTo({top:document.querySelector('.story').getBoundingClientRect().height-innerHeight,behavior:'instant'}));
+            await page.waitForFunction(()=>window.__katana.state().choreography.impact.mode==='playing');
+            const sample=await page.evaluate(async()=>{
+              const frames=[],started=performance.now();
+              await new Promise(resolve=>{
+                function frame(now){
+                  const canvas=document.querySelector('canvas'),gl=canvas.getContext('webgl2');
+                  // synchronize to the completed rendered frame, not a queued RAF callback.
+                  gl.finish();frames.push(now);
+                  if(now-started<1400)requestAnimationFrame(frame);else resolve();
+                }
+                requestAnimationFrame(frame);
+              });
+              return {reportedStats:window.__katana.state().stats,fps:(frames.length-1)*1000/(frames.at(-1)-frames[0])};
+            });
+            bursts.push(sample);
+          }
+          effects.push({phase,measurements:bursts,method:'Three native-scroll landings; frame timings synchronized with gl.finish().'});
+          continue;
+        }
         await page.evaluate(p=>window.scrollTo({top:(document.querySelector('.story').getBoundingClientRect().height-innerHeight)*p,behavior:'instant'}),progress);
         // Allow catch-up and two full measurement windows before sampling.
         await page.waitForTimeout(5600);

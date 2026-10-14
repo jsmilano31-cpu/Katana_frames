@@ -1,0 +1,154 @@
+[
+  {
+    "name": "Desktop 1440 × 900",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "asset": "Official Katana by J.AkioHonda",
+    "measurements": [
+      {
+        "fps": 68.49315068493145,
+        "dpr": 1,
+        "drawCalls": 41,
+        "triangles": 22646
+      },
+      {
+        "fps": 98.90656063618283,
+        "dpr": 1,
+        "drawCalls": 43,
+        "triangles": 20296
+      },
+      {
+        "fps": 112.15232778386992,
+        "dpr": 1,
+        "drawCalls": 33,
+        "triangles": 22198
+      }
+    ],
+    "effects": [
+      {
+        "phase": "awakening and mist",
+        "fps": 165.02143783029223,
+        "dpr": 1,
+        "drawCalls": 38,
+        "triangles": 22454
+      },
+      {
+        "phase": "repeated landing bursts",
+        "measurements": [
+          {
+            "reportedStats": {
+              "fps": 129.5,
+              "dpr": 1,
+              "drawCalls": 34,
+              "triangles": 19236
+            },
+            "fps": 139.49865458150396
+          },
+          {
+            "reportedStats": {
+              "fps": 139.58125623130636,
+              "dpr": 1,
+              "drawCalls": 39,
+              "triangles": 20102
+            },
+            "fps": 141.68319637291032
+          },
+          {
+            "reportedStats": {
+              "fps": 140.6350941708496,
+              "dpr": 1,
+              "drawCalls": 40,
+              "triangles": 20104
+            },
+            "fps": 140.81502026882882
+          }
+        ],
+        "method": "Three native-scroll landings; frame timings synchronized with gl.finish()."
+      },
+      {
+        "phase": "planted ambient",
+        "fps": 164.49828024525235,
+        "dpr": 1,
+        "drawCalls": 35,
+        "triangles": 19238
+      }
+    ],
+    "limitation": "Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone."
+  },
+  {
+    "name": "Pixel 7 emulation",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "asset": "Official Katana by J.AkioHonda",
+    "measurements": [
+      {
+        "fps": 107.98920107989187,
+        "dpr": 1.25,
+        "drawCalls": 29,
+        "triangles": 22126
+      },
+      {
+        "fps": 117.99999999999984,
+        "dpr": 1.25,
+        "drawCalls": 34,
+        "triangles": 19728
+      },
+      {
+        "fps": 130.49999999999983,
+        "dpr": 1.25,
+        "drawCalls": 25,
+        "triangles": 21872
+      }
+    ],
+    "effects": [
+      {
+        "phase": "awakening and mist",
+        "fps": 164.9999999999999,
+        "dpr": 1.25,
+        "drawCalls": 27,
+        "triangles": 21998
+      },
+      {
+        "phase": "repeated landing bursts",
+        "measurements": [
+          {
+            "reportedStats": {
+              "fps": 138.49999999999991,
+              "dpr": 1.25,
+              "drawCalls": 26,
+              "triangles": 18972
+            },
+            "fps": 156.50449684866507
+          },
+          {
+            "reportedStats": {
+              "fps": 157.5824066224509,
+              "dpr": 1.25,
+              "drawCalls": 31,
+              "triangles": 19598
+            },
+            "fps": 158.62853891022914
+          },
+          {
+            "reportedStats": {
+              "fps": 154.54409491998612,
+              "dpr": 1.25,
+              "drawCalls": 32,
+              "triangles": 19600
+            },
+            "fps": 156.42857142857142
+          }
+        ],
+        "method": "Three native-scroll landings; frame timings synchronized with gl.finish()."
+      },
+      {
+        "phase": "planted ambient",
+        "fps": 164.5064805583253,
+        "dpr": 1.25,
+        "drawCalls": 27,
+        "triangles": 18974
+      }
+    ],
+    "limitation": "Actual model in headless Edge. Portrait is desktop browser emulation, not a physical phone."
+  }
+]

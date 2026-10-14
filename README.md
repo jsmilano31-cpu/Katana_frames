@@ -1,6 +1,6 @@
 ﻿# Katana - Ink & Steel
 
-A local cinematic showcase made with Vite, TypeScript, Three.js, and GSAP ScrollTrigger. Native scrolling unfolds six movements: Presence, The draw, The edge, Stillness, Ink to light, and Your perspective. Wind escapes the scabbard during extraction; the finale plants the real katana into an ink-covered stone slab with an outward gust.
+A local cinematic showcase made with Vite, TypeScript, Three.js, and GSAP ScrollTrigger. Native scrolling unfolds six movements: Presence, The draw, The edge, Stillness, Through the mist, and Your perspective. A silver-turquoise light pulse awakens the emerging blade, layered mist follows its movement, and a complete landing burst plants it in stone. The planted scene is the actual bottom of the page; credits are available in About.
 
 ## Run locally
 
@@ -24,15 +24,19 @@ The production build is in `dist/`. Serve it over HTTP using the preview command
 
 ## Choreography and controls
 
-- Scroll forward or backward to draw or reseat the blade. Sword, camera, and impact choreography stop after approximately 0.8 seconds of catch-up. Travel is eight viewport heights on desktop and six on portrait screens.
-- Fine sheath mist and ribbons follow the real opening. In the final act the sword turns downward (90–94%), strikes (94–96.5%), and releases an outward wind ring and ink particles (96.5–100%). Reverse scrolling undoes the sequence; the tip remains embedded after impact.
-- Gentle ambient particles, ink drift, and faint wind continue while idle. **Pause effects** freezes that ambient motion while scrolling remains usable; **Resume effects** restores it. Hidden tabs stop rendering.
-- The blade clears the scabbard before the perspective sweep. Moving lights and environment reflections reveal its shape. Layered ink artwork gradually gives way to ivory.
+- Scroll forward or backward to draw or reseat the blade. Sword and camera movement follow scroll with approximately 0.8 seconds of catch-up. Travel is eight viewport heights on desktop and six on portrait screens.
+- From 16–38%, a separate light layer sends a pulse along the exposed steel. It follows the model's curvature, obeys sheath clipping, and reaches the tip with a brief glint. Reverse scrolling returns the blade to its dormant state.
+- White mist, turquoise wisps, and luminous motes surround the blade. Trails sample authored sword poses, respond to scroll direction, and strengthen during larger movements. The atmosphere stays dark through the final reveal.
+- In the final act the sword turns downward (90–94%) and descends (94–96.5%). Contact triggers a 1.6-second flare, spreading fissures, rising stone fragments, and mist rings, even if scrolling stops. The actual blade tip remains anchored in stone.
+- Reversing below contact cancels the burst. Moving below 94% re-arms it; a later forward crossing plays it again. Opening directly at `#form` shows the settled ending. Resize and Explore do not replay the burst.
+- Gentle mist and motes continue while idle. **Pause effects** suppresses ambient motion and automatic bursts, settling an active landing immediately; scroll-controlled movement and awakening remain usable. **Resume effects** restores ambient movement. Hidden tabs suspend rendering and effect clocks.
 - Chapter navigation leads to authored compositions. Resizing and orientation changes preserve the scene's progress within native scroll-pixel rounding.
 - **Explore the katana** becomes available when the final impact settles. Drag with mouse or touch, or focus the viewer and use arrow keys, to orbit the planted sword. Orbit limits keep the camera above the ground. **R**, **Home**, and **Reset view** reset the camera. **Escape** or **Back to the study** restores the cinematic sequence. **Replay the journey** returns to the beginning.
 - Reduced motion, unavailable WebGL, and failed loading use six desktop and six portrait images rendered from the real model. A retry is available after loading failure. There is no forced wheel interception or scroll snapping.
 
-`src/config.ts` centralizes act timing, responsive camera paths, transforms, extraction calibration, ground placement, wind settings, lighting, artwork, and text timing. `src/motion.ts` samples the reversible state; `src/scene.ts` renders it, with bounded wind pools and procedural stone in `src/effects.ts`. The actual maximum-X blade vertex supplies the contact anchor after normalization. The read-only `window.__katana.state()` exposes camera, tip contact, effects, ambient time, and rendering statistics for QA. `?capture=1` enables poster capture and freezes ambient time for reproducible images.
+`src/config.ts` centralizes choreography, framing, and effect settings. Pure scroll sampling remains separate from the landing clock in `src/impact.ts`; the scene renderer coordinates both. `src/awakening.ts` adds a separate clipped surface layer, `src/mist.ts` creates bounded fog and trails, and `src/effects.ts` handles the ground and fragments. The actual maximum-X blade vertex supplies the contact anchor after normalization. The read-only `window.__katana.state()` exposes camera, tip contact, awakening, landing state/count, ambient time, and rendering statistics for QA. `?capture=1` freezes ambient time, settles landings, and exposes progress/impact-phase capture hooks for reproducible images.
+
+Live HTML panels use a fixed viewport layer to keep focus from scrolling the sticky scene. ScrollTrigger refreshes preserve authored progress and suppress transient resets, preventing layout refreshes from replaying the landing.
 
 ## Model and artwork
 
@@ -40,7 +44,7 @@ The official **Katana by J.AkioHonda** is included in `public/assets/model/katan
 
 Original SVG ink silhouettes are generated in `src/ink.ts` and rendered on transparent planes at different depths. Their artwork and layout are original. The Instagram reel served as composition and motion inspiration; no reel artwork, video, branding, or copy is included in the website.
 
-Wind ribbons, mist, stone grain, ink patches, and fractures are procedural local artwork. No additional external asset or service is required. Desktop and portrait layouts reserve separate areas for copy, object, navigation, and controls; short landscape screens use a compact composition.
+Wind ribbons, mist, stone grain, ink patches, and fractures are procedural local artwork. The mist's cool palette and curling shapes take visual inspiration from [Aniplex's official Muichiro figure](https://store.aniplexusa.com/demonslayer/muichiro-figure/); anime images, character models, and artwork are not shipped. All runtime assets are local. Desktop and portrait layouts reserve separate areas for copy, object, navigation, and controls; short landscape screens use a compact composition.
 
 To import another official download:
 
