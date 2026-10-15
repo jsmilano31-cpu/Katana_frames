@@ -9,7 +9,7 @@ function outline(guide:Vector3[]){
   const vertices:number[]=[],indices:number[]=[];
   for(let i=0;i<=12;i++){
     const t=i/12,at=t*(guide.length-1),index=Math.min(guide.length-2,Math.floor(at));
-    const p=guide[index].clone().lerp(guide[index+1],at-index),width=i===12?.002:.059*(1-t*.48),thickness=.009*(1-t*.6);
+    const p=guide[index].clone().lerp(guide[index+1],at-index),width=i===12?.002:.059*(1-t*.48),thickness=.018*(1-t*.6);
     for(const [y,z] of [[-width,-thickness],[width,-thickness],[width,thickness],[-width,thickness]])vertices.push(p.x,p.y+y,p.z+z);
     if(i<12)for(let edge=0;edge<4;edge++){const a=i*4+edge,b=i*4+(edge+1)%4;indices.push(a,b,a+4,b,b+4,a+4);}
   }
@@ -45,7 +45,7 @@ export class SwordField {
   private faded=0;
   constructor(guide:Vector3[],tip:Vector3){
     const c=sceneConfig.swordField,geometry=outline(guide),material=new MeshStandardMaterial({color:c.color,
-      roughness:.92,metalness:.04,envMapIntensity:.025,transparent:true,depthWrite:false,side:DoubleSide,forceSinglePass:true});
+      roughness:.92,metalness:.04,envMapIntensity:.025,transparent:false,alphaHash:true,depthWrite:true,depthTest:true,side:DoubleSide,forceSinglePass:true});
     this.visibility=new InstancedBufferAttribute(new Float32Array(c.desktopCount).fill(1),1).setUsage(DynamicDrawUsage);
     geometry.setAttribute('aFieldVisibility',this.visibility);
     material.onBeforeCompile=shader=>{
@@ -109,6 +109,6 @@ export class SwordField {
     this.visibility.needsUpdate=true;
   }
 
-  diagnostics(){return{count:this.mesh.count,reveal:this.reveal,faded:this.faded,trianglesPerSword:this.mesh.geometry.index!.count/3};}
+  diagnostics(){return{count:this.mesh.count,reveal:this.reveal,faded:this.faded,trianglesPerSword:this.mesh.geometry.index!.count/3,depthWrite:(this.mesh.material as MeshStandardMaterial).depthWrite,alphaHash:(this.mesh.material as MeshStandardMaterial).alphaHash};}
   dispose(){for(const mesh of[this.mesh,this.shadows]){mesh.dispose();mesh.geometry.dispose();(mesh.material as MeshStandardMaterial).dispose();}this.shadowTexture.dispose();this.root.removeFromParent();}
 }

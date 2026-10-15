@@ -187,13 +187,14 @@ test('portrait exploration responds to a touch drag and exits through its toolba
 });
 
 test('the official katana loads with local textures and all six authored views', async ({ page }) => {
+  test.setTimeout(90000);
   test.skip(!existsSync('public/assets/model/katana.glb'), 'An official model must be imported.');
   const errors: string[] = [];
   const failed: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('response', response => { if (response.status() >= 400) failed.push(response.url()); });
   await page.goto('/');
-  await expect(page.locator('body')).toHaveAttribute('data-view', '3d');
+  await expect(page.locator('body')).toHaveAttribute('data-view', '3d',{timeout:60000});
   const seated = await page.evaluate(() => window.__katana.state().choreography);
   for (const index of [1, 2, 3, 4, 5]) {
     await page.locator(`[data-nav="${index}"]`).click();

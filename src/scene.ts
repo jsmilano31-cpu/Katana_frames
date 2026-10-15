@@ -1,7 +1,7 @@
 import {
   ACESFilmicToneMapping, Box3, Color, DirectionalLight, Group, HemisphereLight,
   LoadingManager, Material, Mesh, PerspectiveCamera, PMREMGenerator, Scene,
-  Quaternion, Spherical, Texture, Vector3, WebGLRenderer, type WebGLRenderTarget,
+  Quaternion, Spherical, Texture, Vector3, WebGLRenderer, WebGLRenderTarget,
   Euler, Matrix4, Plane, MeshBasicMaterial, ShaderMaterial, FogExp2,
 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -18,6 +18,8 @@ import { awakeningMaterial } from './awakening';
 import { LandingImpact } from './impact';
 import { MoonlitGrove } from './grove';
 import { SwordField } from './sword-field';
+import {DragonSpirit} from './dragon';
+import {FallingLeaves} from './falling-leaves';
 
 export interface SceneStats { fps: number; dpr: number; drawCalls: number; triangles: number }
 
@@ -50,6 +52,9 @@ export class KatanaScene {
   private authoredCamera=new Vector3();
   private effects = new WindEffects();
   private grove = new MoonlitGrove();
+  private dragon = new DragonSpirit();
+  private fallingLeaves = new FallingLeaves();
+  private leafReplayReset=false;
   private field:SwordField|null=null;
   private groveFog = new FogExp2('#14262f',0);
   private exploreOrigin = new Vector3();
@@ -103,6 +108,7 @@ export class KatanaScene {
     const warm = new DirectionalLight('#89c5ca', 0.45);
     warm.position.set(-4, 1, -2);
     this.scene.add(key, rim, warm, this.model, this.effects.root,this.grove.root);
+    this.scene.add(this.dragon.root);this.grove.root.add(this.fallingLeaves.root);
     this.scene.fog=this.groveFog;
     this.model.add(this.sword, this.scabbard);
     this.draco.setDecoderPath('/assets/decoders/draco/');
@@ -176,6 +182,7 @@ export class KatanaScene {
       }
       const copies = original.map(material => {
         const copy = material.clone();
+        copy.depthTest=true;copy.depthWrite=true;
         if (sheath) { copy.transparent = true; this.sheathMaterials.push(copy); }
         if (blade) { copy.clippingPlanes = [this.bladePlane]; this.bladeMaterials.push(copy); }
         return copy;
@@ -191,15 +198,20 @@ export class KatanaScene {
     }
     this.field=new SwordField(this.bladeGuide,this.bladeTip);this.grove.root.add(this.field.root);
     this.ink = await createInk(); this.scene.add(this.ink);
+    await this.dragon.load();
     this.setStory(this.storyProgress);
     await this.renderer.compileAsync(this.scene, this.camera);
     // Warm the finale's instanced shaders during loading, rather than at impact.
     const groveVisible=this.grove.root.visible;
     this.field?.setProgress(1);
     this.grove.root.visible=true;
+    this.dragon.setProgress(.36);this.dragon.update(this.camera,0);
+    this.fallingLeaves.capture(1);
     await this.renderer.compileAsync(this.scene,this.camera);
     // Upload the grove buffers and local textures while the loading poster is visible.
     this.renderer.render(this.scene,this.camera);
+    this.fallingLeaves.reset();this.fallingLeaves.root.visible=false;
+    this.dragon.setProgress(this.storyProgress);
     this.grove.root.visible=groveVisible;
     this.field?.setProgress(this.storyProgress);
     this.renderer.render(this.scene,this.camera);
@@ -215,10 +227,12 @@ export class KatanaScene {
     }
     this.lastStoryTime=now;
     this.storyProgress = progress;
+    if(progress<sceneConfig.effects.impact)this.leafReplayReset=false;
     const previousImpact=this.impact.mode;
     if(this.captureMode)this.impact.restore(progress);else this.impact.observe(progress,this.ambientPaused);
     const state = sampleChoreography(progress);
     this.grove.setProgress(progress);
+    this.dragon.setProgress(progress);
     this.field?.setProgress(progress);
     this.groveFog.density=sceneConfig.grove.fogDensity*this.grove.diagnostics().reveal;
     this.qa.setFromEuler(this.rotation.set(...state.fromRotation));
@@ -270,6 +284,51 @@ export class KatanaScene {
   storyState() { return { progress:this.storyProgress,rotation:this.model.quaternion.toArray(),sword:this.sword.position.toArray(),scabbard:this.scabbard.position.toArray(),scabbardVisible:this.scabbard.visible,tip:this.sword.localToWorld(this.bladeTip.clone()).toArray(),effects:{...this.effects.diagnostics(),awakening:sampleAwakening(this.storyProgress,this.exposed),exposed:this.exposed},impact:this.impact.snapshot(),ambientPaused:this.ambientPaused,ambientTime:this.ambientTime,grove:this.grove.diagnostics(),field:this.field?.diagnostics(),fit:{mouth:this.mouth.toArray(),axis:this.mouthAxis.toArray()},exploration:{origin:this.exploreOrigin.toArray(),minimumDistance:this.controls.minDistance,maximumDistance:this.controls.maxDistance,panRadius:sceneConfig.model.length*sceneConfig.explore.panRadius} }; }
 
   get impactSettled(){return this.impact.mode!=='playing';}
+  resetLeaves(){this.fallingLeaves.reset();this.leafReplayReset=true;this.dirty=true;}
+  captureLeaves(seconds:number){if(!this.captureMode)throw new Error('Leaf capture requires ?capture=1');this.fallingLeaves.capture(seconds);this.dirty=true;}
+  atmosphereState(){return{dragon:this.dragon.diagnostics(),leaves:this.fallingLeaves.diagnostics()};}
+  /** Offscreen color IDs verify actual visible fragments, not just instance counts. */
+  captureVisibility(){
+    if(!this.captureMode)throw new Error('Visibility capture requires ?capture=1');
+    const width=512,height=Math.round(width/this.camera.aspect),target=new WebGLRenderTarget(width,height);
+    const previous=this.renderer.getRenderTarget();
+    const hidden:{object:import('three').Object3D;visible:boolean}[]=[];
+    const changed:{mesh:Mesh;material:Material|Material[]}[]=[];
+    const materials=new Set<MeshBasicMaterial>();
+    this.scene.traverse(object=>{
+      if(object instanceof Mesh){
+        const original=Array.isArray(object.material)?object.material:[object.material];
+        if(original.every(m=>m.type==='MeshStandardMaterial')){
+          const id=object.name==='Field of silhouette katanas'?'field':this.sword.getObjectById(object.id)?(/nagasa|blade/i.test(object.name)?'blade':'handle'):'scenery';
+          const rgb=id==='field'?'1.0,0.0,0.0':id==='blade'?'0.0,1.0,0.0':id==='handle'?'1.0,1.0,0.0':'0.0,0.0,1.0';
+          const replacements=original.map(source=>{
+            const material=new MeshBasicMaterial({color:'#ffffff',map:'map' in source?source.map as Texture|null:null,alphaTest:source.alphaTest,opacity:source.opacity,transparent:source.transparent,depthWrite:source.depthWrite,depthTest:source.depthTest,side:source.side,alphaHash:source.alphaHash,toneMapped:false,fog:false,clippingPlanes:source.clippingPlanes});
+            material.onBeforeCompile=(shader,renderer)=>{
+              source.onBeforeCompile(shader,renderer);
+              shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',`#include <opaque_fragment>\ngl_FragColor.rgb=vec3(${rgb});`);
+            };
+            material.customProgramCacheKey=()=>`visibility-${id}-${source.customProgramCacheKey()}`;
+            materials.add(material);return material;
+          });
+          changed.push({mesh:object,material:object.material});object.material=Array.isArray(object.material)?replacements:replacements[0];
+        }else{hidden.push({object,visible:object.visible});object.visible=false;}
+      }else if(object.type==='Sprite'||object.type==='Points'||object.type==='LineSegments'){
+        hidden.push({object,visible:object.visible});object.visible=false;
+      }
+    });
+    const pixels=new Uint8Array(width*height*4),counts={blade:0,handle:0,field:0,scenery:0};
+    try{
+      this.renderer.setRenderTarget(target);this.renderer.render(this.scene,this.camera);this.renderer.readRenderTargetPixels(target,0,0,width,height,pixels);
+      for(let i=0;i<pixels.length;i+=4){const r=pixels[i],g=pixels[i+1],b=pixels[i+2];
+        if(g>200&&r<30&&b<30)counts.blade++;else if(r>200&&g>200&&b<30)counts.handle++;else if(r>200&&g<30&&b<30)counts.field++;else if(b>200&&r<30&&g<30)counts.scenery++;
+      }
+    }finally{
+      changed.forEach(({mesh,material})=>mesh.material=material);hidden.forEach(({object,visible})=>object.visible=visible);
+      this.renderer.setRenderTarget(previous);target.dispose();materials.forEach(m=>m.dispose());
+      this.renderer.render(this.scene,this.camera);
+    }
+    return{width,height,pixels:counts};
+  }
   setImpactCallback(callback:()=>void){this.onImpact=callback;}
   prepareEntry(settled:boolean){this.impact.prepareEntry(settled);}
   setCaptureImpact(phase:number|null){
@@ -510,6 +569,9 @@ export class KatanaScene {
     if (!this.dirty) { this.lastFrame = 0; return; }
     this.effects.faceCamera(this.camera);
     this.grove.update(this.ambientTime,this.camera);
+    this.dragon.update(this.camera,this.ambientTime);
+    const leavesVisible=!this.leafReplayReset&&this.storyProgress>=sceneConfig.effects.impact&&this.impact.mode==='settled';
+    this.fallingLeaves.update(seconds,leavesVisible,leavesVisible&&!this.ambientPaused);
     this.field?.update(this.camera,this.sword.localToWorld(this.bladeTip.clone()),this.sword.localToWorld(new Vector3(-sceneConfig.model.length/2,this.bladeGuide[0].y,0)));
     if (this.lastFrame) {
       const seconds = Math.min((time - this.lastFrame) / 1000, 0.2);
@@ -539,6 +601,7 @@ export class KatanaScene {
     this.renderer.setAnimationLoop(null);
     this.effects.dispose();
     this.field?.dispose();
+    this.dragon.dispose();this.fallingLeaves.dispose();
     this.grove.dispose();
     this.controls.removeEventListener('change', this.markDirty);
     this.controls.dispose();

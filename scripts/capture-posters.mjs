@@ -19,12 +19,13 @@ try {
     await page.waitForTimeout(200);
     for (let index = 0; index < 6; index++) {
       await page.evaluate(index => window.__katana.captureChapter(index), index);
+      if(index===5)await page.evaluate(()=>window.__katana.captureLeaves(180));
       await page.waitForTimeout(80);
       await page.screenshot({ path: path.join(output, `chapter-${index}${suffix}.png`) });
     }
   }
   manifest.postersReady = true;
-  manifest.modifications = 'glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation orientation reset; sheath opening and blade collar calibrated from geometry, normalized, and grouped for reversible unsheathing. Separate awakening light layer, original procedural mist and ink artwork, studio lighting, and a stone impact setting added. Original procedural moonlit bamboo grove and instanced silhouette katana field added. Desktop and portrait chapter posters rendered.';
+  manifest.modifications = 'glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation orientation reset; sheath opening and blade collar calibrated from geometry, normalized, and grouped for reversible unsheathing. Separate awakening light layer, original procedural mist and ink artwork, studio lighting, and a stone impact setting added. Original procedural moonlit bamboo grove, instanced silhouette katana field, layered SVG dragon spirit, and falling bamboo leaves with persistent ground accumulation added. Desktop and portrait chapter posters rendered.';
   await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
   console.log('Captured twelve chapter posters from the official model. Inspect them before the final asset check.');
 } finally {

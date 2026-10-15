@@ -1,0 +1,188 @@
+[
+  {
+    "name": "desktop",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "awakening": {
+      "fps": 146.2128475551294,
+      "stats": {
+        "fps": 153.99999999999994,
+        "dpr": 1,
+        "drawCalls": 42,
+        "triangles": 22462
+      },
+      "atmosphere": {
+        "dragon": {
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "dissolve": 0,
+          "visible": true
+        },
+        "leaves": {
+          "time": 0,
+          "airborne": 0,
+          "landed": 0,
+          "baked": 0,
+          "spawned": 0,
+          "airborneLimit": 96,
+          "landedLimit": 512,
+          "textureSize": 2048
+        }
+      }
+    },
+    "grove": {
+      "fps": 77.88529620014161,
+      "stats": {
+        "fps": 78.81385153440723,
+        "dpr": 1,
+        "drawCalls": 50,
+        "triangles": 138636
+      },
+      "atmosphere": {
+        "dragon": {
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "dissolve": 1,
+          "visible": false
+        },
+        "leaves": {
+          "time": 605.0855999999977,
+          "airborne": 66,
+          "landed": 512,
+          "baked": 3053,
+          "spawned": 3631,
+          "airborneLimit": 96,
+          "landedLimit": 512,
+          "textureSize": 2048
+        }
+      }
+    },
+    "hour": {
+      "fps": 67.03776859998806,
+      "stats": {
+        "fps": 70.08997365412338,
+        "dpr": 1,
+        "drawCalls": 50,
+        "triangles": 138640
+      },
+      "atmosphere": {
+        "dragon": {
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "dissolve": 1,
+          "visible": false
+        },
+        "leaves": {
+          "time": 3604.277300000002,
+          "airborne": 65,
+          "landed": 512,
+          "baked": 21049,
+          "spawned": 21626,
+          "airborneLimit": 96,
+          "landedLimit": 512,
+          "textureSize": 2048
+        }
+      }
+    },
+    "method": "Five-second rendered-frame timings synchronized with gl.finish(); real GLB, dragon, mist, sword field, and bounded leaf carpet. Capture hooks prefill leaves; ambient effects are resumed. Mobile is desktop emulation."
+  },
+  {
+    "name": "Pixel 7 emulation",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "awakening": {
+      "fps": 164.2,
+      "stats": {
+        "fps": 165.01321102746877,
+        "dpr": 1.25,
+        "drawCalls": 31,
+        "triangles": 22006
+      },
+      "atmosphere": {
+        "dragon": {
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "dissolve": 0,
+          "visible": true
+        },
+        "leaves": {
+          "time": 0,
+          "airborne": 0,
+          "landed": 0,
+          "baked": 0,
+          "spawned": 0,
+          "airborneLimit": 48,
+          "landedLimit": 256,
+          "textureSize": 1024
+        }
+      }
+    },
+    "grove": {
+      "fps": 99.27887976668464,
+      "stats": {
+        "fps": 95.71286141575276,
+        "dpr": 1.25,
+        "drawCalls": 44,
+        "triangles": 79180
+      },
+      "atmosphere": {
+        "dragon": {
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "dissolve": 1,
+          "visible": false
+        },
+        "leaves": {
+          "time": 605.5759999999957,
+          "airborne": 34,
+          "landed": 256,
+          "baked": 1527,
+          "spawned": 1817,
+          "airborneLimit": 48,
+          "landedLimit": 256,
+          "textureSize": 1024
+        }
+      }
+    },
+    "hour": {
+      "fps": 128.56876669220102,
+      "stats": {
+        "fps": 143.56213548676544,
+        "dpr": 1.25,
+        "drawCalls": 43,
+        "triangles": 79166
+      },
+      "atmosphere": {
+        "dragon": {
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "dissolve": 1,
+          "visible": false
+        },
+        "leaves": {
+          "time": 3604.836699999991,
+          "airborne": 34,
+          "landed": 256,
+          "baked": 10525,
+          "spawned": 10815,
+          "airborneLimit": 48,
+          "landedLimit": 256,
+          "textureSize": 1024
+        }
+      }
+    },
+    "method": "Five-second rendered-frame timings synchronized with gl.finish(); real GLB, dragon, mist, sword field, and bounded leaf carpet. Capture hooks prefill leaves; ambient effects are resumed. Mobile is desktop emulation."
+  }
+]

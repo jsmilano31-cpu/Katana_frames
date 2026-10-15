@@ -1,0 +1,147 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900,
+    "errors": [],
+    "failed": [],
+    "leaves": {
+      "time": 600,
+      "airborne": 67,
+      "landed": 512,
+      "baked": 3022,
+      "spawned": 3601,
+      "airborneLimit": 96,
+      "landedLimit": 512,
+      "textureSize": 2048
+    },
+    "visibility": {
+      "width": 512,
+      "height": 320,
+      "pixels": {
+        "blade": 850,
+        "handle": 486,
+        "field": 3663,
+        "scenery": 127780
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  },
+  {
+    "name": "wide",
+    "width": 1809,
+    "height": 685,
+    "errors": [],
+    "failed": [],
+    "leaves": {
+      "time": 600,
+      "airborne": 67,
+      "landed": 512,
+      "baked": 3022,
+      "spawned": 3601,
+      "airborneLimit": 96,
+      "landedLimit": 512,
+      "textureSize": 2048
+    },
+    "visibility": {
+      "width": 512,
+      "height": 194,
+      "pixels": {
+        "blade": 304,
+        "handle": 181,
+        "field": 2491,
+        "scenery": 76068
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  },
+  {
+    "name": "portrait",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "failed": [],
+    "leaves": {
+      "time": 600,
+      "airborne": 35,
+      "landed": 256,
+      "baked": 1510,
+      "spawned": 1801,
+      "airborneLimit": 48,
+      "landedLimit": 256,
+      "textureSize": 1024
+    },
+    "visibility": {
+      "width": 512,
+      "height": 1108,
+      "pixels": {
+        "blade": 5609,
+        "handle": 3031,
+        "field": 4422,
+        "scenery": 353705
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  },
+  {
+    "name": "landscape",
+    "width": 844,
+    "height": 390,
+    "errors": [],
+    "failed": [],
+    "leaves": {
+      "time": 600,
+      "airborne": 67,
+      "landed": 512,
+      "baked": 3022,
+      "spawned": 3601,
+      "airborneLimit": 96,
+      "landedLimit": 512,
+      "textureSize": 2048
+    },
+    "visibility": {
+      "width": 512,
+      "height": 237,
+      "pixels": {
+        "blade": 472,
+        "handle": 269,
+        "field": 3214,
+        "scenery": 92746
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  },
+  {
+    "name": "compact",
+    "width": 320,
+    "height": 568,
+    "errors": [],
+    "failed": [],
+    "leaves": {
+      "time": 600,
+      "airborne": 35,
+      "landed": 256,
+      "baked": 1510,
+      "spawned": 1801,
+      "airborneLimit": 48,
+      "landedLimit": 256,
+      "textureSize": 1024
+    },
+    "visibility": {
+      "width": 512,
+      "height": 909,
+      "pixels": {
+        "blade": 3771,
+        "handle": 2043,
+        "field": 3038,
+        "scenery": 288209
+      }
+    },
+    "overflow": false,
+    "bottomGap": 0
+  }
+]

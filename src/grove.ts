@@ -118,7 +118,7 @@ export class MoonlitGrove {
     const rockMat=new MeshStandardMaterial({color:'#3c5059',map:ground,roughness:.42,metalness:.13,envMapIntensity:.18,flatShading:true,transparent:true});this.materials.push(rockMat);
     this.rocks=new InstancedMesh(rockGeometry,rockMat,config.desktopRocks);
     for(let i=0;i<config.desktopRocks;i++){
-      const a=i*2.399963,r=config.innerRadius-1+random(i+1000)*15,scale=.5+random(i+1100)*1.7;
+      const a=i*2.399963,r=Math.max(config.innerRadius,sceneConfig.swordField.outerRadius+4)+random(i+1000)*15,scale=.5+random(i+1100)*1.7;
       dummy.position.set(sceneConfig.effects.ground[0]+Math.cos(a)*r,config.groundY+scale*.15,Math.sin(a)*r);dummy.rotation.set(random(i)*.3,a,random(i+1)*.3);dummy.scale.set(scale,scale*.55,scale*.8);dummy.updateMatrix();this.rocks.setMatrixAt(i,dummy.matrix);
     }
     const floorMat=new MeshStandardMaterial({color:config.groundColor,map:ground,bumpMap:ground,bumpScale:.045,roughness:.78,metalness:.04,envMapIntensity:.025,transparent:true});this.materials.push(floorMat);
@@ -157,6 +157,11 @@ export class MoonlitGrove {
     const positions=new Float32Array(config.motes*3);const moteMat=new PointsMaterial({color:'#a9e7dd',size:.038,transparent:true,opacity:0,depthWrite:false});this.materials.push(moteMat);
     const moteGeometry=new BufferGeometry();moteGeometry.setAttribute('position',new BufferAttribute(positions,3));this.motes=new Points(moteGeometry,moteMat);
     this.root.add(floor,this.sky,moon,disc,this.stalks,this.branches,this.leaves,this.rocks,this.litter,this.shadows,...this.fog,this.motes,this.moonlight,this.moonlight.target);
+    // Solid scenery participates in the same depth buffer as the swords.
+    // Alpha hashing preserves the reveal without transparent-batch sort errors.
+    for(const material of this.materials)if(material instanceof MeshStandardMaterial){
+      material.transparent=false;material.alphaHash=true;material.depthWrite=true;material.depthTest=true;
+    }
     for(const mesh of [this.stalks,this.branches,this.leaves,this.rocks,this.litter,this.shadows]){mesh.computeBoundingSphere();mesh.instanceMatrix.needsUpdate=true;}
     this.setProgress(0);
   }

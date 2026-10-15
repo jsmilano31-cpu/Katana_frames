@@ -357,7 +357,8 @@ function setMenuOpen(open:boolean,focus=false):void {
   if(focus)menuToggle.focus({preventScroll:true});
 }
 menuToggle.addEventListener('click',()=>setMenuOpen(viewerMenu.hidden));
-$('.viewer-replay').addEventListener('click',()=>goTo(0));
+function replayJourney(){scene?.resetLeaves();goTo(0);}
+$('.viewer-replay').addEventListener('click',replayJourney);
 document.addEventListener('pointerdown',event=>{
   if(isExploring&&!viewerMenu.hidden&&!explorePanel.contains(event.target as Node))setMenuOpen(false);
 });
@@ -396,7 +397,7 @@ $('.exit-button').addEventListener('pointerup', event => {
   }
 });
 $('.reset-button').addEventListener('click', () => scene?.resetExplore());
-$('.replay-button').addEventListener('click', () => goTo(0));
+$('.replay-button').addEventListener('click',replayJourney);
 
 const rotations: Record<string, [number, number]> = { left: [-0.12, 0], right: [0.12, 0], up: [0, -0.12], down: [0, 0.12] };
 document.querySelectorAll<HTMLButtonElement>('[data-rotate]').forEach(button => button.addEventListener('click', () => scene?.rotate(...rotations[button.dataset.rotate!])));
@@ -467,16 +468,22 @@ declare global {
       captureProgress?: (progress: number) => Promise<void>;
       captureImpact?: (phase: number) => Promise<void>;
       capturePose?: (pose:CameraPose)=>Promise<void>;
+      captureVisibility?:()=>ReturnType<KatanaScene['captureVisibility']>;
+      captureLeaves?:(seconds:number)=>Promise<void>;
+      atmosphere:()=>ReturnType<KatanaScene['atmosphereState']>|null;
     };
   }
 }
 window.__katana = {
+  atmosphere:()=>scene?.atmosphereState()??null,
   state: () => ({
     view: document.body.dataset.view ?? 'loading', chapter: currentChapter, progress, exploring: isExploring,
     pose: scene ? { position: scene.camera.position.toArray() as [number, number, number], target: scene.controls.target.toArray() as [number, number, number], fov: scene.camera.fov } : currentPose(), stats, choreography: scene?.storyState() ?? null,
   }),
 };
 if (new URLSearchParams(location.search).has('capture')) {
+  window.__katana.captureLeaves=async seconds=>{if(!scene)throw new Error('3D unavailable');scene.captureLeaves(seconds);await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));};
+  window.__katana.captureVisibility=()=>{if(!scene)throw new Error('3D unavailable');return scene.captureVisibility();};
   window.__katana.capturePose=async pose=>{
     scene?.setPose(pose);await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
   };

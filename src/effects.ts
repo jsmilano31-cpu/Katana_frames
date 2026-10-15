@@ -75,7 +75,7 @@ export class WindEffects {
       positions.setXYZ(i,x*irregular,positions.getY(i),z*irregular*.59);
     }
     stoneGeometry.computeVertexNormals();
-    const stoneMaterial=new MeshStandardMaterial({color:sceneConfig.effects.groundColor,roughness:.96,metalness:.03,flatShading:true,transparent:true});
+    const stoneMaterial=new MeshStandardMaterial({color:sceneConfig.effects.groundColor,roughness:.96,metalness:.03,flatShading:true,alphaHash:true,depthWrite:true,depthTest:true});
     // Object-space mineral grain stays attached to the slab as the camera orbits.
     stoneMaterial.onBeforeCompile=shader=>{
       shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vStone;').replace('#include <begin_vertex>','#include <begin_vertex>\nvStone=position;');

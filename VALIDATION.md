@@ -1,6 +1,12 @@
-﻿# Validation — 2026-10-14
+﻿# Validation — 2026-10-15
+
+The latest delivery adds the scroll-linked dragon spirit and continuous bamboo leaves with persistent ground accumulation. Current results, screenshots, and measurements are in [Divine Awakening validation](docs/divine-awakening/VALIDATION.md). The report below is retained as the previous revision's baseline.
+
+# Previous validation — 2026-10-14
 
 The Field of Blades revision uses the official textured J.AkioHonda model. The sheath fit is calibrated from the actual Saya and Habaki geometry. Tapping or clicking the settled scene enters exploration; one closed corner menu replaces the large panel. A seeded field of 160 desktop or 80 portrait silhouette katanas fills the clearing. The main blade remains dominant and planted; the previous camera angles, zoom bounds, and pan bounds are retained.
+
+The visibility refinement corrects transparent-batch sorting that allowed the ground and rocks to paint over background blades at some angles. Solid scenery and silhouettes now write depth; alpha hashing retains reversible reveals and camera fades. Background blades have slightly thicker edges, and decorative rocks begin beyond the sword field. The original detailed model, its textures, controls, and camera ranges remain intact.
 
 ## Completed checks
 
@@ -8,7 +14,7 @@ The Field of Blades revision uses the official textured J.AkioHonda model. The s
 | --- | --- |
 | TypeScript and production build | Pass |
 | Camera paths, reversal, clearance, awakening bounds, landing lifecycle, and GLB packing | 14 unit tests pass |
-| Installed Edge desktop and Pixel 7 emulation | 48 browser tests pass; 4 input-specific cases intentionally skipped on the other device project |
+| Installed Edge desktop and Pixel 7 emulation | 50 browser cases pass across the full run and targeted rerun; 4 input-specific cases intentionally skipped |
 | Actual model, textures, and local assets | Pass |
 | Awakening | Pulse remains within exposed steel; reversing returns it to a dormant state |
 | Landing playback | Completes when scroll stops; reversal cancels it; leaving the landing region re-arms it |
@@ -24,6 +30,8 @@ The Field of Blades revision uses the official textured J.AkioHonda model. The s
 | Corner controls | Closed by default; focus, outside-close, Escape, Reset, Pause, Replay, and Exit pass |
 | Keyboard entry | Focus-visible action is positioned outside layout flow; Replay stays stationary during a click |
 | Silhouette field | 160 desktop / 80 portrait instances; 368 triangles each; seeded planting and reveal reverse cleanly |
+| Depth and angle visibility | Actual rendered blade, grip, and field fragments present from six high/rear/side/distant poses on desktop and portrait; partial reveal checked |
+| Scenery hierarchy | Solid depth prevents ground painting over blades; decorative rocks positioned outside the field; high, rear, side, and full-orbit screenshots reviewed |
 | Camera-driven fading | A full low-angle orbit at maximum zoom-out faded up to 3 nearby/obscuring swords while ambient time stayed paused |
 | Camera bounds | Zoom reaches both bounds; pan stays within one model unit of the starting target; elevation stays above ground |
 | Explore orientation change | Preserves viewing direction, planted tip, and impact count; updates responsive bounds and scenery density |
@@ -39,11 +47,11 @@ The Field of Blades revision uses the official textured J.AkioHonda model. The s
 
 The production build was visually reviewed at **1440 × 900**, **1809 × 685**, **390 × 844**, **844 × 390**, and **320 × 568**. Captures cover Presence, early/late draw, mist, reveal, impact, the settled composition, direct entry with the menu closed, four approximately quarter-turn viewpoints, controls/help, both zoom ranges, and portrait reduced motion. Dedicated close-ups show the sheath from three directions. All five sizes have no runtime or console errors, failed assets, horizontal overflow, or document-bottom gap.
 
-The earlier ScrollTrigger refresh and sticky-scene focus fixes are retained. Keyboard entry initially changed the Replay button's position when focus moved; its focus-visible placement now stays outside layout flow. Initial fragment navigation is explicitly routed after initialization to avoid native scrolling to fixed chapter panels. The final full suite passed 48 cases with four intentional skips: three touch cases on desktop and one mouse case on portrait. Shader/buffer/texture warming remains part of loading.
+The earlier ScrollTrigger refresh and sticky-scene focus fixes are retained. Keyboard entry initially changed the Replay button's position when focus moved; its focus-visible placement now stays outside layout flow. Initial fragment navigation is explicitly routed after initialization to avoid native scrolling to fixed chapter panels. This revision adds two real-model depth/visibility cases. The full run passed 49 cases, skipped four input-specific cases, and encountered one portrait model-loading timeout during warm-up. The targeted rerun passed that case in 21.6 seconds; no failed cases remain. Shader/buffer/texture warming remains part of loading.
 
 The browser suite uses the official model for awakening, landing, contact, asset, reverse-draw, orientation, and six-view checks. Small intercepted fixtures cover controller bounds and failure scenarios; they are never shipped as the site's model. Production visual review and performance measurements use the actual textured model and complete grove.
 
-Raw production review: [visual-checks.json](docs/field-of-blades/visual-checks.json). Camera-fade probe: [proximity-check.json](docs/field-of-blades/proximity-check.json).
+Current production review: [visual-checks.json](docs/visibility-fix/visual-checks.json). All five layouts have no runtime/console errors, failed assets, horizontal overflow, or bottom gap. Twenty additional high-front, high-back, high-side, and low-back captures have positive hero-blade and field fragment counts. Visibility masks remove translucent mist/artwork and retain solid geometry depth and camera-fade rules. Earlier camera-fade probe: [proximity-check.json](docs/field-of-blades/proximity-check.json).
 
 The source-space geometry inspection reports a minimum **0.007360** clearance between the blade and the sheath's outer cross-section envelope at nine sampled positions. The fitted frame rotation is about **0.000017 radians**, replacing the old 0.032-radian adjustment. This checks envelope compatibility; the renderer conceals enclosed steel with a clipping plane rather than simulating a hollow physical cavity. Actual measurements and calibrated frames: [sheath-fit.json](docs/field-of-blades/sheath-fit.json). Reproduce with `node scripts/inspect-fit.mjs`.
 
@@ -55,18 +63,18 @@ Machine: **Acer Nitro ANV15-52**, Windows 11, **Intel Core i5-13420H**. Headless
 
 | Configuration | Forward/reverse scrolling | Awakening and mist | Landing bursts | Planted ambient | Grove orbit | DPR |
 | --- | --- | --- | --- | --- | --- | --- |
-| Desktop 1440 × 900 | 89–109 FPS | 164 FPS | 99–104 FPS | 107 FPS | 122 FPS | 1 |
-| Pixel 7 browser emulation | 94–155 FPS | 165 FPS | 119–148 FPS | 165 FPS | 164 FPS | 1.25 |
+| Desktop 1440 × 900 | 57–69 FPS | 165 FPS | 97–101 FPS | 103 FPS | 121 FPS | 1 |
+| Pixel 7 browser emulation | 98–133 FPS | 165 FPS | 87–94 FPS | 90 FPS | 155 FPS | 1.25 |
 
 Scrolling, awakening, and ambient values use the renderer's two-second measurement windows. Landing values use three real native-scroll landings; orbit values use five seconds of continuously changing camera direction with active ambient motion. Both use timestamps synchronized with `gl.finish()`. These headless results measure rendering throughput and do not guarantee display refresh or performance on other hardware.
 
 The final planted scene uses about **136,300 triangles and 48 draw calls** on desktop, and **78,000 triangles and 41 calls** in portrait. The instanced field and contact patches add two draw calls; the original detailed GLB is not duplicated for background swords. Browser/GPU conditions vary between runs; the raw final results are retained.
 
-The final measured desktop scrolling result exceeds the 60 FPS target on this laptop. **No physical phone was available; the physical-mobile 30 FPS target remains unverified.** Phone emulation uses the laptop GPU. Portrait uses 90 bamboo stalks and 3,150 leaves, compared with 180 stalks and 6,300 leaves on desktop, plus fewer rocks, ground leaves, fog layers, and particles. Pixel density is capped and sustained slow rendering reduces resolution.
+The desktop orbit exceeds the 60 FPS target on this laptop; the scrolling minimum of 57 FPS is slightly below it. The target is not guaranteed throughout the journey. **No physical phone was available; the physical-mobile 30 FPS target remains unverified.** Phone emulation uses the laptop GPU. Portrait uses 90 bamboo stalks and 3,150 leaves, compared with 180 stalks and 6,300 leaves on desktop, plus fewer rocks, ground leaves, fog layers, and particles. Pixel density is capped and sustained slow rendering reduces resolution.
 
 Unlit mist cards use one rendering pass. Invisible trails, tip glints, and pressure rings are omitted. Pausing effects allows idle rendering to stop; hidden tabs suspend both rendering and effect clocks.
 
-Raw measurements: [performance.json](docs/field-of-blades/performance.json).
+Current raw measurements: [performance.json](docs/visibility-fix/performance.json). Earlier measurements remain in `docs/field-of-blades/`.
 
 With the production preview running:
 
@@ -79,6 +87,11 @@ Vite reports a size advisory for the dynamically loaded Three.js core: approxima
 
 ## Delivery and review
 
+- [Corrected blade field in exploration](docs/visibility-fix/desktop-explore.png)
+- [High front angle](docs/visibility-fix/desktop-high-front.png)
+- [High rear angle](docs/visibility-fix/desktop-high-back.png)
+- [Portrait side angle](docs/visibility-fix/portrait-high-side.png)
+- [Portrait static fallback with corrected field](docs/visibility-fix/portrait-static.png)
 - [Corrected sheath, front](docs/field-of-blades/sheath-front.png)
 - [Corrected sheath, back](docs/field-of-blades/sheath-back.png)
 - [Desktop planted ending](docs/field-of-blades/desktop-final.png)
@@ -89,7 +102,7 @@ Vite reports a size advisory for the dynamically loaded Three.js core: approxima
 - [Opposite viewpoint](docs/field-of-blades/desktop-orbit-2.png)
 - [Camera proximity fading](docs/field-of-blades/proximity-fade.png)
 - [Portrait static fallback](docs/field-of-blades/portrait-static.png)
-- Final screenshots and measurements: `docs/field-of-blades/`; earlier revision captures are retained in their original directories.
+- Current screenshots and measurements: `docs/visibility-fix/`; earlier revision captures are retained in their original directories. All twelve fallback posters were regenerated; the finale images changed with the depth fix.
 - Source, lockfile, and launcher: project root / `start-local.cmd`
 - Static production build with local model, posters, fonts, and licenses: `dist/`
 

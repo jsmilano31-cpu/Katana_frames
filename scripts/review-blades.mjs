@@ -1,6 +1,6 @@
 import {chromium} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
-const base=process.env.KATANA_PREVIEW_URL??'http://127.0.0.1:5173',output='docs/field-of-blades';await mkdir(output,{recursive:true});
+const base=process.env.KATANA_PREVIEW_URL??'http://127.0.0.1:5173',output=process.env.KATANA_REVIEW_OUTPUT??'docs/field-of-blades';await mkdir(output,{recursive:true});
 const browser=await chromium.launch({channel:'msedge',headless:true}),report=[];
 try{
   for(const [name,width,height] of [['desktop',1440,900],['wide',1809,685],['portrait',390,844],['landscape',844,390],['compact',320,568]]){
@@ -31,7 +31,14 @@ try{
     for(let i=0;i<5;i++)await page.keyboard.press('+');await page.screenshot({path:`${output}/${name}-close.png`});
     for(let i=0;i<18;i++)await page.keyboard.press('-');await page.screenshot({path:`${output}/${name}-wide-view.png`});
     await page.keyboard.press('Escape');
-    report.push({name,width,height,errors,consoleErrors,failed,state:await page.evaluate(()=>window.__katana.state()),overflow:await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),bottomGap:await page.evaluate(()=>document.documentElement.scrollHeight-document.querySelector('.story').getBoundingClientRect().height)});
+    const visibility=[];
+    for(const [label,position] of [['high-front',[.95,10,9]],['high-back',[.95,10,-9]],['high-side',[10,8,0]],['low-back',[.95,3,-16]]]){
+      await page.evaluate(position=>window.__katana.capturePose({position,target:[.95,.2,0],fov:43,roll:0}),position);
+      visibility.push({label,...await page.evaluate(()=>window.__katana.captureVisibility())});
+      await page.screenshot({path:`${output}/${name}-${label}.png`});
+    }
+    await page.evaluate(()=>window.__katana.captureProgress(1));
+    report.push({name,width,height,errors,consoleErrors,failed,visibility,state:await page.evaluate(()=>window.__katana.state()),overflow:await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),bottomGap:await page.evaluate(()=>document.documentElement.scrollHeight-document.querySelector('.story').getBoundingClientRect().height)});
     if(name==='portrait'){await page.emulateMedia({reducedMotion:'reduce'});await page.locator('[data-nav="5"]').click();await page.waitForTimeout(300);await page.screenshot({path:`${output}/portrait-static.png`});}
     await page.close();
   }
