@@ -205,13 +205,13 @@ export class KatanaScene {
     const groveVisible=this.grove.root.visible;
     this.field?.setProgress(1);
     this.grove.root.visible=true;
-    this.dragon.setProgress(.36);this.dragon.update(this.camera,0);
+    this.dragon.setProgress(.36,1);this.dragon.update(this.camera,0);
     this.fallingLeaves.capture(1);
     await this.renderer.compileAsync(this.scene,this.camera);
     // Upload the grove buffers and local textures while the loading poster is visible.
     this.renderer.render(this.scene,this.camera);
     this.fallingLeaves.reset();this.fallingLeaves.root.visible=false;
-    this.dragon.setProgress(this.storyProgress);
+    this.dragon.setProgress(this.storyProgress,this.exposed);
     this.grove.root.visible=groveVisible;
     this.field?.setProgress(this.storyProgress);
     this.renderer.render(this.scene,this.camera);
@@ -232,7 +232,6 @@ export class KatanaScene {
     if(this.captureMode)this.impact.restore(progress);else this.impact.observe(progress,this.ambientPaused);
     const state = sampleChoreography(progress);
     this.grove.setProgress(progress);
-    this.dragon.setProgress(progress);
     this.field?.setProgress(progress);
     this.groveFog.density=sceneConfig.grove.fogDensity*this.grove.diagnostics().reveal;
     this.qa.setFromEuler(this.rotation.set(...state.fromRotation));
@@ -247,6 +246,7 @@ export class KatanaScene {
     const mouthPoint=this.mouth.clone().add(this.scabbard.position);
     this.bladePlane.set(this.mouthAxis.clone().negate(),mouthPoint.dot(this.mouthAxis)).applyMatrix4(this.model.matrixWorld);
     this.exposed=this.exposure(this.sword.position,this.scabbard.position);
+    this.dragon.setProgress(progress,this.exposed);
     const awakening=sampleAwakening(progress,this.exposed);
     if(this.aura){
       this.aura.uniforms.uPulse.value=awakening.pulsePosition;

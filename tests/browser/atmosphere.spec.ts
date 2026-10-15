@@ -10,6 +10,26 @@ test('dragon follows reversible scroll and disappears before the grove',async({p
   }
   await page.evaluate(()=>window.__katana.captureProgress!(.36));
   expect((await page.evaluate(()=>window.__katana.atmosphere()))!.dragon.eye).toBe(1);
+  expect((await page.evaluate(()=>window.__katana.atmosphere()))!.dragon.loaded).toBe(true);
+  await page.evaluate(()=>window.__katana.captureProgress!(.25));
+  const partial=await page.evaluate(()=>({dragon:window.__katana.atmosphere()!.dragon,blade:window.__katana.state().choreography!.effects}));
+  expect(partial.dragon.extraction).toBeCloseTo((partial.blade.exposed-.01)/.99,8);
+  expect(partial.dragon.eye).toBe(0);
+  await page.evaluate(()=>window.__katana.captureProgress!(.34));
+  expect((await page.evaluate(()=>window.__katana.state().choreography))!.effects.awakening.glint).toBe(1);
+  expect((await page.evaluate(()=>window.__katana.atmosphere()))!.dragon.eye).toBe(1);
+  await page.setViewportSize({width:844,height:390});
+  expect((await page.evaluate(()=>window.__katana.atmosphere()))!.dragon.eye).toBe(1);
+});
+
+test('a failed decorative dragon texture leaves the katana and finale usable',async({page})=>{
+  test.setTimeout(90000);await page.route('**/assets/dragon/*.png',route=>route.abort());
+  await page.goto('/?capture=1');
+  await expect(page.locator('body')).toHaveAttribute('data-view','3d',{timeout:60000});
+  await page.evaluate(()=>window.__katana.captureProgress!(.34));
+  expect((await page.evaluate(()=>window.__katana.atmosphere()))!.dragon).toMatchObject({failed:true,loaded:false,visible:false});
+  await page.evaluate(()=>window.__katana.captureProgress!(1));await enterViewer(page);
+  expect(await page.evaluate(()=>window.__katana.state().exploring)).toBe(true);
 });
 
 test('leaf carpet survives camera and pause controls, stays bounded, and Replay clears it',async({page})=>{

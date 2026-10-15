@@ -1,0 +1,56 @@
+[
+  {
+    "name": "desktop",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "errors": [],
+    "fps": 164.80000000000004,
+    "stats": {
+      "fps": 164.99175041247915,
+      "dpr": 1,
+      "drawCalls": 42,
+      "triangles": 22462
+    },
+    "dragon": {
+      "extraction": 1,
+      "reveal": 1,
+      "body": 1,
+      "head": 1,
+      "eye": 1,
+      "opening": 1,
+      "sun": 1,
+      "dissolve": 0,
+      "visible": true,
+      "loaded": true,
+      "failed": false
+    },
+    "method": "Five-second headless rendered-frame throughput synchronized with gl.finish(); production build, real GLB, painted dragon, vermilion sun, registered eye, and active ambient mist. Mobile is desktop emulation, not physical-device testing."
+  },
+  {
+    "name": "Pixel 7 emulation",
+    "browser": "155.0.4283.45",
+    "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A7A8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "errors": [],
+    "fps": 164.99340026398943,
+    "stats": {
+      "fps": 165.02966545345745,
+      "dpr": 1.25,
+      "drawCalls": 31,
+      "triangles": 22006
+    },
+    "dragon": {
+      "extraction": 1,
+      "reveal": 1,
+      "body": 1,
+      "head": 1,
+      "eye": 1,
+      "opening": 1,
+      "sun": 1,
+      "dissolve": 0,
+      "visible": true,
+      "loaded": true,
+      "failed": false
+    },
+    "method": "Five-second headless rendered-frame throughput synchronized with gl.finish(); production build, real GLB, painted dragon, vermilion sun, registered eye, and active ambient mist. Mobile is desktop emulation, not physical-device testing."
+  }
+]

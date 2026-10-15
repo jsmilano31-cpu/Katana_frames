@@ -1,0 +1,90 @@
+{
+  "hardware": {
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13420H",
+    "platform": "win32",
+    "release": "10.0.26200",
+    "node": "v24.20.0"
+  },
+  "results": [
+    {
+      "file": "model/katana.glb",
+      "bytes": 15280840,
+      "sha256": "970223c5c4f821eae08eab00a3734529fac21358b7d93b8f70f50aefa3d9a35b"
+    },
+    {
+      "file": "model/manifest.json",
+      "bytes": 1310,
+      "sha256": "8bdc908570ac56f7027afc3a8c8c2fa2e0940304954bbdab4fe4e33e15635fe1"
+    },
+    {
+      "file": "dragon/ink-dragon.png",
+      "bytes": 2525304,
+      "sha256": "7bfb71698184b3d7906a2d8d3bdc3514e02c9aa4f368b4227a7bb0b4b03cc7d8"
+    },
+    {
+      "file": "dragon/ink-dragon-mobile.png",
+      "bytes": 569113,
+      "sha256": "4ee51401fd48e5a5caac3c0c26db001a2a8d5adb0772cf23b3ae7ef125dad468"
+    },
+    {
+      "file": "posters/chapter-0.png",
+      "bytes": 1027782,
+      "sha256": "4293784be171e568ed37ca9159c3044ccdd6414551e702cfb1f0dd00c5c66980"
+    },
+    {
+      "file": "posters/chapter-0-mobile.png",
+      "bytes": 313586,
+      "sha256": "4d533d56c5388862f77156c769f02d0914311ee9fb559bb635287caf7a833014"
+    },
+    {
+      "file": "posters/chapter-1.png",
+      "bytes": 1214613,
+      "sha256": "cb6f2d0c5fa4ea0e810b46475de935c341b6e84f6e324b8dd0fef4d53559832b"
+    },
+    {
+      "file": "posters/chapter-1-mobile.png",
+      "bytes": 393188,
+      "sha256": "20733e8a60cc5d2414dde39de6641d4713ed5d0f8f47525d73fa4854bfd4a9d1"
+    },
+    {
+      "file": "posters/chapter-2.png",
+      "bytes": 1126351,
+      "sha256": "409b2d327520b1cc01ca7ecd159cf34f265f6b1c9e78ecb9ce2fcf0377af73e8"
+    },
+    {
+      "file": "posters/chapter-2-mobile.png",
+      "bytes": 324269,
+      "sha256": "28922905dc9a4deef96958af332e33ce87d3eea74bba032a8156bf6a914e3177"
+    },
+    {
+      "file": "posters/chapter-3.png",
+      "bytes": 1144709,
+      "sha256": "641a8747bbc3bd8d92ae20ea157a609221ed2f698f24e18200a1b253db05770e"
+    },
+    {
+      "file": "posters/chapter-3-mobile.png",
+      "bytes": 321955,
+      "sha256": "7641ec2c88b4e61e4dafb4d8a9d514b134e94914ae916ef59dda776460e6b411"
+    },
+    {
+      "file": "posters/chapter-4.png",
+      "bytes": 1073482,
+      "sha256": "c37168bdb9968b87a3581e753fbce9b19ca2a7440e40d82558bfed7918252bb0"
+    },
+    {
+      "file": "posters/chapter-4-mobile.png",
+      "bytes": 318630,
+      "sha256": "aa3312de7d4f630bd051b8ab7881aec62d0f1d19c4907522a86ed46eb6698634"
+    },
+    {
+      "file": "posters/chapter-5.png",
+      "bytes": 1188559,
+      "sha256": "1062e8a203108b672d13ea7e5731f52edd28bc623f3fb04dd1a268eb4b4acaf3"
+    },
+    {
+      "file": "posters/chapter-5-mobile.png",
+      "bytes": 337648,
+      "sha256": "de8ed0d7d11692a66d48c1d8673cd29147c813360e6e2ff743d8bbe0f078e118"
+    }
+  ]
+}

@@ -64,7 +64,11 @@ describe('awakening and independent landing playback',()=>{
     expect(sampleAwakening(.1).aura).toBe(0);
     expect(sampleAwakening(.25).pulseStrength).toBeGreaterThan(.7);
     expect(sampleAwakening(.25,.2).pulsePosition).toBeLessThan(.2);
-    expect(sampleAwakening(.4).glint).toBeGreaterThan(.9);
+    expect(sampleAwakening(.34,1).glint).toBe(1);
+    expect(sampleAwakening(.34,.5).glint).toBe(0);
+    expect(sampleAwakening(.34,1).pulsePosition).toBe(1);
+    expect(sampleAwakening(.4,1).glint).toBeGreaterThan(0);
+    expect(sampleAwakening(.42,1).glint).toBe(0);
     expect(sampleAwakening(.5).pulseStrength).toBe(0);
     expect(sampleAwakening(.1).aura).toBe(0);
   });

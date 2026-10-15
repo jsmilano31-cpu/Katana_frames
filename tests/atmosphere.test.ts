@@ -5,11 +5,21 @@ import {sceneConfig} from '../src/config';
 
 describe('scroll-linked dragon awakening',()=>{
   it('reveals, opens the eye, dissolves, and samples identically in reverse',()=>{
-    expect(sampleDragon(.1).body).toBe(0);expect(sampleDragon(.24).body).toBe(1);
-    expect(sampleDragon(.24).eye).toBe(0);expect(sampleDragon(.36).eye).toBe(1);
-    expect(sampleDragon(.52).body).toBe(0);expect(sampleDragon(.56).eye).toBe(0);
-    const forward=Array.from({length:101},(_,i)=>sampleDragon(i/100));
-    expect(Array.from({length:101},(_,i)=>sampleDragon((100-i)/100)).reverse()).toEqual(forward);
+    expect(sampleDragon(.1,0).body).toBe(0);expect(sampleDragon(.24,1).body).toBe(1);
+    expect(sampleDragon(.24,.6).eye).toBe(0);expect(sampleDragon(.34,1).eye).toBe(1);
+    expect(sampleDragon(.52,1).body).toBe(0);expect(sampleDragon(.56,1).eye).toBe(0);
+    const forward=Array.from({length:101},(_,i)=>sampleDragon(i/100,Math.min(1,Math.max(0,(i/100-.12)/.22))));
+    expect(Array.from({length:101},(_,i)=>sampleDragon((100-i)/100,Math.min(1,Math.max(0,((100-i)/100-.12)/.22)))).reverse()).toEqual(forward);
+  });
+  it('follows actual exposure instead of anticipating steel at a fixed scroll percentage',()=>{
+    expect(sampleDragon(.3,0)).toMatchObject({body:0,eye:0,sun:0});
+    expect(sampleDragon(.12,.006)).toMatchObject({body:0,eye:0,sun:0});
+    const first=sampleDragon(.2,.08),partial=sampleDragon(.2,.5),cleared=sampleDragon(.2,1);
+    expect(first.body).toBeGreaterThan(0);expect(first.body).toBeLessThan(partial.body);
+    expect(first.sun).toBeLessThan(cleared.sun*.2);expect(first.sun).toBeLessThan(partial.sun);
+    expect(partial.eye).toBe(0);expect(cleared.eye).toBe(1);
+    expect(sampleDragon(.34,1)).toEqual(sampleDragon(.4,1));
+    expect(sampleDragon(.46,1).body).toBeLessThan(cleared.body);
   });
 });
 describe('persistent, bounded leaf accumulation',()=>{

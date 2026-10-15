@@ -109,12 +109,14 @@ test('pausing during impact settles the scene and keeps exploration available',a
 
 test('awakening stays on exposed steel and reverses to a dormant blade',async({page})=>{
   await page.goto('/?capture=1');await expect(page.locator('body')).toHaveAttribute('data-view','3d');
-  for(const p of [.12,.18,.25,.34,.38,.4,.25,.12]){
+  for(const p of [.12,.18,.25,.34,.38,.4,.42,.25,.12]){
     await page.evaluate(value=>window.__katana.captureProgress!(value),p);
     const effect=await page.evaluate(()=>window.__katana.state().choreography!.effects);
     expect(effect.awakening.pulsePosition).toBeLessThanOrEqual(effect.exposed);
     if(p===.25)expect(effect.awakening.pulseStrength).toBeGreaterThan(.7);
-    if(p===.4)expect(effect.awakening.glint).toBeGreaterThan(.9);
+    if(p===.34)expect(effect.awakening.glint).toBe(1);
+    if(p===.4){expect(effect.awakening.glint).toBeGreaterThan(0);expect(effect.awakening.glint).toBeLessThan(.6);}
+    if(p===.42)expect(effect.awakening.glint).toBe(0);
     if(p===.12)expect(effect.awakening.aura).toBe(0);
   }
 });

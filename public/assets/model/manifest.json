@@ -6,7 +6,7 @@
   "source": "https://sketchfab.com/3d-models/katana-36e9ab64846246e8964a66b691e62f37",
   "license": "CC BY 4.0",
   "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-  "modifications": "glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation orientation reset; sheath opening and blade collar calibrated from geometry, normalized, and grouped for reversible unsheathing. Separate awakening light layer, original procedural mist and ink artwork, studio lighting, and a stone impact setting added. Original procedural moonlit bamboo grove, instanced silhouette katana field, layered SVG dragon spirit, and falling bamboo leaves with persistent ground accumulation added. Desktop and portrait chapter posters rendered.",
+  "modifications": "glTF resources embedded into GLB; original geometry and PBR textures preserved. Presentation orientation reset; sheath opening and blade collar calibrated from geometry, normalized, and grouped for reversible unsheathing. Separate awakening light layer, original procedural mist and ink artwork, studio lighting, and a stone impact setting added. Original procedural moonlit bamboo grove, instanced silhouette katana field, AI-generated ink dragon with procedural vermilion sun and extraction-linked awakening, and falling bamboo leaves with persistent ground accumulation added. Desktop and portrait chapter posters rendered.",
   "postersReady": true,
   "preview": {
     "source": "https://media.sketchfab.com/models/36e9ab64846246e8964a66b691e62f37/thumbnails/b6058b0c11ca4c62a7f25aed9b4e8ce4/d7b7c85e515a45849de67fd981060e05.jpeg",

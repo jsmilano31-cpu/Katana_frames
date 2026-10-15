@@ -36,14 +36,15 @@ export function sampleEffects(progress:number) {
     lift:config.dropHeight*(1-descent**2),groundOpacity:alignment,
     contact:p>=config.impact};
 }
-export function sampleAwakening(progress:number,exposedFraction=1){
+export function sampleAwakening(progress:number,exposedFraction?:number){
   const p=clamp01(progress),config=sceneConfig.effects;
-  const phase=ease((p-config.awakeningStart)/(config.awakeningEnd-config.awakeningStart));
-  const active=p>config.awakeningStart&&p<config.awakeningEnd;
-  return {phase,pulsePosition:Math.min(phase,Math.max(0,exposedFraction-.012)),
+  const exposed=clamp01(exposedFraction??ease((p-sceneConfig.motion.drawStart)/(sceneConfig.motion.drawEnd-sceneConfig.motion.drawStart)));
+  const phase=p<=sceneConfig.motion.drawStart?0:exposed;
+  const active=phase>0&&phase<1&&p<config.awakeningEnd;
+  return {phase,pulsePosition:phase===1?1:Math.max(0,phase-.012),
     pulseStrength:active?Math.sin(Math.PI*phase)**.4:0,
-    aura:ease((p-config.awakeningStart)/.1)*config.auraIntensity,
-    glint:p>=config.awakeningEnd?Math.sin(Math.PI*clamp01((p-config.awakeningEnd)/(config.glintEnd-config.awakeningEnd))):0};
+    aura:ease(phase/.6)*config.auraIntensity,
+    glint:ease((phase-.92)/.08)*(1-ease((p-config.awakeningEnd)/(config.glintEnd-config.awakeningEnd)))};
 }
 export function activeChapter(progress:number):number {
   const p=clamp01(progress);return chapters.reduce((index,c,i)=>p>=c.start?i:index,0);

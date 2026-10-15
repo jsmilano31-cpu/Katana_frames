@@ -1,0 +1,2207 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900,
+    "errors": [],
+    "failed": [],
+    "stages": [
+      {
+        "label": "seated",
+        "progress": 0.12,
+        "dragon": {
+          "extraction": 0,
+          "reveal": 0,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0,
+          "dissolve": 0,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.9894430906190632,
+            -0.1983601262303021,
+            0.0893502719237264
+          ],
+          "drawPhase": 0,
+          "drawStrength": 0,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0,
+            "pulsePosition": 0,
+            "pulseStrength": 0,
+            "aura": 0,
+            "glint": 0
+          },
+          "exposed": 0.005815623196874962
+        }
+      },
+      {
+        "label": "first-steel",
+        "progress": 0.16,
+        "dragon": {
+          "extraction": 0.06620103900488371,
+          "reveal": 0.029005967685745263,
+          "body": 0.13221196072374108,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.08814130714916073,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.8731562881611337,
+            -0.1469241752017387,
+            0.08818116060786488
+          ],
+          "drawPhase": 0.15384615384615388,
+          "drawStrength": 0.2091254274196959,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.07553902861483487,
+            "pulsePosition": 0.06353902861483487,
+            "pulseStrength": 0.5603958105917318,
+            "aura": 0.0052272152455652724,
+            "glint": 0
+          },
+          "exposed": 0.07553902861483487
+        }
+      },
+      {
+        "label": "emerging",
+        "progress": 0.2,
+        "dragon": {
+          "extraction": 0.24528857384466518,
+          "reveal": 0.319739070959651,
+          "body": 0.32143056347654225,
+          "head": 0.17247629692261252,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.271779141291899,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.575240199013732,
+            -0.023784130268007353,
+            0.07368951404934337
+          ],
+          "drawPhase": 0.30769230769230776,
+          "drawStrength": 0.4526411262415111,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.25283568810621854,
+            "pulsePosition": 0.24083568810621853,
+            "pulseStrength": 0.8736306730034226,
+            "aura": 0.04596727943867714,
+            "glint": 0
+          },
+          "exposed": 0.25283568810621854
+        }
+      },
+      {
+        "label": "partial",
+        "progress": 0.25,
+        "dragon": {
+          "extraction": 0.5483791349148008,
+          "reveal": 0.9343161631813439,
+          "body": 0.9263644503771491,
+          "head": 0.9102005492404257,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.9209764833315747,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.0664285763878193,
+            0.16008662515405236,
+            0.010824192109139236
+          ],
+          "drawPhase": 0.5,
+          "drawStrength": 0.675,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.5528953435656528,
+            "pulsePosition": 0.5408953435656528,
+            "pulseStrength": 0.994466889688769,
+            "aura": 0.11789728256854144,
+            "glint": 0
+          },
+          "exposed": 0.5528953435656528
+        }
+      },
+      {
+        "label": "eye-opening",
+        "progress": 0.28,
+        "dragon": {
+          "extraction": 0.7362701300346278,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 0.20052388222560416,
+          "opening": 0.20052388222560416,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.24988187231931258,
+            0.2590281084594449,
+            -0.05276263577400758
+          ],
+          "drawPhase": 0.6153846153846155,
+          "drawStrength": 0.7012621820140611,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.7389074287342815,
+            "pulsePosition": 0.7269074287342815,
+            "pulseStrength": 0.8823513401998841,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 0.7389074287342815
+        }
+      },
+      {
+        "label": "awakened",
+        "progress": 0.34,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.7430238591288781,
+            0.3917954150475348,
+            -0.19073793506720826
+          ],
+          "drawPhase": 0.8461538461538463,
+          "drawStrength": 0.41825085483939145,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "comparison",
+        "progress": 0.36,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.8292486886473177,
+            0.4124564237256827,
+            -0.2199089964921081
+          ],
+          "drawPhase": 0.923076923076923,
+          "drawStrength": 0.2273498810731802,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "hold",
+        "progress": 0.4,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.3110628940072455,
+            0.444651846544502,
+            -0.5302204525164913
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0.499999999999999
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "dissolve",
+        "progress": 0.46,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0.5,
+          "head": 0.5,
+          "eye": 0.5,
+          "opening": 1,
+          "sun": 0.5,
+          "dissolve": 0.5,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            2.0941253683478895,
+            -1.0796843209614408,
+            -4.237997226651332
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "stillness",
+        "progress": 0.56,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -4.720924875780651,
+            -0.8273491003646454,
+            -0.13514637071420202
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "ending",
+        "progress": 1,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.054236179184945,
+            -4.741348490955227,
+            -0.02661585799140288
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      }
+    ],
+    "stoppedStable": true,
+    "reversedStable": true,
+    "overflow": false
+  },
+  {
+    "name": "wide",
+    "width": 1809,
+    "height": 685,
+    "errors": [],
+    "failed": [],
+    "stages": [
+      {
+        "label": "seated",
+        "progress": 0.12,
+        "dragon": {
+          "extraction": 0,
+          "reveal": 0,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0,
+          "dissolve": 0,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.9894430906190632,
+            -0.1983601262303021,
+            0.0893502719237264
+          ],
+          "drawPhase": 0,
+          "drawStrength": 0,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0,
+            "pulsePosition": 0,
+            "pulseStrength": 0,
+            "aura": 0,
+            "glint": 0
+          },
+          "exposed": 0.005815623196874962
+        }
+      },
+      {
+        "label": "first-steel",
+        "progress": 0.16,
+        "dragon": {
+          "extraction": 0.06620103900488371,
+          "reveal": 0.029005967685745263,
+          "body": 0.13221196072374108,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.08814130714916073,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.8731562881611337,
+            -0.1469241752017387,
+            0.08818116060786488
+          ],
+          "drawPhase": 0.15384615384615388,
+          "drawStrength": 0.2091254274196959,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.07553902861483487,
+            "pulsePosition": 0.06353902861483487,
+            "pulseStrength": 0.5603958105917318,
+            "aura": 0.0052272152455652724,
+            "glint": 0
+          },
+          "exposed": 0.07553902861483487
+        }
+      },
+      {
+        "label": "emerging",
+        "progress": 0.2,
+        "dragon": {
+          "extraction": 0.24528857384466518,
+          "reveal": 0.319739070959651,
+          "body": 0.32143056347654225,
+          "head": 0.17247629692261252,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.271779141291899,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.575240199013732,
+            -0.023784130268007353,
+            0.07368951404934337
+          ],
+          "drawPhase": 0.30769230769230776,
+          "drawStrength": 0.4526411262415111,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.25283568810621854,
+            "pulsePosition": 0.24083568810621853,
+            "pulseStrength": 0.8736306730034226,
+            "aura": 0.04596727943867714,
+            "glint": 0
+          },
+          "exposed": 0.25283568810621854
+        }
+      },
+      {
+        "label": "partial",
+        "progress": 0.25,
+        "dragon": {
+          "extraction": 0.5483791349148008,
+          "reveal": 0.9343161631813439,
+          "body": 0.9263644503771491,
+          "head": 0.9102005492404257,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.9209764833315747,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.0664285763878193,
+            0.16008662515405236,
+            0.010824192109139236
+          ],
+          "drawPhase": 0.5,
+          "drawStrength": 0.675,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.5528953435656528,
+            "pulsePosition": 0.5408953435656528,
+            "pulseStrength": 0.994466889688769,
+            "aura": 0.11789728256854144,
+            "glint": 0
+          },
+          "exposed": 0.5528953435656528
+        }
+      },
+      {
+        "label": "eye-opening",
+        "progress": 0.28,
+        "dragon": {
+          "extraction": 0.7362701300346278,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 0.20052388222560416,
+          "opening": 0.20052388222560416,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.24988187231931258,
+            0.2590281084594449,
+            -0.05276263577400758
+          ],
+          "drawPhase": 0.6153846153846155,
+          "drawStrength": 0.7012621820140611,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.7389074287342815,
+            "pulsePosition": 0.7269074287342815,
+            "pulseStrength": 0.8823513401998841,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 0.7389074287342815
+        }
+      },
+      {
+        "label": "awakened",
+        "progress": 0.34,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.7430238591288781,
+            0.3917954150475348,
+            -0.19073793506720826
+          ],
+          "drawPhase": 0.8461538461538463,
+          "drawStrength": 0.41825085483939145,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "comparison",
+        "progress": 0.36,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.8292486886473177,
+            0.4124564237256827,
+            -0.2199089964921081
+          ],
+          "drawPhase": 0.923076923076923,
+          "drawStrength": 0.2273498810731802,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "hold",
+        "progress": 0.4,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.3110628940072455,
+            0.444651846544502,
+            -0.5302204525164913
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0.499999999999999
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "dissolve",
+        "progress": 0.46,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0.5,
+          "head": 0.5,
+          "eye": 0.5,
+          "opening": 1,
+          "sun": 0.5,
+          "dissolve": 0.5,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            2.0941253683478895,
+            -1.0796843209614408,
+            -4.237997226651332
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "stillness",
+        "progress": 0.56,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -4.720924875780651,
+            -0.8273491003646454,
+            -0.13514637071420202
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "ending",
+        "progress": 1,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.054236179184945,
+            -4.741348490955227,
+            -0.02661585799140288
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      }
+    ],
+    "stoppedStable": true,
+    "reversedStable": true,
+    "overflow": false
+  },
+  {
+    "name": "portrait",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "failed": [],
+    "stages": [
+      {
+        "label": "seated",
+        "progress": 0.12,
+        "dragon": {
+          "extraction": 0,
+          "reveal": 0,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0,
+          "dissolve": 0,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.9894430906190632,
+            -0.1983601262303021,
+            0.0893502719237264
+          ],
+          "drawPhase": 0,
+          "drawStrength": 0,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0,
+            "pulsePosition": 0,
+            "pulseStrength": 0,
+            "aura": 0,
+            "glint": 0
+          },
+          "exposed": 0.005815623196874962
+        }
+      },
+      {
+        "label": "first-steel",
+        "progress": 0.16,
+        "dragon": {
+          "extraction": 0.06620103900488371,
+          "reveal": 0.029005967685745263,
+          "body": 0.13221196072374108,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.08814130714916073,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.8731562881611337,
+            -0.1469241752017387,
+            0.08818116060786488
+          ],
+          "drawPhase": 0.15384615384615388,
+          "drawStrength": 0.2091254274196959,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.07553902861483487,
+            "pulsePosition": 0.06353902861483487,
+            "pulseStrength": 0.5603958105917318,
+            "aura": 0.0052272152455652724,
+            "glint": 0
+          },
+          "exposed": 0.07553902861483487
+        }
+      },
+      {
+        "label": "emerging",
+        "progress": 0.2,
+        "dragon": {
+          "extraction": 0.24528857384466518,
+          "reveal": 0.319739070959651,
+          "body": 0.32143056347654225,
+          "head": 0.17247629692261252,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.271779141291899,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.575240199013732,
+            -0.023784130268007353,
+            0.07368951404934337
+          ],
+          "drawPhase": 0.30769230769230776,
+          "drawStrength": 0.4526411262415111,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.25283568810621854,
+            "pulsePosition": 0.24083568810621853,
+            "pulseStrength": 0.8736306730034226,
+            "aura": 0.04596727943867714,
+            "glint": 0
+          },
+          "exposed": 0.25283568810621854
+        }
+      },
+      {
+        "label": "partial",
+        "progress": 0.25,
+        "dragon": {
+          "extraction": 0.5483791349148008,
+          "reveal": 0.9343161631813439,
+          "body": 0.9263644503771491,
+          "head": 0.9102005492404257,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.9209764833315747,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.0664285763878193,
+            0.16008662515405236,
+            0.010824192109139236
+          ],
+          "drawPhase": 0.5,
+          "drawStrength": 0.675,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.5528953435656528,
+            "pulsePosition": 0.5408953435656528,
+            "pulseStrength": 0.994466889688769,
+            "aura": 0.11789728256854144,
+            "glint": 0
+          },
+          "exposed": 0.5528953435656528
+        }
+      },
+      {
+        "label": "eye-opening",
+        "progress": 0.28,
+        "dragon": {
+          "extraction": 0.7362701300346278,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 0.20052388222560416,
+          "opening": 0.20052388222560416,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.24988187231931258,
+            0.2590281084594449,
+            -0.05276263577400758
+          ],
+          "drawPhase": 0.6153846153846155,
+          "drawStrength": 0.7012621820140611,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.7389074287342815,
+            "pulsePosition": 0.7269074287342815,
+            "pulseStrength": 0.8823513401998841,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 0.7389074287342815
+        }
+      },
+      {
+        "label": "awakened",
+        "progress": 0.34,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.7430238591288781,
+            0.3917954150475348,
+            -0.19073793506720826
+          ],
+          "drawPhase": 0.8461538461538463,
+          "drawStrength": 0.41825085483939145,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "comparison",
+        "progress": 0.36,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.8292486886473177,
+            0.4124564237256827,
+            -0.2199089964921081
+          ],
+          "drawPhase": 0.923076923076923,
+          "drawStrength": 0.2273498810731802,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "hold",
+        "progress": 0.4,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.3110628940072455,
+            0.444651846544502,
+            -0.5302204525164913
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0.499999999999999
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "dissolve",
+        "progress": 0.46,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0.5,
+          "head": 0.5,
+          "eye": 0.5,
+          "opening": 1,
+          "sun": 0.5,
+          "dissolve": 0.5,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            2.0941253683478895,
+            -1.0796843209614408,
+            -4.237997226651332
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "stillness",
+        "progress": 0.56,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -4.720924875780651,
+            -0.8273491003646454,
+            -0.13514637071420202
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "ending",
+        "progress": 1,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.054236179184945,
+            -4.741348490955227,
+            -0.02661585799140288
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      }
+    ],
+    "stoppedStable": true,
+    "reversedStable": true,
+    "overflow": false
+  },
+  {
+    "name": "landscape",
+    "width": 844,
+    "height": 390,
+    "errors": [],
+    "failed": [],
+    "stages": [
+      {
+        "label": "seated",
+        "progress": 0.12,
+        "dragon": {
+          "extraction": 0,
+          "reveal": 0,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0,
+          "dissolve": 0,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.9894430906190632,
+            -0.1983601262303021,
+            0.0893502719237264
+          ],
+          "drawPhase": 0,
+          "drawStrength": 0,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0,
+            "pulsePosition": 0,
+            "pulseStrength": 0,
+            "aura": 0,
+            "glint": 0
+          },
+          "exposed": 0.005815623196874962
+        }
+      },
+      {
+        "label": "first-steel",
+        "progress": 0.16,
+        "dragon": {
+          "extraction": 0.06620103900488371,
+          "reveal": 0.029005967685745263,
+          "body": 0.13221196072374108,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.08814130714916073,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.8731562881611337,
+            -0.1469241752017387,
+            0.08818116060786488
+          ],
+          "drawPhase": 0.15384615384615388,
+          "drawStrength": 0.2091254274196959,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.07553902861483487,
+            "pulsePosition": 0.06353902861483487,
+            "pulseStrength": 0.5603958105917318,
+            "aura": 0.0052272152455652724,
+            "glint": 0
+          },
+          "exposed": 0.07553902861483487
+        }
+      },
+      {
+        "label": "emerging",
+        "progress": 0.2,
+        "dragon": {
+          "extraction": 0.24528857384466518,
+          "reveal": 0.319739070959651,
+          "body": 0.32143056347654225,
+          "head": 0.17247629692261252,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.271779141291899,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.575240199013732,
+            -0.023784130268007353,
+            0.07368951404934337
+          ],
+          "drawPhase": 0.30769230769230776,
+          "drawStrength": 0.4526411262415111,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.25283568810621854,
+            "pulsePosition": 0.24083568810621853,
+            "pulseStrength": 0.8736306730034226,
+            "aura": 0.04596727943867714,
+            "glint": 0
+          },
+          "exposed": 0.25283568810621854
+        }
+      },
+      {
+        "label": "partial",
+        "progress": 0.25,
+        "dragon": {
+          "extraction": 0.5483791349148008,
+          "reveal": 0.9343161631813439,
+          "body": 0.9263644503771491,
+          "head": 0.9102005492404257,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.9209764833315747,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.0664285763878193,
+            0.16008662515405236,
+            0.010824192109139236
+          ],
+          "drawPhase": 0.5,
+          "drawStrength": 0.675,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.5528953435656528,
+            "pulsePosition": 0.5408953435656528,
+            "pulseStrength": 0.994466889688769,
+            "aura": 0.11789728256854144,
+            "glint": 0
+          },
+          "exposed": 0.5528953435656528
+        }
+      },
+      {
+        "label": "eye-opening",
+        "progress": 0.28,
+        "dragon": {
+          "extraction": 0.7362701300346278,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 0.20052388222560416,
+          "opening": 0.20052388222560416,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.24988187231931258,
+            0.2590281084594449,
+            -0.05276263577400758
+          ],
+          "drawPhase": 0.6153846153846155,
+          "drawStrength": 0.7012621820140611,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.7389074287342815,
+            "pulsePosition": 0.7269074287342815,
+            "pulseStrength": 0.8823513401998841,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 0.7389074287342815
+        }
+      },
+      {
+        "label": "awakened",
+        "progress": 0.34,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.7430238591288781,
+            0.3917954150475348,
+            -0.19073793506720826
+          ],
+          "drawPhase": 0.8461538461538463,
+          "drawStrength": 0.41825085483939145,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "comparison",
+        "progress": 0.36,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.8292486886473177,
+            0.4124564237256827,
+            -0.2199089964921081
+          ],
+          "drawPhase": 0.923076923076923,
+          "drawStrength": 0.2273498810731802,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "hold",
+        "progress": 0.4,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.3110628940072455,
+            0.444651846544502,
+            -0.5302204525164913
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0.499999999999999
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "dissolve",
+        "progress": 0.46,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0.5,
+          "head": 0.5,
+          "eye": 0.5,
+          "opening": 1,
+          "sun": 0.5,
+          "dissolve": 0.5,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            2.0941253683478895,
+            -1.0796843209614408,
+            -4.237997226651332
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "stillness",
+        "progress": 0.56,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -4.720924875780651,
+            -0.8273491003646454,
+            -0.13514637071420202
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "ending",
+        "progress": 1,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.054236179184945,
+            -4.741348490955227,
+            -0.02661585799140288
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      }
+    ],
+    "stoppedStable": true,
+    "reversedStable": true,
+    "overflow": false
+  },
+  {
+    "name": "compact",
+    "width": 320,
+    "height": 568,
+    "errors": [],
+    "failed": [],
+    "stages": [
+      {
+        "label": "seated",
+        "progress": 0.12,
+        "dragon": {
+          "extraction": 0,
+          "reveal": 0,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0,
+          "dissolve": 0,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.9894430906190632,
+            -0.1983601262303021,
+            0.0893502719237264
+          ],
+          "drawPhase": 0,
+          "drawStrength": 0,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0,
+            "pulsePosition": 0,
+            "pulseStrength": 0,
+            "aura": 0,
+            "glint": 0
+          },
+          "exposed": 0.005815623196874962
+        }
+      },
+      {
+        "label": "first-steel",
+        "progress": 0.16,
+        "dragon": {
+          "extraction": 0.06620103900488371,
+          "reveal": 0.029005967685745263,
+          "body": 0.13221196072374108,
+          "head": 0,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.08814130714916073,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.8731562881611337,
+            -0.1469241752017387,
+            0.08818116060786488
+          ],
+          "drawPhase": 0.15384615384615388,
+          "drawStrength": 0.2091254274196959,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.07553902861483487,
+            "pulsePosition": 0.06353902861483487,
+            "pulseStrength": 0.5603958105917318,
+            "aura": 0.0052272152455652724,
+            "glint": 0
+          },
+          "exposed": 0.07553902861483487
+        }
+      },
+      {
+        "label": "emerging",
+        "progress": 0.2,
+        "dragon": {
+          "extraction": 0.24528857384466518,
+          "reveal": 0.319739070959651,
+          "body": 0.32143056347654225,
+          "head": 0.17247629692261252,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.271779141291899,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.575240199013732,
+            -0.023784130268007353,
+            0.07368951404934337
+          ],
+          "drawPhase": 0.30769230769230776,
+          "drawStrength": 0.4526411262415111,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.25283568810621854,
+            "pulsePosition": 0.24083568810621853,
+            "pulseStrength": 0.8736306730034226,
+            "aura": 0.04596727943867714,
+            "glint": 0
+          },
+          "exposed": 0.25283568810621854
+        }
+      },
+      {
+        "label": "partial",
+        "progress": 0.25,
+        "dragon": {
+          "extraction": 0.5483791349148008,
+          "reveal": 0.9343161631813439,
+          "body": 0.9263644503771491,
+          "head": 0.9102005492404257,
+          "eye": 0,
+          "opening": 0,
+          "sun": 0.9209764833315747,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -0.0664285763878193,
+            0.16008662515405236,
+            0.010824192109139236
+          ],
+          "drawPhase": 0.5,
+          "drawStrength": 0.675,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.5528953435656528,
+            "pulsePosition": 0.5408953435656528,
+            "pulseStrength": 0.994466889688769,
+            "aura": 0.11789728256854144,
+            "glint": 0
+          },
+          "exposed": 0.5528953435656528
+        }
+      },
+      {
+        "label": "eye-opening",
+        "progress": 0.28,
+        "dragon": {
+          "extraction": 0.7362701300346278,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 0.20052388222560416,
+          "opening": 0.20052388222560416,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.24988187231931258,
+            0.2590281084594449,
+            -0.05276263577400758
+          ],
+          "drawPhase": 0.6153846153846155,
+          "drawStrength": 0.7012621820140611,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 0.7389074287342815,
+            "pulsePosition": 0.7269074287342815,
+            "pulseStrength": 0.8823513401998841,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 0.7389074287342815
+        }
+      },
+      {
+        "label": "awakened",
+        "progress": 0.34,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.7430238591288781,
+            0.3917954150475348,
+            -0.19073793506720826
+          ],
+          "drawPhase": 0.8461538461538463,
+          "drawStrength": 0.41825085483939145,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "comparison",
+        "progress": 0.36,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            0.8292486886473177,
+            0.4124564237256827,
+            -0.2199089964921081
+          ],
+          "drawPhase": 0.923076923076923,
+          "drawStrength": 0.2273498810731802,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 1
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "hold",
+        "progress": 0.4,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 1,
+          "head": 1,
+          "eye": 1,
+          "opening": 1,
+          "sun": 1,
+          "dissolve": 0,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.3110628940072455,
+            0.444651846544502,
+            -0.5302204525164913
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0.499999999999999
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "dissolve",
+        "progress": 0.46,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0.5,
+          "head": 0.5,
+          "eye": 0.5,
+          "opening": 1,
+          "sun": 0.5,
+          "dissolve": 0.5,
+          "visible": true,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            2.0941253683478895,
+            -1.0796843209614408,
+            -4.237997226651332
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "stillness",
+        "progress": 0.56,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            -4.720924875780651,
+            -0.8273491003646454,
+            -0.13514637071420202
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 0,
+          "lift": 0.65,
+          "groundOpacity": 0,
+          "contact": false,
+          "landingPhase": 0,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      },
+      {
+        "label": "ending",
+        "progress": 1,
+        "dragon": {
+          "extraction": 1,
+          "reveal": 1,
+          "body": 0,
+          "head": 0,
+          "eye": 0,
+          "opening": 1,
+          "sun": 0,
+          "dissolve": 1,
+          "visible": false,
+          "loaded": true,
+          "failed": false
+        },
+        "blade": {
+          "mouth": [
+            1.054236179184945,
+            -4.741348490955227,
+            -0.02661585799140288
+          ],
+          "drawPhase": 1,
+          "drawStrength": 1.2246467991473532e-16,
+          "alignment": 1,
+          "lift": 0,
+          "groundOpacity": 1,
+          "contact": true,
+          "landingPhase": 1,
+          "awakening": {
+            "phase": 1,
+            "pulsePosition": 1,
+            "pulseStrength": 0,
+            "aura": 0.12,
+            "glint": 0
+          },
+          "exposed": 1
+        }
+      }
+    ],
+    "stoppedStable": true,
+    "reversedStable": true,
+    "overflow": false
+  }
+]

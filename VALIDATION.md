@@ -1,6 +1,6 @@
 ﻿# Validation — 2026-10-15
 
-The latest delivery adds the scroll-linked dragon spirit and continuous bamboo leaves with persistent ground accumulation. Current results, screenshots, and measurements are in [Divine Awakening validation](docs/divine-awakening/VALIDATION.md). The report below is retained as the previous revision's baseline.
+The latest delivery replaces the dragon artwork with a detailed ink illustration and vermilion sun, synchronized to the actual exposed blade. Current results, screenshots, and measurements are in [Dragon artwork and timing validation](docs/dragon-refinement/VALIDATION.md). The earlier [Divine Awakening validation](docs/divine-awakening/VALIDATION.md) records the grove and persistent falling leaves. The report below is retained as a previous revision's baseline.
 
 # Previous validation — 2026-10-14
 
